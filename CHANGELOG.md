@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.3.1 "Swing" (2026-11-05)
+- Phones: a slim one-row header (version moved to the footer) and a tighter judges' scores screen, so there's much less scrolling.
+
 ## v2.3.0 "Quickstep" (2026-11-05)
 - A huge drop (or jump) from last week is now the first thing the presenters talk about: "From 30 last week to 4 tonight…".
 - Judges' speech bubbles compare with what they gave the couple last week ("Last week I gave you an 8!").

@@ -81,7 +81,7 @@ test('full week: theme, sick couple, scoring, fix scores, eliminations', async (
   await page.fill('[data-bind=theme]', 'Movie Week');
   await page.click('[data-act=togglesick][data-i="1"]');      // Bob is poorly
   await page.click('[data-act=startweek]');
-  assert.match(await page.textContent('.pill.wk'), /Week 2 · Movie Week/);
+  assert.match(await page.textContent('.pill.wk .wkf'), /Week 2 · Movie Week/);
   // no running order: pick who's on first (Ann or Cat; Bob is sick)
   assert.equal(await page.locator('[data-act=pickc]').count(), 2);
   await page.click('[data-act=pickc][data-i="0"]');
@@ -491,4 +491,20 @@ test('big drop from last week leads the comments; series history on the stage', 
   await page.waitForSelector('.paddle[data-i="0"] .jbub', { timeout: 2000 });
   assert.match(await page.textContent('.jbub'), /9/);
   assert.deepEqual(page.errors, []);
+});
+
+test("phone: slim header and judges' score buttons on screen without scrolling", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 700 }, hasTouch: true, isMobile: true });
+  const page = await ctx.newPage(); page.on('dialog', d => d.accept());
+  await page.goto(URL); await page.addStyleTag({ content: CALM });
+  await page.click('[data-act=load2026]');
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); await page.fill('#quick', '7777'); await page.tap('.qlock'); }
+  const hdr = await page.$eval('header', e => e.getBoundingClientRect().height);
+  assert.ok(hdr <= 52, `header is ${hdr}px tall`);
+  for (const sel of ['#jok', '.jkeys button[data-n="10"]']) {
+    const b = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
+    assert.ok(b <= 700, `${sel} at ${Math.round(b)}px needs scrolling`);
+  }
+  await ctx.close();
 });
