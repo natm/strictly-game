@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2b0f4d">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.35' cy='.3' r='.8'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='.45' stop-color='%23c9d6ff'/%3E%3Cstop offset='1' stop-color='%23606a9a'/%3E%3C/radialGradient%3E%3CclipPath id='c'%3E%3Ccircle cx='32' cy='35' r='24'/%3E%3C/clipPath%3E%3C/defs%3E%3Cpath d='M32 2v9' stroke='%231c0a33' stroke-width='3'/%3E%3Ccircle cx='32' cy='35' r='24' fill='url(%23g)'/%3E%3Cg clip-path='url(%23c)' stroke='%231c0a33' stroke-width='1.6' opacity='.55'%3E%3Cpath d='M8 23h48M8 31h48M8 39h48M8 47h48M8 55h48'/%3E%3Cpath d='M20 11v48M28 11v48M36 11v48M44 11v48' /%3E%3C/g%3E%3Cg clip-path='url(%23c)'%3E%3Crect x='21' y='24' width='6' height='6' fill='%23fff'/%3E%3Crect x='37' y='40' width='6' height='6' fill='%23ff4fa0'/%3E%3Crect x='29' y='48' width='6' height='6' fill='%2335d0ff'/%3E%3Crect x='45' y='24' width='6' height='6' fill='%23ffd93d'/%3E%3C/g%3E%3Ccircle cx='32' cy='35' r='24' fill='none' stroke='%231c0a33' stroke-width='3'/%3E%3Cpath d='M54 6l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' fill='%23ffd93d' stroke='%231c0a33' stroke-width='1.2'/%3E%3C/svg%3E">
 <title>Strictly Score Guess</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -130,7 +131,8 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
   padding:4px 22px;box-shadow:0 4px 0 var(--ink);transform:rotate(-3deg);animation:drop .7s 1.6s cubic-bezier(.2,1.8,.4,1) both;text-shadow:0 2px 0 var(--ink)}
 @keyframes drop{from{transform:translateY(-120px) rotate(-3deg);opacity:0}to{transform:rotate(-3deg);opacity:1}}
 .couplebig{font-family:var(--title);font-size:clamp(34px,8vw,96px);line-height:1.05;color:#fff;margin:12px 0;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink)}
-.couplebig span{display:inline-block;opacity:0;animation:letter .6s cubic-bezier(.2,1.8,.4,1) forwards}
+.couplebig .ln{display:block}.couplebig .wd{display:inline-block;white-space:nowrap;opacity:1;animation:none}.couplebig .amp{opacity:1;animation:none;font-size:.7em}
+.couplebig .wd span{display:inline-block;opacity:0;animation:letter .6s cubic-bezier(.2,1.8,.4,1) forwards}
 @keyframes letter{from{transform:translateY(-80px) rotate(-30deg) scale(.3);opacity:0}to{transform:none;opacity:1}}
 .dancetag{display:inline-block;font-family:var(--title);font-size:clamp(18px,3.4vw,38px);color:var(--ink);background:var(--yellow);border:var(--line);border-radius:18px;padding:4px 22px;
   transform:rotate(2deg);box-shadow:0 5px 0 var(--ink);opacity:0;animation:drop .7s 2.4s cubic-bezier(.2,1.8,.4,1) forwards}
@@ -138,8 +140,11 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 /* paddles */
 .paddles{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);margin:6px 0 10px}
 .paddle{text-align:center;perspective:700px}
-.paddle .face{background:#fff;color:var(--red);font-family:var(--title);font-size:clamp(54px,13vw,150px);line-height:1.1;border:var(--line);border-radius:18px;
-  box-shadow:var(--shadow);margin-top:6px;transform:rotateX(95deg) scale(.6);opacity:0;transform-origin:50% 0}
+.paddle .face{background:#fff;color:var(--red);font-family:var(--title);font-size:clamp(40px,10vw,120px);line-height:1;border:var(--line);border-radius:50%;
+  aspect-ratio:1;width:min(100%,220px);margin:6px auto 0;display:grid;place-items:center;position:relative;outline:6px solid var(--yellow);outline-offset:-14px;
+  box-shadow:var(--shadow);transform:rotateX(95deg) scale(.6);opacity:0;transform-origin:50% 0}
+.paddle .face:after{content:"";position:absolute;left:50%;top:100%;width:14%;height:38%;margin-left:-7%;background:#d99a4e;border:3px solid var(--ink);border-top:0;border-radius:0 0 6px 6px}
+.paddles{margin-bottom:clamp(40px,8vw,96px)!important}
 .paddle.on .face{animation:flip .8s cubic-bezier(.2,1.5,.4,1) forwards}
 @keyframes flip{from{transform:rotateX(95deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
 .paddle .portrait{transition:transform .3s}
@@ -154,6 +159,37 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .weekpick{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--title);color:#fff;font-size:22px;text-shadow:0 2px 0 var(--ink)}
 .weekpick b{font-size:40px;color:var(--yellow);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;min-width:1.4em;text-align:center}
 .weekpick button{font-size:22px;width:44px;height:44px;padding:0}
+/* quick type box */
+.quick{margin-bottom:14px}
+.quick label{display:block;font-family:var(--title);font-size:clamp(15px,1.9vw,20px);margin-bottom:4px}
+.quick input{font-family:var(--title);font-size:clamp(24px,4vw,36px);letter-spacing:.12em;text-align:center;padding:8px 12px;border-width:4px}
+/* real scores: gold judges' desk look */
+.realmode h2.t{color:#fff}
+.realbanner{display:block;width:max-content;max-width:100%;margin:0 auto 10px;font-family:var(--title);font-size:clamp(16px,2.4vw,26px);background:var(--yellow);color:var(--ink);
+  border:var(--line);border-radius:14px;padding:4px 22px;box-shadow:var(--shadow);transform:rotate(-2deg);animation:wob 2s infinite}
+.realmode .card{background:linear-gradient(180deg,#1c0a33,#3b1470);color:#fff;border-color:var(--yellow);box-shadow:0 6px 0 var(--yellow),0 0 40px #ffd93d88}
+.realmode .jname,.realmode .quick label,.realmode .totalbox{color:#fff}
+.realmode .keys button{background:#2b0f4d;color:var(--yellow);border-color:var(--yellow);box-shadow:0 4px 0 var(--yellow)}
+.realmode .keys button.sel{background:var(--yellow);color:var(--ink);text-shadow:none}
+.realmode .quick input{background:#fff8d6;border-color:var(--yellow)}
+.realmode .phand{filter:drop-shadow(0 2px 0 var(--yellow))}
+/* couple art */
+.cart{display:inline-block;flex:none;border:3px solid var(--ink);border-radius:18px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff3b0,#ff9ecb 70%,#b980ff);box-shadow:0 3px 0 var(--ink);vertical-align:middle;line-height:0}
+.cart svg,.cart img{width:100%;height:100%;display:block;object-fit:cover}
+.cart.sm{width:64px;height:48px;border-radius:12px}
+.cart.md{width:120px;height:90px}
+.cart.lg{width:clamp(180px,34vw,320px);height:clamp(135px,25.5vw,240px);border-width:4px;border-radius:24px;box-shadow:var(--shadow)}
+.stage .cart.lg{animation:dancepop .8s 1.6s cubic-bezier(.2,1.6,.4,1) both,sway 1.6s 2.4s ease-in-out infinite alternate;margin-bottom:6px}
+@keyframes dancepop{from{transform:scale(0) rotate(-20deg)}to{transform:none}}
+@keyframes sway{from{transform:rotate(-4deg) translateY(0)}to{transform:rotate(4deg) translateY(-6px)}}
+.lrow .cart.sm{width:52px;height:39px;border-radius:10px}
+.cc .cart{margin:0 auto 6px;display:block}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.sw{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--ink)}
+.sw.on{outline:4px solid var(--pink);outline-offset:2px}
+.hsbtn{font-size:13px;padding:4px 10px;border-width:3px;box-shadow:0 2px 0 var(--ink)}
+.hsbtn.on{background:var(--pink);color:#fff}
+.stagecontent{padding-top:80px}
 /* presenters */
 .quips{display:flex;flex-direction:column;gap:12px;margin:10px 0 4px}
 .pres{display:flex;align-items:flex-end;gap:12px;animation:fromL .7s cubic-bezier(.2,1.4,.4,1) both}
@@ -180,10 +216,10 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .pad.has .pup{transform:none}
 .pad .pup.lift{animation:lift .75s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes lift{0%{transform:translateY(104%) rotate(-14deg)}55%{transform:translateY(-8%) rotate(6deg)}78%{transform:translateY(2%) rotate(-3deg)}100%{transform:none}}
-.pcard{position:absolute;left:0;right:0;top:0;height:60%;background:#fff;border:3px solid var(--ink);border-radius:12px;display:grid;place-items:center;
+.pcard{position:absolute;left:0;right:0;top:0;aspect-ratio:1;background:#fff;border:3px solid var(--ink);border-radius:50%;outline:4px solid var(--yellow);outline-offset:-8px;display:grid;place-items:center;
   font-family:var(--title);font-size:clamp(26px,5vw,52px);color:var(--red);box-shadow:0 3px 0 var(--ink)}
 .pcard.hi{color:#16a34a}
-.pstick{position:absolute;left:50%;top:56%;bottom:0;width:10px;margin-left:-5px;background:#d99a4e;border:3px solid var(--ink);border-radius:4px}
+.pstick{position:absolute;left:50%;top:60%;bottom:0;width:10px;margin-left:-5px;background:#d99a4e;border:3px solid var(--ink);border-radius:4px}
 .phand{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font-size:clamp(26px,4vw,40px);line-height:1;z-index:2;filter:drop-shadow(0 2px 0 var(--ink))}
 .pad .hint0{position:absolute;left:0;right:0;top:20%;text-align:center;font-family:var(--title);opacity:.35;font-size:clamp(22px,4vw,40px)}
 .pad.has .hint0{display:none}
@@ -255,6 +291,7 @@ table.res tr.rrow{opacity:0;animation:slidein .5s forwards}
 .cc small{display:block;font-family:var(--body);font-size:13px;opacity:.8}
 .tag{display:inline-block;border:3px solid var(--ink);border-radius:999px;font-family:var(--title);font-size:12px;padding:0 10px;background:var(--cyan);color:var(--ink)}
 .tag.out{background:#ccc}.tag.sick{background:var(--orange)}
+.chip .tick{font-size:.8em;margin-left:2px}
 .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
 .tabs button.act{background:var(--pink);color:#fff}
 .entry{display:grid;grid-template-columns:auto 1fr minmax(100px,200px) auto;gap:8px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:6px 10px;margin-bottom:8px}
@@ -278,6 +315,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
   </header>
   <main id="main"><div class="wrap" id="view"></div></main>
 </div>
+<datalist id="dances"></datalist>
 <input type="file" id="photofile" accept="image/*" hidden>
 <input type="file" id="importfile" accept="application/json" hidden>
 
@@ -294,15 +332,31 @@ const uid=()=>Math.random().toString(36).slice(2,9);
 const sum=a=>a.reduce((x,y)=>x+y,0);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-const defaultJudges=()=>[
-  {name:'Shirley Ballas',photo:''},{name:'Motsi Mabuse',photo:''},
-  {name:'Anton Du Beke',photo:''},{name:'Craig Revel Horwood',photo:''}];
+const defaultJudges=()=>[   // always shown in this order: Craig, Motsi, Shirley, Anton
+  {name:'Craig Revel Horwood',photo:'',style:3},{name:'Motsi Mabuse',photo:'',style:1},
+  {name:'Shirley Ballas',photo:'',style:0},{name:'Anton Du Beke',photo:'',style:2}];
 const mkPlayer=(i,name)=>({id:uid(),name:name||'Player '+(i+1),color:COLORS[i%COLORS.length],av:EMOJI[i%EMOJI.length],here:true});
 const defaultPresenters=()=>[{name:'Emma Willis',photo:''},{name:'Josh Widdicombe',photo:''},{name:'Johannes Radebe',photo:''}];
 const defaultState=()=>({v:2,presenters:defaultPresenters(),players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],rounds:[],weeksDone:0,week:null,
-  tmp:[null,null,null,null],sound:true,seasonTab:'players'});
-let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),o)}catch(e){}return defaultState()})();
+  tmp:[null,null,null,null],sound:true,jOrder:2,seasonTab:'players'});
+let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),{jOrder:0},o)}catch(e){}return defaultState()})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save – storage full?')}};
+/* one-off: put judges in show order (Craig, Motsi, Shirley, Anton) and re-order every saved score to match */
+(function migrateJudgeOrder(){
+  if(S.jOrder===2)return;
+  S.judges.forEach((j,i)=>{if(j.style==null)j.style=i});
+  const key=j=>(j.name||'').toLowerCase().split(' ')[0];
+  const perm=['craig','motsi','shirley','anton'].map(w=>S.judges.findIndex(j=>key(j)===w));
+  S.jOrder=2;
+  if(perm.some(x=>x<0)||new Set(perm).size!==4||perm.every((x,k)=>x===k)){save();return}
+  const P=a=>Array.isArray(a)&&a.length===4?perm.map(k=>a[k]):a;
+  const PG=g=>{if(g)Object.keys(g).forEach(k=>g[k]=P(g[k]))};
+  S.judges=perm.map(k=>S.judges[k]);
+  S.couples.forEach(c=>(c.scores||[]).forEach(x=>x.real=P(x.real)));
+  (S.rounds||[]).forEach(r=>{r.r=P(r.r);PG(r.g)});
+  if(S.week){Object.values(S.week.results||{}).forEach(r=>{r.real=P(r.real);PG(r.guesses)});PG(S.week.guesses)}
+  S.tmp=P(S.tmp);save();
+})();
 let overlay=null;         // 'home' | 'manage' | 'season' | 'rules' | null (=show current game phase)
 let ready=false;          // pass-the-controls gate (not saved on purpose)
 let revealTok=0;
@@ -346,24 +400,24 @@ function burstAt(el,n){const r=el.getBoundingClientRect();burst(r.left+r.width/2
 /* =============== cartoon judge avatars =============== */
 function avatar(j,i,mood='idle'){
   if(j.photo)return `<img src="${j.photo}" alt="${esc(j.name)}">`;
-  const ink='#1c0a33';
-  const skin=['#ffd2b0','#a8683f','#ffd8b8','#ffcfa8'][i%4];
-  const hair=['#ffd54a','#2b1a14','#c9c9d1','#3a3a3a'][i%4];
-  const suit=['#e0245e','#7b2cbf','#1d4ed8','#222'][i%4];
+  const ink='#1c0a33',st=j.style!=null?j.style:i;
+  const skin=['#ffd2b0','#a8683f','#ffd8b8','#ffcfa8'][st%4];
+  const hair=['#ffd54a','#2b1a14','#c9c9d1','#3a3a3a'][st%4];
+  const suit=['#e0245e','#7b2cbf','#1d4ed8','#222'][st%4];
   const back=[
     `<path d="M16 120 Q4 50 24 30 Q60 -6 96 30 Q116 50 104 120Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
     `<circle cx="60" cy="34" r="36" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="26" cy="54" r="17" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="94" cy="54" r="17" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
-    ``,``][i%4];
+    ``,``][st%4];
   const front=[
     `<path d="M30 46 Q60 6 92 46 Q74 30 52 36 Q40 38 30 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M32 44 Q60 12 90 44 Q60 30 32 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M30 48 Q28 14 60 14 Q92 14 90 48 Q80 28 60 28 Q40 28 30 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
-    `<path d="M36 36 Q60 22 84 36 Q60 30 36 36Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i%4];
+    `<path d="M36 36 Q60 22 84 36 Q60 30 36 36Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][st%4];
   const extra=[
     ``,
     `<circle cx="29" cy="72" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/><circle cx="91" cy="72" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/>`,
     `<path d="M50 104 L60 110 L70 104 L70 118 L60 112 L50 118Z" fill="#ff4d4d" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>`,
-    `<g fill="rgba(255,255,255,.35)" stroke="${ink}" stroke-width="4"><rect x="30" y="46" width="24" height="18" rx="7"/><rect x="66" y="46" width="24" height="18" rx="7"/></g><path d="M54 54h12" stroke="${ink}" stroke-width="4"/>`][i%4];
+    `<g fill="rgba(255,255,255,.35)" stroke="${ink}" stroke-width="4"><rect x="30" y="46" width="24" height="18" rx="7"/><rect x="66" y="46" width="24" height="18" rx="7"/></g><path d="M54 54h12" stroke="${ink}" stroke-width="4"/>`][st%4];
   const brow={happy:'M34 40 Q43 32 52 38 M68 38 Q77 32 86 40',idle:'M34 41 Q43 36 52 40 M68 40 Q77 36 86 41',
     meh:'M34 42 L52 40 M68 40 L86 42',sad:'M34 36 L52 42 M68 42 L86 36'}[mood];
   const mouth={
@@ -372,7 +426,7 @@ function avatar(j,i,mood='idle'){
     meh:`<path d="M47 80 H73" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`,
     sad:`<path d="M46 86 Q60 70 74 86" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`}[mood];
   const pupil=mood==='sad'?3.2:4.6;
-  const eyes=i===3?`<circle cx="42" cy="57" r="${pupil}" fill="${ink}"/><circle cx="78" cy="57" r="${pupil}" fill="${ink}"/>`:
+  const eyes=st===3?`<circle cx="42" cy="57" r="${pupil}" fill="${ink}"/><circle cx="78" cy="57" r="${pupil}" fill="${ink}"/>`:
    `<ellipse cx="46" cy="57" rx="9" ry="11" fill="#fff" stroke="${ink}" stroke-width="3.5"/><ellipse cx="74" cy="57" rx="9" ry="11" fill="#fff" stroke="${ink}" stroke-width="3.5"/>
     <circle cx="47" cy="58" r="${pupil}" fill="${ink}"/><circle cx="73" cy="58" r="${pupil}" fill="${ink}"/><circle cx="48.6" cy="55.5" r="1.7" fill="#fff"/><circle cx="74.6" cy="55.5" r="1.7" fill="#fff"/>`;
   return `<svg viewBox="0 0 120 120">
@@ -414,6 +468,82 @@ function presenterAvatar(i,mood){
     <circle cx="47" cy="58" r="4.6" fill="${ink}"/><circle cx="73" cy="58" r="4.6" fill="${ink}"/><circle cx="48.6" cy="55.5" r="1.7" fill="#fff"/><circle cx="74.6" cy="55.5" r="1.7" fill="#fff"/>
     <path d="${brow}" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>
     ${mouthJ}${extra}</svg>`;
+}
+/* ---------- cartoon couples ---------- */
+const SKINS=['#ffe3cc','#f6c9a2','#e2a77a','#c4865a','#9a6440','#6e4630'];
+const HAIRS=['#2b1a14','#5a3a22','#8b5a2b','#d9a441','#f2d98a','#b8b8c2','#c0392b','#e05fa0'];
+const OUTFITS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#e0245e','#1d4ed8','#111827','#ffffff'];
+const HSTYLES=['Short','Long','Curly','Bun','Bald','Spiky','Ponytail'];
+const hashStr=t=>{let h=2166136261;for(const ch of t){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+function defaultLook(name,k){const h=hashStr(name+'#'+k);return{s:SKINS[h%SKINS.length],h:HAIRS[(h>>4)%6],hs:(h>>8)%HSTYLES.length,o:OUTFITS[(h>>12)%OUTFITS.length]}}
+function looksOf(c){const parts=c.name.split('&').map(x=>x.trim());return c.look||[defaultLook(parts[0]||c.name,0),defaultLook(parts[1]||c.name+'pro',1)]}
+function personSVG(cx,L,tilt,pro){
+  const ink='#1c0a33',cy=64,S_=`stroke="${ink}" stroke-width="4" stroke-linejoin="round"`;
+  const shortF=`<path d="M${cx-25} ${cy-4} Q${cx-27} ${cy-33} ${cx} ${cy-33} Q${cx+27} ${cy-33} ${cx+25} ${cy-4} Q${cx+16} ${cy-20} ${cx} ${cy-21} Q${cx-16} ${cy-20} ${cx-25} ${cy-4}Z" fill="${L.h}" ${S_}/>`;
+  const back=[ '',
+    `<path d="M${cx-31} ${cy+42} Q${cx-42} ${cy-20} ${cx-18} ${cy-35} Q${cx} ${cy-45} ${cx+18} ${cy-35} Q${cx+42} ${cy-20} ${cx+31} ${cy+42}Z" fill="${L.h}" ${S_}/>`,
+    `<circle cx="${cx}" cy="${cy-14}" r="31" fill="${L.h}" ${S_}/><circle cx="${cx-27}" cy="${cy+2}" r="13" fill="${L.h}" ${S_}/><circle cx="${cx+27}" cy="${cy+2}" r="13" fill="${L.h}" ${S_}/>`,
+    `<circle cx="${cx}" cy="${cy-38}" r="12" fill="${L.h}" ${S_}/>`,
+    '','',
+    `<ellipse cx="${cx+29}" cy="${cy+10}" rx="9" ry="21" fill="${L.h}" ${S_}/>`][L.hs];
+  const front=[shortF,
+    `<path d="M${cx-24} ${cy-6} Q${cx-6} ${cy-42} ${cx+26} ${cy-8} Q${cx+8} ${cy-22} ${cx-8} ${cy-18} Q${cx-16} ${cy-14} ${cx-24} ${cy-6}Z" fill="${L.h}" ${S_}/>`,
+    `<path d="M${cx-22} ${cy-10} Q${cx} ${cy-30} ${cx+22} ${cy-10} Q${cx} ${cy-20} ${cx-22} ${cy-10}Z" fill="${L.h}" ${S_}/>`,
+    shortF,
+    `<path d="M${cx-12} ${cy-22} Q${cx-4} ${cy-27} ${cx+4} ${cy-25}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>`,
+    `<path d="M${cx-25} ${cy-4} Q${cx-28} ${cy-26} ${cx-14} ${cy-30} L${cx-8} ${cy-42} L${cx} ${cy-30} L${cx+8} ${cy-44} L${cx+12} ${cy-30} Q${cx+28} ${cy-26} ${cx+25} ${cy-4} Q${cx+14} ${cy-20} ${cx} ${cy-20} Q${cx-14} ${cy-20} ${cx-25} ${cy-4}Z" fill="${L.h}" ${S_}/>`,
+    shortF][L.hs];
+  const seq=pro?[[-16,128],[0,122],[16,128],[-8,140],[8,140]].map(([dx,y])=>`<circle cx="${cx+dx}" cy="${y}" r="2.6" fill="#fff" opacity=".9"/>`).join(''):'';
+  return `<path d="M${cx-36} 156 Q${cx-32} 110 ${cx} 110 Q${cx+32} 110 ${cx+36} 156Z" fill="${L.o}" ${S_}/>${seq}
+  <g transform="rotate(${tilt} ${cx} ${cy+10})">${back}
+    <rect x="${cx-8}" y="${cy+22}" width="16" height="16" fill="${L.s}" ${S_}/>
+    <ellipse cx="${cx}" cy="${cy}" rx="26" ry="29" fill="${L.s}" ${S_}/>${front}
+    <circle cx="${cx-15}" cy="${cy+12}" r="5" fill="#ff7aa8" opacity=".5"/><circle cx="${cx+15}" cy="${cy+12}" r="5" fill="#ff7aa8" opacity=".5"/>
+    <ellipse cx="${cx-10}" cy="${cy-1}" rx="7" ry="8.5" fill="#fff" stroke="${ink}" stroke-width="3"/><ellipse cx="${cx+10}" cy="${cy-1}" rx="7" ry="8.5" fill="#fff" stroke="${ink}" stroke-width="3"/>
+    <circle cx="${cx-9}" cy="${cy}" r="3.6" fill="${ink}"/><circle cx="${cx+9}" cy="${cy}" r="3.6" fill="${ink}"/><circle cx="${cx-8}" cy="${cy-2}" r="1.3" fill="#fff"/><circle cx="${cx+10}" cy="${cy-2}" r="1.3" fill="#fff"/>
+    <path d="M${cx-12} ${cy+11} Q${cx} ${cy+27} ${cx+12} ${cy+11}Z" fill="#7a1030" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>
+  </g>`;
+}
+function coupleSVG(c){
+  const [a,b]=looksOf(c),ink='#1c0a33';
+  const star=(x,y,r)=>`<path d="M${x} ${y-r} L${x+r*.3} ${y-r*.3} L${x+r} ${y} L${x+r*.3} ${y+r*.3} L${x} ${y+r} L${x-r*.3} ${y+r*.3} L${x-r} ${y} L${x-r*.3} ${y-r*.3}Z" fill="#fff" stroke="${ink}" stroke-width="2"/>`;
+  return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+    ${star(18,24,9)}${star(182,30,7)}${star(100,14,6)}
+    ${personSVG(66,a,9,false)}${personSVG(134,b,-9,true)}
+    <path d="M86 126 Q94 100 100 92 M114 126 Q106 100 100 92" fill="none" stroke="${ink}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M86 126 Q94 100 100 92" fill="none" stroke="${a.o}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M114 126 Q106 100 100 92" fill="none" stroke="${b.o}" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="100" cy="90" r="7" fill="${a.s}" stroke="${ink}" stroke-width="3"/></svg>`;
+}
+const art=(c,size='sm')=>c?`<span class="cart ${size}">${c.photo?`<img src="${c.photo}" alt="${esc(c.name)}">`:coupleSVG(c)}</span>`:'';
+/* turn a photo into a cartoon: smooth, posterise, boost colour, add ink outlines */
+function cartoonify(img){
+  const N=360,cv=document.createElement('canvas');cv.width=cv.height=N;const x=cv.getContext('2d');
+  const m=Math.min(img.width,img.height);x.filter='blur(1.2px) saturate(1.5) contrast(1.1)';
+  x.drawImage(img,(img.width-m)/2,(img.height-m)/4,m,m,0,0,N,N);x.filter='none';
+  const d=x.getImageData(0,0,N,N),p=d.data,g=new Float32Array(N*N),gb=new Float32Array(N*N);
+  for(let i=0;i<N*N;i++)g[i]=.3*p[i*4]+.59*p[i*4+1]+.11*p[i*4+2];
+  for(let y=1;y<N-1;y++)for(let xx=1;xx<N-1;xx++){let t=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)t+=g[(y+dy)*N+xx+dx];gb[y*N+xx]=t/9}
+  const step=255/5;for(let i=0;i<p.length;i+=4)for(let k=0;k<3;k++)p[i+k]=Math.min(255,Math.round(p[i+k]/step)*step+10);
+  for(let y=1;y<N-1;y++)for(let xx=1;xx<N-1;xx++){const i=y*N+xx;
+    const gx=gb[i-N+1]+2*gb[i+1]+gb[i+N+1]-gb[i-N-1]-2*gb[i-1]-gb[i+N-1],gy=gb[i+N-1]+2*gb[i+N]+gb[i+N+1]-gb[i-N-1]-2*gb[i-N]-gb[i-N+1];
+    if(gx*gx+gy*gy>2600){p[i*4]=28;p[i*4+1]=10;p[i*4+2]=51}}
+  x.putImageData(d,0,0);return cv.toDataURL('image/jpeg',.82);
+}
+let artEdit=null;
+function vArtEdit(){
+  const c=couple(artEdit);if(!c)return vManage();
+  const L=looksOf(c),parts=c.name.split('&').map(x=>x.trim());
+  const sw=(k,who,vals)=>`<div class="swatches">${vals.map(v=>`<span class="sw ${L[who][k]===v?'on':''}" style="background:${v}" data-act="artset" data-who="${who}" data-k="${k}" data-v="${v}"></span>`).join('')}</div>`;
+  const person=who=>`<div class="card"><h3>${who?'💃 '+esc(parts[1]||'Pro'):'⭐ '+esc(parts[0]||'Celebrity')}</h3>
+    <label class="hint">Skin</label>${sw('s',who,SKINS)}<label class="hint">Hair colour</label>${sw('h',who,HAIRS)}
+    <label class="hint">Hair style</label><div class="swatches">${HSTYLES.map((n,i)=>`<button class="hsbtn ${L[who].hs===i?'on':'white'}" data-act="artset" data-who="${who}" data-k="hs" data-v="${i}">${n}</button>`).join('')}</div>
+    <label class="hint">Outfit</label>${sw('o',who,OUTFITS)}</div>`;
+  return `<h2 class="t">${esc(c.name)}</h2><div class="sub">Design their cartoon — or turn a photo into one</div>
+    <div class="center">${art(c,'lg')}</div>
+    <div class="actions"><button class="cyan" data-act="artphoto">📷 Cartoonify a photo</button>${c.photo?`<button class="white" data-act="artclearphoto">Use drawn cartoon</button>`:''}<button class="white" data-act="artrandom">🎲 Surprise me</button></div>
+    ${c.photo?'<div class="hint center" style="color:#fff">Showing your cartoonified photo. Tap “Use drawn cartoon” to edit the drawing instead.</div>':`<div class="grid2">${person(0)}${person(1)}</div>`}
+    <div class="actions"><button class="big pink" data-act="artdone">✔ Done</button></div>`;
 }
 /* original, light-hearted presenter quips — {tokens} are filled in per couple */
 const QUIPS={
@@ -468,13 +598,21 @@ function scorePlayer(g,r){let j=0;g.forEach((v,i)=>{const d=Math.abs(v-r[i]);j+=
   const td=Math.abs(sum(g)-sum(r)),bonus=td===0?5:td<=2?2:0;return{judgePts:j,bonus,total:j+bonus}}
 function ranks(totals,ids){const s=ids.slice().sort((a,b)=>(totals[b]||0)-(totals[a]||0));const m={};s.forEach((id,i)=>m[id]=i);return m}
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+const remaining=()=>W().entries.map((e,i)=>({e,i})).filter(x=>x.e.status==='dance'&&!W().results[x.e.cid]);
 function nextIdx(from){const w=W();for(let i=from;i<w.entries.length;i++)if(w.entries[i].status==='dance')return i;return -1}
+/* stage name: celebrity and pro on separate lines, words never split, size shrinks to fit */
+function stageName(name,delay){
+  const lines=name.split('&').map(x=>x.trim()).filter(Boolean);
+  const L=Math.max(...lines.map(l=>l.length))+(lines.length>1?2:0);let k=0;
+  const html=lines.map((ln,li)=>`<span class="ln">${li?'<span class="amp">&amp; </span>':''}${ln.split(/\s+/).map(w=>`<span class="wd">${[...w].map(ch=>`<span style="animation-delay:${delay+(k++)*.045}s">${esc(ch)}</span>`).join('')}</span>`).join(' ')}</span>`).join('');
+  return `<div class="couplebig" style="font-size:min(clamp(30px,8vw,92px),${(88/(.62*L)).toFixed(2)}vw)">${html}</div>`;
+}
 const letters=(s,delay=.9)=>[...s].map((c,i)=>`<span style="animation-delay:${delay+i*.05}s">${c===' '?'&nbsp;':esc(c)}</span>`).join('');
 
 function board(rows,title,opt={}){
   const body=rows.map((r,i)=>`<div class="lrow ${r.gone?'gone':''}" style="animation-delay:${i*.09}s">
     <div class="rk">${i+1}</div>
-    <div class="nm">${r.av?`<span class="av" style="background:${r.color||'#fff'}">${r.av}</span>`:''}<span class="t">${esc(r.name)}${r.mv?`<span class="mv ${r.mv>0?'up':'dn'}">${r.mv>0?'▲':'▼'}${Math.abs(r.mv)}</span>`:''}${r.sub?`<small>${r.sub}</small>`:''}${r.mini||''}</span></div>
+    <div class="nm">${r.art||''}${r.av?`<span class="av" style="background:${r.color||'#fff'}">${r.av}</span>`:''}<span class="t">${esc(r.name)}${r.mv?`<span class="mv ${r.mv>0?'up':'dn'}">${r.mv>0?'▲':'▼'}${Math.abs(r.mv)}</span>`:''}${r.sub?`<small>${r.sub}</small>`:''}${r.mini||''}</span></div>
     <div class="sc"><span data-count data-from="${r.from??r.score}" data-to="${r.score}" data-delay="${300+i*90}">${r.from??r.score}</span></div></div>`).join('')
     ||'<div class="lrow"><div></div><div>Nothing yet…</div><div></div></div>';
   return `<div class="board"><div class="bh">${title}</div>${body}</div>`;
@@ -491,7 +629,7 @@ function weekPlayerRows(withMove){
 }
 function weekCoupleRows(){
   const w=W();return w.entries.filter(e=>w.results[e.cid]).map(e=>{const r=w.results[e.cid].real,c=couple(e.cid);
-    return{name:c.name,sub:e.dance||'',score:sum(r),mini:`<div class="miniscore">${r.map(n=>`<b>${n}</b>`).join('')}</div>`}}).sort((a,b)=>b.score-a.score);
+    return{name:c.name,art:art(c,'sm'),sub:e.dance||'',score:sum(r),mini:`<div class="miniscore">${r.map(n=>`<b>${n}</b>`).join('')}</div>`}}).sort((a,b)=>b.score-a.score);
 }
 
 /* =============== views =============== */
@@ -507,7 +645,7 @@ function hdr(){
 
 function vHome(){
   const w=W(),inProg=!!w;
-  const phaseName={setup:'setting up',dance:'ready to dance',guess:'guessing',real:'entering scores',reveal:'scores revealed',board:'leaderboards',wrap:'week results',elim:'who left?'};
+  const phaseName={setup:'setting up',pick:'who\'s next?',dance:'ready to dance',guess:'guessing',real:'entering scores',reveal:'scores revealed',board:'leaderboards',wrap:'week results',elim:'who left?'};
   const n=S.couples.filter(c=>c.out==null).length;
   return `<div class="hero"><div class="ball">🪩</div>
     <h2 class="t">${letters('Keep Dancing!',0)}</h2><div class="sub">The family score-guessing game</div></div>
@@ -544,7 +682,7 @@ function vManage(){
   return `<h2 class="t">The Cast</h2><div class="sub">Everything here is remembered week to week</div>
   <div class="grid2">
   <div class="card"><h3>💃 Couples</h3>
-    ${S.couples.map(c=>`<div class="row"><input type="text" data-bind="couple:${c.id}:name" value="${esc(c.name)}">
+    ${S.couples.map(c=>`<div class="row"><span data-act="editart" data-id="${c.id}" style="cursor:pointer" title="Edit cartoon">${art(c,'sm')}</span><input type="text" data-bind="couple:${c.id}:name" value="${esc(c.name)}">
       ${c.out!=null?`<span class="tag out">OUT wk ${c.out}</span><button class="sm green" data-act="restore" data-id="${c.id}">Bring back</button>`:''}
       <button class="sm red" data-act="delcouple" data-id="${c.id}">✕</button></div>`).join('')||'<div class="hint">No couples yet. Add them below!</div>'}
     <textarea id="newcouples" placeholder="Add couples — one per line, e.g.&#10;Jane Smith &amp; Pro Name&#10;Bob Jones &amp; Pro Name"></textarea>
@@ -580,7 +718,7 @@ function vSeason(){
   }else if(tab==='stats'){
     body=vStats();
   }else if(tab==='couples'){
-    const rows=S.couples.map(c=>({name:c.name,score:sum(c.scores.map(s=>sum(s.real))),gone:c.out!=null,
+    const rows=S.couples.map(c=>({name:c.name,art:art(c,'sm'),score:sum(c.scores.map(s=>sum(s.real))),gone:c.out!=null,
       sub:c.out!=null?`Left in week ${c.out}`:(c.scores.length?`${c.scores.length} dance${c.scores.length===1?'':'s'} · best ${Math.max(...c.scores.map(s=>sum(s.real)))}`:'Not danced yet')})).sort((a,b)=>b.score-a.score);
     body=board(rows,"Judges' Season Scoreboard");
   }else{
@@ -648,58 +786,92 @@ function vSetup(){
   <div class="card"><h3>📅 This week</h3><div class="row"><div style="width:110px"><label class="hint">Week number</label><input type="number" min="1" max="99" data-bind="weekn" value="${w.n}"></div>
     <div class="grow"><label class="hint">Theme (optional)</label><input type="text" data-bind="theme" maxlength="40" value="${esc(w.theme||'')}" placeholder="e.g. Movie Week, Halloween, Musicals…"></div></div></div>
   <div class="card"><h3>🎉 Who's playing tonight? <span class="hint">(tap to switch on/off)</span></h3>
-    <div class="chips">${S.players.map(p=>`<div class="chip ${p.here?'':'off'}" data-act="togglehere" data-id="${p.id}"><span class="av" style="background:${p.color}">${p.av}</span>${esc(p.name)}</div>`).join('')}
+    <div class="chips">${S.players.map(p=>`<div class="chip ${p.here?'':'off'}" data-act="togglehere" data-id="${p.id}"><span class="av" style="background:${p.color}">${p.av}</span>${esc(p.name)} <span class="tick">${p.here?'✅':'❌'}</span></div>`).join('')}
     <button class="sm green" data-act="addplayerhere">+ New player</button></div></div>
-  <div class="card"><h3>💃 Running order <span class="hint">(🤕 = sick or not here this week)</span></h3>
-    ${w.entries.map((e,i)=>{const c=couple(e.cid);return `<div class="entry ${e.status==='sick'?'sick':''}">
-      <div class="mv"><button data-act="mv" data-i="${i}" data-d="-1">▲</button><button data-act="mv" data-i="${i}" data-d="1">▼</button></div>
-      <div class="n">${i+1}. ${esc(c.name)}</div>
-      <input type="text" list="dances" data-bind="dance:${i}" value="${esc(e.dance)}" placeholder="Dance (e.g. Waltz)">
-      <button class="sm ${e.status==='sick'?'orange':'green'}" style="${e.status==='sick'?'background:var(--orange)':''}" data-act="togglesick" data-i="${i}">${e.status==='sick'?'🤕 Not dancing':'✅ Dancing'}</button></div>`}).join('')||'<div class="hint">No couples left! Add some under Couples, Players &amp; Judges.</div>'}
-    <div class="actions" style="margin:6px 0 0"><button class="cyan" data-act="shuffleorder">🔀 Shuffle order</button><button class="white" data-act="nav" data-to="manage">Edit couples</button></div></div>
-  <datalist id="dances">${['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha Cha Cha','Rumba','Samba','Salsa','Jive','Paso Doble','Charleston','Argentine Tango','Couple\'s Choice','Street/Commercial','Showdance','Musical Theatre','Contemporary','Ballroom Showdance'].map(d=>`<option value="${d}">`).join('')}</datalist>
+  <div class="card"><h3>💃 Who's dancing tonight? <span class="hint">(tap 🤕 if a couple is sick or not on)</span></h3>
+    <div class="hint" style="margin:-4px 0 10px">No need to know the running order — you'll pick who's up next as the show goes.</div>
+    ${w.entries.map((e,i)=>{const c=couple(e.cid);return `<div class="entry ${e.status==='sick'?'sick':''}" style="grid-template-columns:1fr auto">
+      <div class="n" style="display:flex;align-items:center;gap:8px">${art(c,'sm')}${esc(c.name)}</div>
+      <button class="sm ${e.status==='sick'?'':'green'}" style="${e.status==='sick'?'background:var(--orange)':''}" data-act="togglesick" data-i="${i}">${e.status==='sick'?'🤕 Not dancing':'✅ Dancing'}</button></div>`}).join('')||'<div class="hint">No couples left! Add some under Couples, Players &amp; Judges.</div>'}
+    <div class="actions" style="margin:6px 0 0"><button class="white" data-act="nav" data-to="manage">Edit couples</button></div></div>
   <div class="actions"><button class="big pink" data-act="startweek" ${ok?'':'disabled'}>🎬 Lights, camera, dance!</button><button class="white" data-act="quitweek">Cancel</button></div>`;
 }
 
-function progress(){const w=W();const list=w.entries.filter(e=>e.status!=='sick');const k=list.indexOf(entry());return `Couple ${k+1} of ${list.length}`}
+function progress(){const w=W();const total=w.entries.filter(e=>e.status!=='sick').length,done=w.entries.filter(e=>w.results[e.cid]).length;return `Couple ${done+1} of ${total}`}
+function vPick(){
+  const w=W(),rem=remaining(),done=w.entries.filter(e=>w.results[e.cid]).length;
+  return `<h2 class="t">Who's Up Next?</h2><div class="sub">${done?`${done} danced · `:''}${rem.length} still to dance — tap the couple on the floor</div>
+  <div class="cgrid">${rem.map(x=>{const c=couple(x.e.cid);return `<div class="cc" data-act="pickc" data-i="${x.i}">${art(c,'md')}${esc(c.name)}</div>`}).join('')}</div>
+  <div class="chips" style="justify-content:center;margin-top:16px">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
+}
 
 function vDance(){
   const e=entry(),c=couple(e.cid);
   return `<div class="stage"><div class="beam b1"></div><div class="beam b2"></div>
     <div class="ballwrap"><div class="string"></div><div class="mball">🪩</div></div>
     ${W().theme?`<div class="themetag">🎬 ${esc(W().theme)}</div>`:''}
-    <div class="stagecontent"><div class="upnext">${progress()} · UP NEXT!</div>
-      <div class="couplebig">${letters(c.name,1.9)}</div>
-      ${e.dance?`<div class="dancetag">💃 ${esc(e.dance)}</div>`:''}</div>
+    <div class="stagecontent">${art(c,'lg')}<br><div class="upnext">${progress()} · UP NEXT!</div>
+      ${stageName(c.name,1.9)}
+      <div class="dancetag" id="dtag" style="${e.dance?'':'display:none'}">💃 <span>${esc(e.dance)}</span></div></div>
     <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
+  <div class="row" style="max-width:420px;margin:14px auto 0"><input type="text" list="dances" data-bind="dance:${W().idx}" value="${esc(e.dance)}" placeholder="💃 Dance style (optional)"></div>
   <div class="actions"><button class="big pink" data-act="danced">They've danced! 👏 Start guessing</button><button class="white" data-act="cantdance">🤕 Can't dance tonight</button></div>
   <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
 
 function keypad(btn){
   const done=S.tmp.every(x=>x),js=justSet;justSet=-1;
-  return `<div class="card">${S.judges.map((j,i)=>`<div class="keyrow">
+  return `<div class="card kp">
+    <div class="quick"><label for="quick">⌨️ Type the four scores, then press Enter</label>
+      <input id="quick" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="e.g. 7 8 6 10" value="${S.tmp.filter(x=>x).join(' ')}"></div>
+    ${S.judges.map((j,i)=>`<div class="keyrow" data-row="${i}">
     <div class="judge"><div class="portrait">${avatar(j,i,S.tmp[i]?moodFor(S.tmp[i]):'idle')}</div><div class="jname">${esc(j.name)}</div>
       <div class="pad ${S.tmp[i]?'has':''}"><div class="hint0">?</div><div class="pup ${i===js?'lift':''}"><div class="pstick"></div><div class="pcard ${S.tmp[i]>=9?'hi':''}">${S.tmp[i]||''}</div></div><div class="phand">✊</div></div></div>
     <div class="keys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="key" data-j="${i}" data-n="${n}" class="${S.tmp[i]===n?'sel':''}">${n}</button>`).join('')}</div></div>`).join('')}
-    <div class="totalbox">Total: ${done?sum(S.tmp):'–'} <span style="opacity:.5">/ 40</span></div></div>
+    <div class="totalbox">Total: <span id="ktot">${done?sum(S.tmp):'–'}</span> <span style="opacity:.5">/ 40</span></div></div>
   <div class="actions"><button class="big pink ${done?'pulse':''}" data-act="confirm" ${done?'':'disabled'}>${btn}</button></div>`;
 }
 
+/* "7 8 6 10" / "78610" -> [7,8,6,10]; a lone 0 also means 10 */
+function parseQuick(v){
+  const out=[],d=v.replace(/[^0-9]/g,' ');
+  for(const tok of d.split(/\s+/).filter(Boolean)){
+    for(let i=0;i<tok.length&&out.length<4;i++){
+      if(tok[i]==='1'&&tok[i+1]==='0'){out.push(10);i++}else if(tok[i]==='0')out.push(10);else out.push(+tok[i]);
+    }
+  }
+  return out.slice(0,4);
+}
+/* update the keypad in place (keeps the text box focused so the phone keyboard stays up) */
+function syncKeypad(prev){
+  S.tmp.forEach((n,i)=>{
+    const row=document.querySelector(`.keyrow[data-row="${i}"]`);if(!row)return;
+    row.querySelectorAll('.keys button').forEach(b=>b.classList.toggle('sel',+b.dataset.n===n));
+    const pad=row.querySelector('.pad'),pup=row.querySelector('.pup'),pc=row.querySelector('.pcard');
+    pad.classList.toggle('has',!!n);pc.textContent=n||'';pc.classList.toggle('hi',n>=9);
+    if(n&&n!==prev[i]){pup.classList.remove('lift');void pup.offsetWidth;pup.classList.add('lift');sfx.key()}
+    if(n!==prev[i])row.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,n?moodFor(n):'idle');
+  });
+  const done=S.tmp.every(x=>x),b=document.querySelector('[data-act=confirm]');
+  if(b){b.disabled=!done;b.classList.toggle('pulse',done)}
+  const t=$('#ktot');if(t)t.textContent=done?sum(S.tmp):'–';
+}
+function focusQuick(){const q=$('#quick');if(q&&matchMedia('(pointer:fine)').matches===false){q.focus()}else if(q)q.focus({preventScroll:true})}
 function vGuess(){
   const w=W(),p=player(w.order[w.oi]);
   if(!ready)return `<div class="pass"><div class="sub">${esc(couple(entry().cid).name)} · guess ${w.oi+1} of ${w.order.length}</div>
     <span class="bigav">${p.av}</span><div style="font-family:var(--title);color:#fff;font-size:24px;text-shadow:0 3px 0 var(--ink)">Pass the controls to…</div>
     <div class="who" style="color:${p.color}">${esc(p.name)}</div><button class="big pink pulse" data-act="ready">I'm ready! 🙈 no peeking</button></div>`;
-  return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}`;
+  return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">${art(couple(entry().cid),'md')}<br>Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}`;
 }
-function vReal(){return `<h2 class="t">The Real Scores</h2><div class="sub">Enter what the judges actually gave ${esc(couple(entry().cid).name)}</div>${keypad('Reveal the scores! 🥁')}`}
+function vReal(){return `<div class="realmode"><div class="realbanner">⭐ OFFICIAL JUDGES' SCORES ⭐</div>
+  <h2 class="t">The Real Scores</h2><div class="sub">No guessing now — enter exactly what the judges gave ${esc(couple(entry().cid).name)}</div>${keypad('Reveal the scores! 🥁')}</div>`}
 
 function vReveal(){
   const w=W(),e=entry(),c=couple(e.cid),res=w.results[e.cid],r=res.real;
   const rows=w.order.map(id=>({p:player(id),g:w.guesses[id],s:scorePlayer(w.guesses[id],r)})).sort((a,b)=>b.s.total-a.s.total);
   const cls=(g,v)=>{const d=Math.abs(g-v);return d===0?'x':d===1?'n':'m'};
-  return `<h2 class="t" style="font-size:clamp(24px,4vw,44px)">${esc(c.name)}</h2>
+  return `<div class="center">${art(c,'md')}</div><h2 class="t" style="font-size:clamp(24px,4vw,44px)">${esc(c.name)}</h2>
   <div class="paddles">${r.map((n,i)=>`<div class="paddle" data-n="${n}">${portrait(i,'idle')}<div class="face ${n>=9?'hi':''}">${n}</div></div>`).join('')}</div>
   <div class="totalbig" id="tot"> </div><div id="banner"></div><div class="quips" id="quips"></div>
   <div id="after" style="opacity:0;pointer-events:none;transition:opacity .5s">
@@ -746,7 +918,7 @@ function playReveal(){
 }
 
 function vBoard(){
-  const w=W(),done=w.entries.filter(e=>w.results[e.cid]).length,last=nextIdx(w.idx+1)<0;
+  const w=W(),done=w.entries.filter(e=>w.results[e.cid]).length,last=remaining().length===0;
   return `<h2 class="t">Leaderboards</h2><div class="sub">After ${done} couple${done===1?'':'s'}</div>
   <div class="grid2">${board(weekPlayerRows(true),'🎉 Player Leaderboard')}${board(weekCoupleRows(),"⭐ Judges' Scoreboard")}</div>
   <div class="actions"><button class="big pink pulse" data-act="next">${last?"That's a wrap! 🎬":'Next couple →'}</button></div>`;
@@ -776,7 +948,7 @@ function vElim(){
   const list=activeCouples();
   return `<h2 class="t">Who Left Tonight?</h2><div class="sub">Tap every couple that goes home — none, one or several</div>
   <div class="cgrid">${list.map(c=>{const res=w.results[c.id],e=w.entries.find(x=>x.cid===c.id);
-    return `<div class="cc ${w.leaving.includes(c.id)?'sel':''}" data-act="leave" data-id="${c.id}">${esc(c.name)}<small>${res?`Scored ${sum(res.real)}/40`:(e&&e.status==='sick'?'🤕 Absent this week':'Did not dance')}</small></div>`}).join('')||'<div class="hint">No couples left!</div>'}</div>
+    return `<div class="cc ${w.leaving.includes(c.id)?'sel':''}" data-act="leave" data-id="${c.id}">${art(c,'md')}${esc(c.name)}<small>${res?`Scored ${sum(res.real)}/40`:(e&&e.status==='sick'?'🤕 Absent this week':'Did not dance')}</small></div>`}).join('')||'<div class="hint">No couples left!</div>'}</div>
   <div class="actions"><button class="big pink" data-act="finishweek">${w.leaving.length?`Say goodbye to ${w.leaving.length} 👋`:'Nobody left ✅'} – finish week</button></div>`;
 }
 
@@ -786,11 +958,13 @@ function render(){
   if(overlay==='rules')h=vRules();
   else if(overlay==='manage')h=vManage();
   else if(overlay==='season')h=vSeason();
+  else if(overlay==='art')h=vArtEdit();
   else if(overlay==='home'||!W())h=vHome();
-  else h={setup:vSetup,dance:vDance,guess:vGuess,real:vReal,reveal:vReveal,board:vBoard,wrap:vWrap,elim:vElim}[W().phase]();
+  else h={setup:vSetup,pick:vPick,dance:vDance,guess:vGuess,real:vReal,reveal:vReveal,board:vBoard,wrap:vWrap,elim:vElim}[W().phase]();
   const v=$('#view');v.style.animation='none';v.offsetWidth;v.style.animation='';
   v.innerHTML=h;$('#main').scrollTop=0;
   runCounts();
+  if(!overlay&&W()&&(W().phase==='real'||(W().phase==='guess'&&ready))&&matchMedia('(pointer:fine)').matches){const q=$('#quick');if(q&&document.activeElement!==q){q.focus({preventScroll:true});if(S.tmp.every(x=>x))q.select();else q.setSelectionRange(q.value.length,q.value.length)}}
   if(!overlay&&W()){const p=W().phase;
     if(p==='reveal')playReveal();
     if(p==='wrap'){rain(180);sfx.tada()}
@@ -817,6 +991,7 @@ function newWeek(){
 function resizePhoto(file,i){
   const fr=new FileReader();
   fr.onload=()=>{const img=new Image();img.onload=()=>{
+    if(photoKind==='couple'){const cp=couple(i);if(cp){cp.photo=cartoonify(img);save();render();toast('Cartoonified! ✨')}return}
     const c=document.createElement('canvas');c.width=c.height=240;const x=c.getContext('2d');
     const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/3,m,m,0,0,240,240);
     (photoKind==='pres'?S.presenters:S.judges)[i].photo=c.toDataURL('image/jpeg',.85);save();render()};img.src=fr.result};
@@ -824,7 +999,7 @@ function resizePhoto(file,i){
 }
 let photoFor=0,photoKind='judge';
 function startCouple(){const w=W();w.order=shuffle(w.pids);w.oi=0;w.guesses={};w.prevTotals=Object.assign({},w.totals);S.tmp=[null,null,null,null];ready=false}
-function advance(){const w=W(),n=nextIdx(w.idx+1);if(n<0){w.phase='wrap'}else{w.idx=n;w.phase='dance'}save();render()}
+function advance(){const w=W(),rem=remaining();if(!rem.length)w.phase='wrap';else if(rem.length===1){w.idx=rem[0].i;w.phase='dance'}else w.phase='pick';save();render()}
 function finishWeek(){
   const w=W();
   w.entries.forEach(e=>{const r=w.results[e.cid];if(r)couple(e.cid).scores.push({week:w.n,dance:e.dance,real:r.real})});
@@ -850,6 +1025,12 @@ document.addEventListener('click',e=>{
   case 'home':overlay='home';return render();
   case 'nav':overlay=b.dataset.to||null;return render();
   case 'resume':overlay=null;return render();
+  case 'editart':artEdit=id;overlay='art';return render();
+  case 'artdone':overlay='manage';return render();
+  case 'artset':{const c=couple(artEdit),L=looksOf(c).map(o=>Object.assign({},o)),k=b.dataset.k;L[+b.dataset.who][k]=k==='hs'?+b.dataset.v:b.dataset.v;c.look=L;save();return render()}
+  case 'artrandom':{const c=couple(artEdit),r=Math.random().toString(36);c.look=[defaultLook(r,0),defaultLook(r,1)];c.photo='';save();return render()}
+  case 'artphoto':photoFor=artEdit;photoKind='couple';$('#photofile').click();return;
+  case 'artclearphoto':couple(artEdit).photo='';save();return render();
   case 'load2026':load2026();return;
   case 'wkstep':S.nextWeek=Math.max(1,Math.min(99,nextWeekNo()+(+b.dataset.d)));save();return render();
   case 'newweek':newWeek();overlay=null;return render();
@@ -877,11 +1058,12 @@ document.addEventListener('click',e=>{
   case 'mv':{const i=+b.dataset.i,d=+b.dataset.d,j=i+d;if(j<0||j>=w.entries.length)return;[w.entries[i],w.entries[j]]=[w.entries[j],w.entries[i]];save();return render()}
   case 'shuffleorder':w.entries=shuffle(w.entries);save();return render();
   case 'startweek':{w.pids=S.players.filter(p=>p.here).map(p=>p.id);w.totals={};w.pids.forEach(p=>w.totals[p]=0);
-    w.idx=nextIdx(0);w.phase='dance';save();return render()}
+    advance();return}
   /* game */
+  case 'pickc':w.idx=+b.dataset.i;w.phase='dance';save();return render();
   case 'danced':startCouple();w.phase='guess';save();return render();
   case 'cantdance':if(confirm('Mark this couple as absent this week and skip them?')){entry().status='sick';advance()}return;
-  case 'ready':ready=true;return render();
+  case 'ready':ready=true;render();focusQuick();return;
   case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;justSet=+b.dataset.j;save();return render();
   case 'confirm':
     if(w.phase==='guess'){w.guesses[w.order[w.oi]]=S.tmp.slice();S.tmp=[null,null,null,null];ready=false;w.oi++;if(w.oi>=w.order.length)w.phase='real'}
@@ -900,6 +1082,7 @@ document.addEventListener('click',e=>{
 });
 /* text inputs write straight into state (no re-render so focus is kept) */
 document.addEventListener('input',e=>{
+  if(e.target.id==='quick'){const prev=S.tmp.slice(),v=parseQuick(e.target.value);S.tmp=[0,1,2,3].map(i=>v[i]||null);save();syncKeypad(prev);return}
   const t=e.target,d=t.dataset.bind;if(!d)return;const [k,id,f]=d.split(':');
   if(k==='weekn'){W().n=Math.max(1,parseInt(t.value)||1);save();hdr();return}
   if(k==='theme'){W().theme=t.value;save();hdr();return}
@@ -907,7 +1090,7 @@ document.addEventListener('input',e=>{
   else if(k==='player')player(id)[f]=t.value;
   else if(k==='judge')S.judges[+id][f]=t.value;
   else if(k==='pres')S.presenters[+id][f]=t.value;
-  else if(k==='dance')W().entries[+id].dance=t.value;
+  else if(k==='dance'){W().entries[+id].dance=t.value;const dt=$('#dtag');if(dt){dt.style.display=t.value?'':'none';dt.querySelector('span').textContent=t.value}}
   save();
 });
 document.addEventListener('change',e=>{
@@ -916,11 +1099,14 @@ document.addEventListener('change',e=>{
 });
 
 document.addEventListener('keydown',e=>{
+  if(e.target.id==='quick'&&e.key==='Enter'){e.preventDefault();const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
+  if(!overlay&&W()&&W().phase==='guess'&&!ready&&(e.key==='Enter'||e.key===' ')&&!e.target.matches('input,textarea')){e.preventDefault();ready=true;render();focusQuick();return}
   const w=W();if(overlay||!w||!['guess','real'].includes(w.phase)||(w.phase==='guess'&&!ready)||e.target.matches('input,textarea'))return;
   if(e.key==='Enter'){const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
   if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
-  if(/^[0-9]$/.test(e.key)){const n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0)return;S.tmp[j]=n;justSet=j;sfx.key();save();render()}
+  if(/^[0-9]$/.test(e.key)){let n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0){S.tmp=[null,null,null,null];j=0}S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
+$('#dances').innerHTML=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha Cha Cha','Rumba','Samba','Salsa','Jive','Paso Doble','Charleston','Argentine Tango',"Couple's Choice",'Street/Commercial','Showdance','Musical Theatre','Contemporary'].map(d=>`<option value="${d}">`).join('');
 render();
 })();
 </script>
