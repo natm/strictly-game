@@ -515,7 +515,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.3.1',RELEASE='Sequins';
+const VERSION='3.3.2',RELEASE='Abi';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -655,22 +655,23 @@ function presenterAvatar(i,mood){
   const pr=i===4?LIGHTSOUT:i===3?BANDLEADER:S.presenters[i];if(pr.photo)return `<img src="${pr.photo}" alt="${esc(pr.name)}">`;
   const ink='#1c0a33';
   // looks based on the BBC's 2026 presenter photo: Emma short dark crop, Josh curly hair + glasses + suit, Johannes short black hair + green
-  const skin=['#f6d2b6','#ffd8bd','#7a4a2c','#f6cfae','#f6d2b6'][i],hair=['#3a2418','#9a6a3a','#141010','#c9c9d1','#7a4a2c'][i],top=['#2c3e66','#1f2a44','#1f7a4d','#111827','#7c3aed'][i];
+  // Abi (4): from her photo: long wavy dark-brown hair, fair skin, olive-green top, hoop earrings
+  const skin=['#f6d2b6','#ffd8bd','#7a4a2c','#f6cfae','#f9dccb'][i],hair=['#3a2418','#9a6a3a','#141010','#c9c9d1','#3b2219'][i],top=['#2c3e66','#1f2a44','#1f7a4d','#111827','#a4a63a'][i];
   const back=[`<path d="M30 30 Q34 4 60 6 Q88 4 92 30 Q80 18 60 18 Q40 18 30 30Z" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="60" cy="10" r="13" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
     `<g fill="${hair}" stroke="${ink}" stroke-width="4"><circle cx="34" cy="30" r="12"/><circle cx="50" cy="20" r="13"/><circle cx="68" cy="19" r="13"/><circle cx="85" cy="29" r="12"/></g>`,'','',
-    `<path d="M16 116 Q4 56 24 30 Q60 -6 96 30 Q116 56 104 116Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`][i];
+    `<path d="M18 118 Q8 104 14 92 Q4 80 12 66 Q4 50 18 36 Q28 10 60 8 Q92 10 102 36 Q116 50 108 66 Q116 80 106 92 Q112 104 102 118Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
   const front=[
     `<path d="M27 52 Q24 24 46 20 Q60 16 76 22 Q96 26 93 52 Q86 34 72 32 Q58 40 44 34 Q32 38 27 52Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M27 52 Q25 62 30 70" fill="none" stroke="${hair}" stroke-width="5" stroke-linecap="round"/>`,
     `<path d="M28 46 Q26 26 40 24 Q46 16 56 20 Q64 14 72 20 Q84 18 88 28 Q96 32 92 46 Q84 34 72 34 Q60 30 48 34 Q36 34 28 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M30 44 Q34 18 60 18 Q86 18 90 44 Q76 30 60 30 Q44 30 30 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M28 48 Q30 20 60 20 Q90 20 92 48 Q80 34 60 34 Q40 34 28 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
-    `<path d="M27 48 Q30 16 60 18 Q92 18 93 48 Q78 30 52 34 Q36 36 27 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
+    `<path d="M26 56 Q24 20 56 18 Q90 16 94 54 Q86 30 64 26 Q54 34 40 34 Q30 40 26 56Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
   const extra=[
     `<circle cx="28" cy="72" r="4" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><circle cx="92" cy="72" r="4" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><path d="M46 102 Q60 116 74 102" fill="none" stroke="#ffd93d" stroke-width="2.5"/><circle cx="60" cy="112" r="3.5" fill="#ffd93d" stroke="${ink}" stroke-width="1.5"/>`,
     `<g fill="rgba(255,255,255,.3)" stroke="${ink}" stroke-width="4"><circle cx="46" cy="57" r="12"/><circle cx="74" cy="57" r="12"/></g><path d="M58 57h4" stroke="${ink}" stroke-width="4"/><path d="M50 100 L60 108 L70 100 L66 120 L60 124 L54 120Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M57 106 L63 106 L65 126 L60 130 L55 126Z" fill="#3b5b8a" stroke="${ink}" stroke-width="2.5"/>`,
     `<path d="M30 104 Q60 126 90 104 L96 120 Q60 140 24 120Z" fill="#2a9d63" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>`,
     `<path d="M50 104 L60 110 L70 104 L70 116 L60 110 L50 116Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M96 118 L116 82" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M96 118 L116 82" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><text x="100" y="40" font-size="20">🎵</text>`,
-    `<rect x="92" y="78" width="10" height="26" rx="4" fill="#333" stroke="${ink}" stroke-width="3"/><circle cx="97" cy="74" r="8" fill="#bbb" stroke="${ink}" stroke-width="3"/><text x="6" y="26" font-size="18">🌙</text>`][i];
+    `<circle cx="27" cy="74" r="5" fill="none" stroke="#e8c76a" stroke-width="2.5"/><circle cx="93" cy="74" r="5" fill="none" stroke="#e8c76a" stroke-width="2.5"/><text x="4" y="24" font-size="16">🌙</text>`][i];
   const brow=mood==='sad'?'M34 36 L52 42 M68 42 L86 36':i===1?'M34 42 L52 40 M68 40 L86 42':'M34 40 Q43 33 52 38 M68 38 Q77 33 86 40';
   const mood2=mood||'idle';
   const mouth=i===1?`<g class="mouth"><path d="M42 74 Q60 98 78 74Z" fill="#7a1030" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M47 76 H73 V80 H47Z" fill="#fff"/></g>`
@@ -1727,7 +1728,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
   if(/^[0-9]$/.test(e.key)){let n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0){S.tmp=[null,null,null,null];j=0}S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
-window.__strictly={scoreStats,seriesDances,presetFor,factsFor,makeQuips};window.__strictlyPhase=()=>W()&&W().phase;   // for tests and debugging
+window.__strictly={scoreStats,seriesDances,presetFor,factsFor,makeQuips,presenterAvatar};window.__strictlyPhase=()=>W()&&W().phase;   // for tests and debugging
 (function loadAnalytics(){if(!ANALYTICS.src)return;const sc=document.createElement('script');sc.defer=true;sc.src=ANALYTICS.src;
   Object.entries(ANALYTICS.attrs||{}).forEach(([k,v])=>sc.setAttribute(k,v));document.head.appendChild(sc)})();
 /* custom events, sent to whichever cookieless tracker is loaded (no personal data: no names, no scores) */
