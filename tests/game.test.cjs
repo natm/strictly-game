@@ -541,3 +541,14 @@ test('presenter extras: Josh fact sources, Emma hugs and tissues, breathless lin
   assert.ok(emma.some(t => /hug/i.test(t)), 'hugs');
   assert.ok(all.some(t => /breath|glisten|sweaty/.test(t)), 'breathless / sweaty lines');
 });
+
+test('Johannes signs off "Back to you, Josh and Emma!" and remembers his pro days', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0');
+  await page.click('[data-act=danced]');
+  const qs = await page.evaluate(() => { const out = []; for (let i = 0; i < 800; i++) out.push(window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a'])); return out; });
+  const solo = qs.filter(q => q.filter(x => x.p !== 3).length === 1 && q[0].p === 2).map(q => q[0].t);
+  assert.ok(solo.some(t => /Back to you, Josh and Emma!$/.test(t)), 'catchphrase when Johannes is alone');
+  assert.ok(qs.flat().filter(x => x.p === 2).some(x => /pro|danced on this floor|training room/.test(x.t)), 'pro-dancer memories');
+  assert.ok(qs.every(q => q.filter(x => x.p !== 2).every(x => !/Back to you, Josh and Emma/.test(x.t))), 'only Johannes says it');
+});

@@ -492,7 +492,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.7.0',RELEASE='Salsa';
+const VERSION='2.7.1',RELEASE='Mambo';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -807,6 +807,11 @@ const JOSH_FACT=["Someone's just handed me a card. It says: {fact}","I read this
   "Found this written on a crisp packet: {fact}","The producer's shouting in my ear: {fact} Now they're telling me to stop talking.","My taxi driver insisted on telling me: {fact}",
   "Fortune cookie at lunch said: {fact} Mine just said 'You will host a dance show'.","Heard it from a pigeon outside the studio: {fact}","Read it on a toilet door. A very well-informed toilet door: {fact}",
   "Group chat's going wild about this: {fact}","The research team have given me this, and I quote: {fact} Riveting."];
+/* Johannes remembering his years as a Strictly pro */
+const JOHANNES_PRO=["When I was a pro on this floor, a {dance} like that would have had me in tears. Happy ones!","Trust me, I danced on this floor for years. That is harder than it looks!",
+  "That takes me back to my pro days: sequins everywhere, sweat everywhere, joy everywhere!","As a former pro, I can tell you that lift was NOT easy. Respect!",
+  "I spent years in that training room. I know exactly how many hours went into that!","When I was dancing, I'd have done anything for a {hi} from {topJudge}!",
+  "Every pro dreams of a partner who works like that. {pro}, you're a lucky one!","I've done that routine in my sleep. Literally, I used to dream in cha-cha-cha!"];
 /* after the dance: everyone's out of breath (or glistening) */
 const BREATHLESSQ={
   0:["Look at you, absolutely glowing, which is the polite word for sweaty! 😅","Catch your breath, {first}. Take all the time you need!","You're both still panting! That's how much you gave it."],
@@ -836,6 +841,7 @@ function makeQuips(real,guesses,order){
   const pickOne=a=>a[Math.floor(Math.random()*a.length)];
   // each presenter's own voice: Josh wild (and often about the judges), Emma kind when it's a tough night
   const voice=(p,tier)=>{
+    if(p===2&&Math.random()<.3)return pickOne(JOHANNES_PRO);
     if(p===1){const jl=JOSH_JUDGES.filter(x=>x.ok(vars));return Math.random()<.45&&jl.length?pickOne(jl).t:pickOne([...JOSH[tier],...QUIPS[1][tier]])}
     if(p===0&&total<=16)return pickOne(EMMA_KIND.tissues);
     if(p===0&&tier==='low'&&Math.random()<.6)return pickOne(EMMA_KIND.hug);
@@ -851,10 +857,13 @@ function makeQuips(real,guesses,order){
   if(n===2){
     const q=QUIPS[ids[1]],canGuess=order.length>1&&hiS>loS,fact=randomFact(cpl),r=Math.random();
     if(stats.length>1&&r<.45)out.push({p:ids[1],t:statLine(ids[1],stats[1])});
-    else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(ids[1]===1?pickOne(JOSH_FACT):STATQ.fact[ids[1]])})}
+    else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(ids[1]===1?(Math.random()<.45?voice(1,tier):pickOne(JOSH_FACT)):STATQ.fact[ids[1]])})}
     else if(r<.78)out.push({p:ids[1],t:fill(pickOne(BREATHLESSQ[ids[1]]))})
     else out.push({p:ids[1],t:fill(canGuess&&ids[1]!==1&&Math.random()<.6?pickOne(q[Math.random()<.6?'best':'worst']):canGuess&&ids[1]===1&&Math.random()<.3?pickOne(q[Math.random()<.5?'best':'worst']):voice(ids[1],tier))});
   }
+  if(out.length===1&&out[0].p===2&&Math.random()<.7){   // Johannes on his own: the scores, then his catchphrase
+    const sc=`${vars.topJudge} gave ${hi}, ${vars.lowJudge} ${lo}… ${total} out of 40!`;
+    out[0].t=(Math.random()<.5?sc+' ':'')+out[0].t+' Back to you, Josh and Emma!'}
   if(Math.random()<.08)out.push({p:3,t:pickOne(BANDQ)});   // Dave Arch, rarely
   return out;
 }

@@ -3,6 +3,11 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.7.1 "Mambo" (2026-11-05)
+- Josh sometimes skips the fact and just makes a joke.
+- When Johannes is the only one to comment, he often runs through the scores and signs off with "Back to you, Josh and Emma!"
+- Johannes remembers his years as a Strictly pro ("Trust me, I danced on this floor for years…").
+
 ## v2.7.0 "Salsa" (2026-11-05)
 - Josh gets his facts from all over: the back of a newspaper, X, Instagram, the bus, the man down the pub, his wife, his kids, a dream… He says "Riveting" much less.
 - Emma offers a hug for a low score 🤗, and tissues for a very low one 🤧.
