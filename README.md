@@ -1,4 +1,6 @@
-# Strictly Score Guess 🪩
+# Keep Dancing! 🪩
+
+*The Strictly score-guessing game.*
 
 A family game to play while watching Strictly Come Dancing. Guess each judge's score before they give it!
 

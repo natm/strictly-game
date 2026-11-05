@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.1.1 "Samba" (2026-11-05)
+- The game is now called **Keep Dancing!** (top left and the browser tab).
+
 ## v2.1.0 "Cha-Cha" (2026-11-05)
 - Real scores and the reveal are one screen. Enter each judge's score (type it or tap it), confirm with Enter or ✓, and their paddle goes up while every player's tally updates on the left.
 - Judges sometimes get a speech bubble when their paddle goes up: "Fab-u-lous!", "Jabulous!", "Let me show you…", "Keep working on it!" and more.
