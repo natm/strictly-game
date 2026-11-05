@@ -478,7 +478,10 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.4.0',RELEASE='Jive';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
+const VERSION='2.5.0',RELEASE='Charleston';
+/* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
+   Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
+const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -895,9 +898,8 @@ function vHome(){
         ${S.history.some(h=>h.n===nextWeekNo())?`<div class="center" style="color:var(--yellow);font-family:var(--title)">⚠️ You've already played week ${nextWeekNo()}</div>`:''}
         ${!S.history.length?`<div class="center" style="color:#fff;font-weight:600">Joining mid-season? Pick the week you're on, and only add the couples still in.</div>`:''}
         <button class="big pink pulse" data-act="newweek" ${n?'':'disabled'}>✨ Start Week ${nextWeekNo()}</button>
-        ${n?'':`<div class="center" style="color:#fff;font-family:var(--title)">Add your couples first 👇</div>
-          <button class="big yellow" data-act="load2026">⚡ Load the 2026 couples still in (after week ${SERIES_2026.afterWeek})</button>`}`}
-      <button class="big cyan" data-act="nav" data-to="manage">👯 Couples, Players &amp; Judges</button>
+`}
+      <button class="big cyan" data-act="nav" data-to="manage">🎉 Players</button>
       <button class="big green" data-act="nav" data-to="season">🏆 Season Tables</button>
     </div>
     <div class="center" style="color:#fff;font-weight:600;text-shadow:0 2px 0 var(--ink)">${n} couple${n===1?'':'s'} still in · ${S.history.length} week${S.history.length===1?'':'s'} played · saved in this browser</div>${credits()}`;
@@ -918,30 +920,14 @@ function vRules(){
 }
 
 function vManage(){
-  const photo=i=>S.judges[i].photo?`<button class="sm white" data-act="clearphoto" data-i="${i}">Remove photo</button>`:'';
-  return `<h2 class="t">The Cast</h2><div class="sub">Everything here is remembered week to week</div>
-  <div class="grid2">
-  <div class="card"><h3>💃 Couples</h3>
-    ${S.couples.map(c=>`<div class="row"><span data-act="editart" data-id="${c.id}" style="cursor:pointer" title="Edit cartoon">${art(c,'sm')}</span><input type="text" data-bind="couple:${c.id}:name" value="${esc(c.name)}">
-      ${c.out!=null?`<span class="tag out">OUT wk ${c.out}</span><button class="sm green" data-act="restore" data-id="${c.id}">Bring back</button>`:''}
-      <button class="sm red" data-act="delcouple" data-id="${c.id}">✕</button></div>`).join('')||'<div class="hint">No couples yet. Add them below!</div>'}
-    <textarea id="newcouples" placeholder="Add couples — one per line, e.g.&#10;Jane Smith &amp; Pro Name&#10;Bob Jones &amp; Pro Name"></textarea>
-    <div class="actions" style="margin:8px 0 0"><button class="green" data-act="addcouples">+ Add couples</button><button data-act="load2026">⚡ Load 2026 couples still in</button></div>
-    <div class="hint">The 2026 list is everyone still in after week ${SERIES_2026.afterWeek}. Edit any name above if it's wrong.</div></div>
-  <div class="card"><h3>🎉 Players</h3>
+  return `<h2 class="t">The Players</h2><div class="sub">Who's playing in your house? Remembered week to week</div>
+  <div class="card" style="max-width:640px;margin-left:auto;margin-right:auto"><h3>🎉 Players</h3>
     ${S.players.map((p,i)=>`<div class="row"><button class="av" style="background:${p.color};cursor:pointer;font-size:22px" data-act="cycleav" data-id="${p.id}" title="Change avatar">${p.av}</button>
       <input type="text" data-bind="player:${p.id}:name" value="${esc(p.name)}" maxlength="18">
       <button class="sm red" data-act="delplayer" data-id="${p.id}">✕</button></div>`).join('')}
     <div class="actions" style="margin:8px 0 0"><button class="green" data-act="addplayer">+ Add player</button></div>
-    <div class="hint">Tick who's playing each week when you start it. Tap an avatar to change it.</div></div>
-  </div>
-  <div class="card"><h3>⭐ The Judges</h3><div class="judges">${S.judges.map((j,i)=>`<div class="judge">${portrait(i)}
-    <input type="text" data-bind="judge:${i}:name" value="${esc(j.name)}" style="text-align:center">
-    <div style="margin-top:6px"><button class="sm cyan" data-act="photo" data-i="${i}">📷 Own photo</button> ${photo(i)}</div></div>`).join('')}</div></div>
-  <div class="card"><h3>🎤 The Presenters <span class="hint">(they react after the judges' scores)</span></h3><div class="judges" style="grid-template-columns:repeat(3,1fr)">${S.presenters.map((j,i)=>`<div class="judge"><div class="portrait">${presenterAvatar(i)}</div>
-    <input type="text" data-bind="pres:${i}:name" value="${esc(j.name)}" style="text-align:center;margin-top:6px">
-    <div style="margin-top:6px"><button class="sm cyan" data-act="ppphoto" data-i="${i}">📷 Own photo</button> ${j.photo?`<button class="sm white" data-act="clearppphoto" data-i="${i}">Remove</button>`:''}</div></div>`).join('')}</div></div>
-  <div class="card"><h3>💾 Your data</h3><div class="hint" style="margin:0 0 8px">Saved in this browser only. Export a backup to move devices or keep it safe.</div>
+    <div class="hint">Tick who's playing each week when you start it. Tap an avatar to change it. The couples, judges and presenters come with the game.</div></div>
+  <div class="card" style="max-width:640px;margin-left:auto;margin-right:auto"><h3>💾 Your data</h3><div class="hint" style="margin:0 0 8px">Saved in this browser only. Export a backup to move devices or keep it safe.</div>
     <div class="actions" style="margin:0"><button class="cyan" data-act="export">Export backup</button><button class="cyan" data-act="import">Import backup</button><button class="red" data-act="wipe">Erase everything</button></div></div>
   <div class="actions"><button class="big pink" data-act="nav" data-to="">← Done</button></div>${credits()}`;
 }
@@ -1033,7 +1019,7 @@ function vSetup(){
     ${w.entries.map((e,i)=>{const c=couple(e.cid);return `<div class="entry ${e.status==='sick'?'sick':''}" style="grid-template-columns:1fr auto">
       <div class="n" style="display:flex;align-items:center;gap:8px">${art(c,'sm')}${esc(c.name)}</div>
       <button class="sm ${e.status==='sick'?'':'green'}" style="${e.status==='sick'?'background:var(--orange)':''}" data-act="togglesick" data-i="${i}">${e.status==='sick'?'🤕 Not dancing':'✅ Dancing'}</button></div>`}).join('')||'<div class="hint">No couples left! Add some under Couples, Players &amp; Judges.</div>'}
-    <div class="actions" style="margin:6px 0 0"><button class="white" data-act="nav" data-to="manage">Edit couples</button></div></div>
+</div>
   <div class="actions"><button class="big pink" data-act="startweek" ${ok?'':'disabled'}>🎬 Lights, camera, dance!</button><button class="white" data-act="quitweek">Cancel</button></div>`;
 }
 
@@ -1198,7 +1184,7 @@ function liveConfirm(){
   $('#jctl').style.display='none';const rb=document.querySelector('.realbanner');if(rb)rb.remove();
   const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses)),quips:makeQuips(r,w.guesses,w.order)};
   w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});
-  S.tmp=[null,null,null,null];w.phase='reveal';save();
+  S.tmp=[null,null,null,null];w.phase='reveal';save();kdTrack('couple_revealed',{week:w.n});
   $('#after').innerHTML=afterHtml();
   setTimeout(()=>liveFinish(false),1100);
 }
@@ -1295,7 +1281,8 @@ const normName=n=>(n||'').trim().toLowerCase().replace(/\s+/g,' ');
 const celebOf=n=>normName((n||'').split('&')[0]);
 function presetFor(c){return c&&SD.couples.find(p=>normName(p.name)===normName(c.name)||celebOf(p.name)===celebOf(c.name))}
 /* keep saved couples in step with the series data (e.g. "John Nellis" -> "John Nellis & Katya Jones") */
-function applySeries(){let ch=false;S.couples.forEach(c=>{const p=presetFor(c);if(p&&!c.name.includes('&')&&normName(p.name)!==normName(c.name)){c.name=p.name;ch=true}});if(ch)save()}
+function applySeries(){let ch=false;
+  if(!S.couples.length&&SD.couples.length){SD.couples.forEach(p=>S.couples.push({id:uid(),name:p.name,out:null,scores:[]}));if(!S.history.length&&!S.week)S.nextWeek=SD.afterWeek+1;ch=true}S.couples.forEach(c=>{const p=presetFor(c);if(p&&!c.name.includes('&')&&normName(p.name)!==normName(c.name)){c.name=p.name;ch=true}});if(ch)save()}
 const firstName=n=>(n||'').trim().split(/\s+/)[0];
 function factsFor(c){const p=presetFor(c);if(!p||!p.facts)return[];return[...(p.facts.celebrity||[]),...(p.facts.pro||[])]}
 function randomFact(c){const f=factsFor(c);return f.length?f[Math.floor(Math.random()*f.length)]:''}
@@ -1371,7 +1358,7 @@ let photoFor=0,photoKind='judge';
 function startCouple(){const w=W();w.order=shuffle(w.pids);w.oi=0;w.guesses={};w.prevTotals=Object.assign({},w.totals);S.tmp=[null,null,null,null];ready=false}
 function advance(){const w=W(),rem=remaining();if(!rem.length)w.phase='wrap';else if(rem.length===1){w.idx=rem[0].i;w.phase='dance'}else w.phase='pick';save();render()}
 function finishWeek(){
-  const w=W();
+  const w=W();kdTrack('week_finished',{week:w.n});
   w.entries.forEach(e=>{const r=w.results[e.cid];if(r)couple(e.cid).scores.push({week:w.n,dance:e.dance,real:r.real})});
   const rows=weekPlayerRows(false),best=rows.length?rows[0].score:0;
   const winners=best>0?rows.filter(r=>r.score===best).map(r=>r.name):[];
@@ -1428,7 +1415,7 @@ document.addEventListener('click',e=>{
   case 'togglesick':{const en=w.entries[+b.dataset.i];en.status=en.status==='sick'?'dance':'sick';save();return render()}
   case 'mv':{const i=+b.dataset.i,d=+b.dataset.d,j=i+d;if(j<0||j>=w.entries.length)return;[w.entries[i],w.entries[j]]=[w.entries[j],w.entries[i]];save();return render()}
   case 'shuffleorder':w.entries=shuffle(w.entries);save();return render();
-  case 'startweek':{w.pids=S.players.filter(p=>p.here).map(p=>p.id);w.totals={};w.pids.forEach(p=>w.totals[p]=0);
+  case 'startweek':{kdTrack('week_started',{week:w.n,players:S.players.filter(p=>p.here).length});w.pids=S.players.filter(p=>p.here).map(p=>p.id);w.totals={};w.pids.forEach(p=>w.totals[p]=0);
     advance();return}
   /* game */
   case 'pickc':w.idx=+b.dataset.i;w.phase='dance';save();return render();
@@ -1486,6 +1473,11 @@ document.addEventListener('keydown',e=>{
   if(/^[0-9]$/.test(e.key)){let n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0){S.tmp=[null,null,null,null];j=0}S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
 window.__strictly={scoreStats,seriesDances,presetFor,factsFor,makeQuips};window.__strictlyPhase=()=>W()&&W().phase;   // for tests and debugging
+(function loadAnalytics(){if(!ANALYTICS.src)return;const sc=document.createElement('script');sc.defer=true;sc.src=ANALYTICS.src;
+  Object.entries(ANALYTICS.attrs||{}).forEach(([k,v])=>sc.setAttribute(k,v));document.head.appendChild(sc)})();
+/* custom events, sent to whichever cookieless tracker is loaded (no personal data: no names, no scores) */
+window.kdTrack=(name,props={})=>{try{if(window.plausible)window.plausible(name,{props});else if(window.umami&&window.umami.track)window.umami.track(name,props);
+  else if(window.sa_event)window.sa_event(name,props);else if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'event/'+name,event:true})}catch(e){}};
 applySeries();
 $('#dances').innerHTML=DANCES.map(d=>`<option value="${d}">`).join('');
 render();

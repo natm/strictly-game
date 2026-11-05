@@ -34,11 +34,10 @@ async function enterReal(page, nums, { skip = true } = {}) {
     await page.waitForSelector('#skip:not([style*="none"]), #after[style*="opacity: 1"]', { timeout: 5000 }).catch(() => {});
     if (await page.locator('[data-act=skipreveal]').isVisible()) await page.click('[data-act=skipreveal]'); }
 }
-async function addCouples(page, names) {
-  await page.click('[data-act=nav][data-to=manage]');
-  await page.fill('#newcouples', names.join('\n'));
-  await page.click('[data-act=addcouples]');
-  await page.click('[data-act=nav][data-to=""]');
+async function addCouples(page, names) {   // couples come with the game; tests seed their own
+  await page.evaluate(n => { const S = JSON.parse(localStorage.getItem('strictly-v2') || '{"v":2,"jOrder":2}');
+    S.couples = n.map((x, i) => ({ id: 'c' + i, name: x, out: null, scores: [] })); S.nextWeek = null; localStorage.setItem('strictly-v2', JSON.stringify(S)); }, names);
+  await page.reload(); await page.addStyleTag({ content: CALM });
 }
 
 // With several couples left you choose who's next; with one left it goes straight to the stage.
@@ -60,16 +59,16 @@ async function playCouple(page, guess, real) {
   await page.click('[data-act=next]');
 }
 
-test('prefills the 2026 couples and offers week 7', async () => {
+test('the 2026 couples come with the game, starting at week 7', async () => {
   const page = await open();
-  await page.click('[data-act=load2026]');
   assert.match(await page.textContent('[data-act=newweek]'), /Start Week 7/);
   const s = await state(page);
   assert.equal(s.couples.length, 10);
-  // loading twice must not duplicate
+  assert.ok(s.couples.some(c => c.name === 'John Nellis & Katya Jones'));
+  // the setup screen is players only
   await page.click('[data-act=nav][data-to=manage]');
-  await page.click('[data-act=load2026]');
-  assert.equal((await state(page)).couples.length, 10);
+  assert.equal(await page.locator('#newcouples, [data-bind^="judge:"], [data-bind^="pres:"], [data-bind^="couple:"]').count(), 0);
+  assert.ok(await page.locator('[data-bind^="player:"]').count() >= 1);
   assert.deepEqual(page.errors, []);
 });
 
@@ -183,26 +182,6 @@ test('lifting paddles appear as numbers are entered', async () => {
   assert.equal(await page.locator('.pad.has').count(), 0);
 });
 
-test('couple cartoons: edit look and cartoonify a photo', async () => {
-  const page = await open();
-  await addCouples(page, ['Ann & A']);
-  await page.click('[data-act=nav][data-to=manage]');
-  await page.click('[data-act=editart]');
-  await page.click('[data-act=artset][data-who="0"][data-k=hs][data-v="2"]');
-  assert.equal((await state(page)).couples[0].look[0].hs, 2);
-  // make a test image in the page and upload it
-  const png = await page.evaluate(() => {
-    const c = document.createElement('canvas'); c.width = 200; c.height = 150; const x = c.getContext('2d');
-    x.fillStyle = '#4af'; x.fillRect(0, 0, 200, 150); x.fillStyle = '#f50'; x.beginPath(); x.arc(100, 75, 50, 0, 7); x.fill();
-    return c.toDataURL('image/png').split(',')[1];
-  });
-  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.click('[data-act=artphoto]')]);
-  await chooser.setFiles({ name: 'press.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
-  await page.waitForFunction(() => (JSON.parse(localStorage.getItem('strictly-v2')).couples[0].photo || '').startsWith('data:image/jpeg'), null, { timeout: 5000 }).catch(e => { throw new Error('no photo; page errors: ' + page.errors.join(' | ')); });
-  assert.equal(await page.locator('.cart.lg img').count(), 1);
-  assert.deepEqual(page.errors, []);
-});
-
 test('mobile: no sideways scrolling on main screens', async () => {
   const page = await open({ width: 390, height: 844 });
   const noOverflow = async name => {
@@ -210,7 +189,6 @@ test('mobile: no sideways scrolling on main screens', async () => {
     assert.ok(sw <= iw, `${name} overflows (${sw} > ${iw})`);
   };
   await noOverflow('home');
-  await page.click('[data-act=load2026]');
   await page.click('[data-act=nav][data-to=manage]'); await noOverflow('cast');
   await page.click('[data-act=nav][data-to=""]');
   await page.click('[data-act=newweek]'); await noOverflow('setup');
@@ -313,7 +291,6 @@ test('real scores screen looks different from guessing', async () => {
 
 test('2026 data: couples have cartoons and facts; stats use the real series scores', async () => {
   const page = await open();
-  await page.click('[data-act=load2026]');
   const info = await page.evaluate(() => {
     const S = JSON.parse(localStorage.getItem('strictly-v2'));
     const lacey = S.couples.find(c => c.name.startsWith('Lacey'));
@@ -406,8 +383,7 @@ test('footer credits BBC and Wikipedia and shows the version', async () => {
 test('short laptop window: the stage and its buttons fit without scrolling', async () => {
   for (const vp of [{ width: 1000, height: 560 }, { width: 1366, height: 768 }, { width: 1920, height: 1000 }]) {
     const page = await open(vp);
-    await page.click('[data-act=load2026]');
-    await page.click('[data-act=newweek]');
+      await page.click('[data-act=newweek]');
     await page.click('[data-act=startweek]');
     await page.click('[data-act=pickc] >> nth=8');   // Graeme Hall & Lauren Oakley
     await page.waitForTimeout(4200);
@@ -477,7 +453,6 @@ test('presenter voices: Josh has plenty to say (incl. the judges), Emma is kind 
 
 test('big drop from last week leads the comments; series history on the stage', async () => {
   const page = await open();
-  await page.click('[data-act=load2026]');
   await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
   await page.click('[data-act=pickc] >> nth=0');                      // Lacey & Vito
   assert.equal(await page.locator('.hist.side .hb').count(), 6, 'six weeks of real scores');
@@ -497,7 +472,6 @@ test("phone: slim header and judges' score buttons on screen without scrolling",
   const ctx = await browser.newContext({ viewport: { width: 390, height: 700 }, hasTouch: true, isMobile: true });
   const page = await ctx.newPage(); page.on('dialog', d => d.accept());
   await page.goto(URL); await page.addStyleTag({ content: CALM });
-  await page.click('[data-act=load2026]');
   await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
   for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); await page.fill('#quick', '7777'); await page.tap('.qlock'); }
   const hdr = await page.$eval('header', e => e.getBoundingClientRect().height);
@@ -527,4 +501,11 @@ test('skip a player who is out of the room: no points, not counted in stats', as
   const s2 = await state(page);
   assert.equal(Object.keys(s2.rounds[0].g).length, 2);
   assert.deepEqual(page.errors, []);
+});
+
+test('analytics hook is off by default and never sets cookies', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
+  assert.equal(await page.evaluate(() => document.cookie), '');
+  assert.equal(await page.evaluate(() => typeof window.kdTrack), 'function');
 });

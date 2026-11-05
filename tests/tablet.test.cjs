@@ -38,7 +38,6 @@ for (const [name, device] of Object.entries(TABLETS)) {
   test(`${name}: whole couple by touch, no sideways scroll, key controls on screen`, async () => {
     const page = await open(device);
     await noSideScroll(page, name + ' home');
-    await page.tap('[data-act=load2026]');
     await page.tap('[data-act=newweek]'); await noSideScroll(page, name + ' setup');
     await page.tap('[data-act=startweek]'); await noSideScroll(page, name + ' pick');
     await page.tap('[data-act=pickc] >> nth=0');
@@ -71,7 +70,7 @@ for (const [name, device] of Object.entries(TABLETS)) {
 
 test('iPad: rotating mid-guess keeps the layout and the progress', async () => {
   const page = await open(TABLETS['iPad portrait']);
-  await page.tap('[data-act=load2026]'); await page.tap('[data-act=newweek]'); await page.tap('[data-act=startweek]');
+  await page.tap('[data-act=newweek]'); await page.tap('[data-act=startweek]');
   await page.tap('[data-act=pickc] >> nth=0'); await page.tap('[data-act=danced]'); await page.tap('[data-act=ready]');
   await page.tap('[data-act=key][data-j="0"][data-n="9"]');
   const land = TABLETS['iPad landscape'].viewport;

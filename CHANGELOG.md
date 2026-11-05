@@ -3,6 +3,12 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.5.0 "Charleston" (2026-11-05)
+- The Players screen (formerly "Couples, Players & Judges") now only edits players. The 2026 couples, judges and presenters come with the game and load automatically.
+- Optional cookieless analytics hook, switched off by default (see README).
+- `routines/`: instructions Claude can run on a schedule, including refreshing the series data from Wikipedia, then testing, releasing and deploying. Also a daily site health check.
+- `scripts/update_series_data.py` and `scripts/parse_series.py` refresh `data/series2026.js` from Wikipedia while keeping the cartoons and facts.
+
 ## v2.4.0 "Jive" (2026-11-05)
 - Skip a player for one couple ("out of the room") from the pass-the-controls or guessing screen. They score nothing for that couple, and their stats aren't affected.
 - Presenter cartoons match the BBC's 2026 photo: Emma's short dark crop, Josh's curls and glasses, Johannes in green.
