@@ -3,6 +3,11 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.8.0 "Tap" (2026-11-05)
+- Entering the judges' scores is as quick as guessing. One tap on a number lifts that judge's paddle, updates everyone's tallies, and moves on to the next judge. No separate ✓.
+- Live corrections: tap any paddle that's up, pick the right number, and the tallies recalculate straight away.
+- Once all four are in, tap 🥁 Reveal the total! (or press Enter) for the total, the banner and the presenters.
+
 ## v2.7.1 "Mambo" (2026-11-05)
 - Josh sometimes skips the fact and just makes a joke.
 - When Johannes is the only one to comment, he often runs through the scores and signs off with "Back to you, Josh and Emma!"

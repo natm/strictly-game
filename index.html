@@ -207,6 +207,9 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .paddle.active .await.num{font-size:clamp(34px,6vw,80px);color:#fff;border-style:solid;animation:none}
 .revhead .realbanner{font-size:clamp(13px,1.6vw,20px);padding:2px 14px}
 .paddle.active .portrait{box-shadow:0 0 0 6px var(--yellow),var(--shadow)}
+.paddle[data-act=jfix].on{cursor:pointer}
+.paddle.fixing .face{opacity:1;transform:none;outline-color:var(--pink);animation:pulse 1s infinite}
+#jdone{margin-top:8px;width:100%;max-width:420px}
 .jctl{background:linear-gradient(180deg,#1c0a33,#3b1470);border:var(--line);border-color:var(--yellow);border-radius:20px;padding:10px 14px;margin:8px auto 0;max-width:640px;box-shadow:0 6px 0 var(--yellow);color:#fff;text-align:center}
 .jctl label{font-family:var(--title);font-size:clamp(18px,2.4vw,26px)}
 .jrow{display:flex;gap:10px;justify-content:center;margin:6px 0}
@@ -217,7 +220,7 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .jkeys button.sel{background:var(--yellow);color:var(--ink)}
 .jctl .hint{color:#fff;opacity:.75}
 /* touch screens: tap a number + ✓ only, no text box (the phone keyboard would cover the screen) */
-@media(pointer:coarse){.jrow input{display:none}.jrow button.big{flex:1;max-width:420px}.jctl .hint{display:none}}
+@media(pointer:coarse){.jrow{display:none}.jrow input{display:none}.jrow button.big{flex:1;max-width:420px}.jctl .hint{display:none}}
 @media(max-width:560px){.jkeys{grid-template-columns:repeat(5,1fr)}}
 @media(min-width:700px){
   .revhead .cart.md{width:84px;height:63px}
@@ -492,7 +495,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.7.1',RELEASE='Mambo';
+const VERSION='2.8.0',RELEASE='Tap';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -1182,12 +1185,12 @@ function vLive(){
   <div class="revgrid">
     <div class="revplayers">${live.map(p=>`<div class="rp" data-pid="${p.id}"><div class="rph"><span class="av" style="background:${p.color};width:1.6em;height:1.6em;font-size:.85em">${p.av}</span><span class="rn">${esc(p.name)}</span><b class="rpts">${pts(p)}</b></div>
       <div class="rslots">${w.guesses[p.id].map((g,i)=>slot(p,i)).join('')}</div><div class="rbonus"></div></div>`).join('')}</div>
-    <div class="revmain"><div class="paddles">${S.judges.map((j,i)=>`<div class="paddle ${i<k?'on static':''} ${i===k?'active':''}" data-i="${i}">${portrait(i,i<k?moodFor(r[i]):'idle')}<div class="face ${r[i]>=9?'hi':''}">${i<k?r[i]:''}</div><div class="await">${i===k?'⬇ Next':'?'}</div></div>`).join('')}</div>
-      ${done?'':`<div class="jctl" id="jctl"><label for="jscore">⭐ <span id="jname">${esc(firstName(S.judges[Math.min(k,3)].name))}</span>'s real score</label>
-        <div class="jrow"><input id="jscore" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" maxlength="2" placeholder="1–10">
-        <button class="big pink" data-act="jconfirm" id="jok" disabled>Show paddle ✓</button></div>
+    <div class="revmain"><div class="paddles">${S.judges.map((j,i)=>`<div class="paddle ${i<k?'on static':''} ${i===k?'active':''}" data-i="${i}" ${done?'':'data-act="jfix"'}>${portrait(i,i<k?moodFor(r[i]):'idle')}<div class="face ${r[i]>=9?'hi':''}">${i<k?r[i]:''}</div><div class="await">${i===k?'⬇ Next':'?'}</div></div>`).join('')}</div>
+      ${done?'':`<div class="jctl" id="jctl"><label for="jscore" id="jlabel">${k<4?`⭐ <span id="jname">${esc(firstName(S.judges[k].name))}</span>'s real score`:'All four in! Tap a paddle to fix one'}</label>
+        <div class="jrow"><input id="jscore" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" maxlength="2" placeholder="1–10"></div>
         <div class="jkeys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="jkey" data-n="${n}">${n}</button>`).join('')}</div>
-        <div class="hint">Type or tap the score, then press Enter (or tap ✓) to lift the paddle</div></div>`}
+        <button class="big pink pulse" data-act="jdone" id="jdone" style="${k<4?'display:none':''}">🥁 Reveal the total!</button>
+        <div class="hint">Tap a number (or type it and press Enter) and up goes the paddle. Tap a paddle to fix it.</div></div>`}
       <div class="totalbig" id="tot"> </div><div id="banner"></div></div>
   </div>
   <div class="quips" id="quips"></div>
@@ -1206,11 +1209,24 @@ function liveMarkPlayers(i,quiet,val){
 }
 function liveReact(n){document.querySelectorAll('.sp').forEach(sp=>{const i=+sp.dataset.pi,m=n>=8?'clap':n<=4?'sad':'idle';
   sp.className='sp '+m+(i===1&&m==='clap'?' slow':'');sp.querySelector('.portrait').innerHTML=presenterAvatar(i,m==='sad'?'sad':'')})}
-function liveSetPending(n){
-  const ok=$('#jok'),valid=n>=1&&n<=10;if(!ok)return;ok.disabled=!valid;ok.classList.toggle('pulse',valid);
-  ok.textContent=valid?`Show ${firstName(S.judges[liveStep()].name)}'s ${n} ✓`:'Show paddle ✓';
-  document.querySelectorAll('.jkeys button').forEach(b=>b.classList.toggle('sel',+b.dataset.n===n));
-  const aw=document.querySelector(`.paddle[data-i="${liveStep()}"] .await`);if(aw){aw.textContent=valid?n:'⬇ Next';aw.classList.toggle('num',valid)}
+let jFix=null;   // judge whose paddle is being corrected
+function liveSetPending(n){document.querySelectorAll('.jkeys button').forEach(b=>b.classList.toggle('sel',+b.dataset.n===n))}
+function liveTarget(){return jFix!=null?jFix:liveStep()}
+function liveLabel(){
+  const t=liveTarget(),l=$('#jlabel'),dn=$('#jdone');if(!l)return;
+  document.querySelectorAll('.paddle').forEach(pd=>pd.classList.toggle('active',+pd.dataset.i===t));
+  document.querySelectorAll('.paddle').forEach(pd=>pd.classList.toggle('fixing',+pd.dataset.i===jFix));
+  l.innerHTML=t<4?`${jFix!=null?'✏️ Fix':'⭐'} <span id="jname">${esc(firstName(S.judges[t].name))}</span>'s ${jFix!=null?'score':'real score'}`:'All four in! Tap a paddle to fix one';
+  if(dn)dn.style.display=liveStep()>3&&jFix==null?'':'none';
+  liveSetPending(t<4?S.tmp[t]:NaN);
+}
+/* redo every player's slots + points from the scores entered so far (used after a correction) */
+function liveRecalcPlayers(){
+  const w=W(),r=S.tmp;
+  document.querySelectorAll('.rp').forEach(row=>{let pts=0;const id=row.dataset.pid;
+    for(let i=0;i<4;i++){const slot=row.querySelector(`.rs[data-k="${i}"]`),g=w.guesses[id][i];slot.className='rs';slot.querySelector('em').textContent='';
+      if(r[i]!=null){const d=Math.abs(g-r[i]);slot.classList.add(d===0?'x':d===1?'n':'m','done');slot.querySelector('em').textContent=d===0?'🎯':d===1?'1 off':d+' off';pts+=ptsFor(g,r[i])}}
+    const el=row.querySelector('.rpts');el.textContent=pts;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')});
 }
 const jVal=()=>{const v=parseInt(($('#jscore')||{}).value,10);return v>=1&&v<=10?v:(($('#jscore')||{}).value||'').trim()==='0'?10:NaN};
 /* playful catchphrase-style reactions, keyed by each judge's cartoon (0 Shirley, 1 Motsi, 2 Anton, 3 Craig) */
@@ -1228,23 +1244,27 @@ function judgeBubble(i,n){
   const b=document.createElement('div');b.className='jbub';b.textContent=text;pd.appendChild(b);setTimeout(()=>b.remove(),2900);
 }
 const pickR=a=>a[Math.floor(Math.random()*a.length)];
-function liveConfirm(){
-  const w=W(),k=liveStep(),n=jVal();if(realDone()||k>3||!(n>=1&&n<=10))return;
-  S.tmp[k]=n;save();
-  const pd=document.querySelector(`.paddle[data-i="${k}"]`),face=pd.querySelector('.face');
-  pd.classList.remove('active');face.textContent=n;face.classList.toggle('hi',n>=9);pd.classList.add('on');
-  pd.querySelector('.portrait').innerHTML=avatar(S.judges[k],k,moodFor(n));if(n>=9)burstAt(pd,50);sfx.flip(n);
-  setTimeout(()=>{liveMarkPlayers(k,false,n);liveReact(n);judgeBubble(k,n)},450);
-  const q=$('#jscore');q.value='';liveSetPending(NaN);
-  if(k<3){const nx=document.querySelector(`.paddle[data-i="${k+1}"]`);nx.classList.add('active');nx.querySelector('.await').textContent='⬇ Next';
-    $('#jname').textContent=firstName(S.judges[k+1].name);if(matchMedia('(pointer:fine)').matches)q.focus({preventScroll:true});return}
-  // all four in: score the round, then total, banner and presenters
+function liveConfirm(n){
+  const w=W(),t=liveTarget();if(n==null)n=jVal();if(realDone()||t>3||!(n>=1&&n<=10))return;
+  const fixing=S.tmp[t]!=null;S.tmp[t]=n;save();jFix=null;
+  const pd=document.querySelector(`.paddle[data-i="${t}"]`),face=pd.querySelector('.face');
+  face.textContent=n;face.classList.toggle('hi',n>=9);pd.classList.remove('static','on');void pd.offsetWidth;pd.classList.add('on');
+  pd.querySelector('.portrait').innerHTML=avatar(S.judges[t],t,moodFor(n));if(n>=9)burstAt(pd,50);sfx.flip(n);
+  if(fixing)liveRecalcPlayers();else setTimeout(()=>{if(S.tmp[t]===n&&!realDone())liveRecalcPlayers();liveReact(n);judgeBubble(t,n)},450);
+  const q=$('#jscore');if(q){q.value='';if(matchMedia('(pointer:fine)').matches)q.focus({preventScroll:true})}
+  liveLabel();
+}
+/* all four in (and any fixes done): score the round, then total, banner and presenters */
+function liveCommit(){
+  const w=W();if(realDone()||liveStep()<4)return;
+  liveRecalcPlayers();   // make sure every tally is in before scoring (even if Reveal was tapped straight away)
   $('#jctl').style.display='none';const rb=document.querySelector('.realbanner');if(rb)rb.remove();
+  document.querySelectorAll('.paddle').forEach(pd=>{pd.removeAttribute('data-act');pd.classList.remove('active','fixing')});
   const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses)),quips:makeQuips(r,w.guesses,w.order)};
   w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});
   S.tmp=[null,null,null,null];w.phase='reveal';save();kdTrack('couple_revealed',{week:w.n});
   $('#after').innerHTML=afterHtml();
-  setTimeout(()=>liveFinish(false),1100);
+  setTimeout(()=>liveFinish(false),600);
 }
 function liveFinish(instant){
   const tok=++revealTok,w=W(),res=w.results[entry().cid],r=res.real,total=sum(r);
@@ -1326,6 +1346,7 @@ function render(){
   if(!overlay&&W()&&W().phase==='guess'&&ready&&matchMedia('(pointer:fine)').matches){const q=$('#quick');if(q&&document.activeElement!==q){q.focus({preventScroll:true});if(S.tmp.every(x=>x))q.select();else q.setSelectionRange(q.value.length,q.value.length)}}
   if(!overlay&&W()){const p=W().phase;
     if(p==='reveal')liveFinish(true);
+    if(p==='real'){jFix=null;liveLabel()}
     if(p==='real'&&matchMedia('(pointer:fine)').matches){const q=$('#jscore');if(q)q.focus({preventScroll:true})}
     if(p==='wrap'){rain(180);sfx.tada()}
   }
@@ -1495,8 +1516,9 @@ document.addEventListener('click',e=>{
     save();return render();
   case 'fixscores':{const res=w.results[entry().cid];w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)-scorePlayer(res.guesses[pid],res.real).total});
     S.tmp=[null,null,null,null];delete w.results[entry().cid];w.phase='real';save();return render()}
-  case 'jkey':{const q=$('#jscore'),n=+b.dataset.n;if(jVal()===n){liveConfirm();return}q.value=n;liveSetPending(n);return}
-  case 'jconfirm':liveConfirm();return;
+  case 'jkey':liveConfirm(+b.dataset.n);return;
+  case 'jfix':{if(realDone())return;const i=+b.dataset.i;if(S.tmp[i]==null)return;jFix=i;liveLabel();return}
+  case 'jdone':liveCommit();return;
   case 'skipreveal':window.__skip&&window.__skip();return;
   case 'board':w.phase='board';save();return render();
   case 'next':advance();return;
@@ -1525,7 +1547,7 @@ document.addEventListener('change',e=>{
 });
 
 document.addEventListener('keydown',e=>{
-  if(e.target.id==='jscore'&&e.key==='Enter'){e.preventDefault();liveConfirm();return}
+  if(e.target.id==='jscore'&&e.key==='Enter'){e.preventDefault();if(liveStep()>3&&jFix==null&&!e.target.value)liveCommit();else liveConfirm();return}
   if(e.target.id==='quick'&&e.key==='Enter'){e.preventDefault();const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
   if(!overlay&&W()&&W().phase==='guess'&&!ready&&(e.key==='Enter'||e.key===' ')&&!e.target.matches('input,textarea')){e.preventDefault();ready=true;render();focusQuick();return}
   const w=W();if(overlay||!w||w.phase!=='guess'||(w.phase==='guess'&&!ready)||e.target.matches('input,textarea'))return;

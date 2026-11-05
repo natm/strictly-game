@@ -30,6 +30,7 @@ const typeScores = async (page, nums) => { for (const n of nums) await page.keyb
 // Real scores: one judge at a time, Enter lifts each paddle. Skips the presenters at the end.
 async function enterReal(page, nums, { skip = true } = {}) {
   for (const n of nums) { await page.fill('#jscore', String(n)); await page.press('#jscore', 'Enter'); }
+  if (await page.isVisible('#jdone')) await page.click('#jdone');            // all four in: reveal the total
   if (skip) { await page.waitForFunction(() => window.__strictlyPhase && window.__strictlyPhase() === 'reveal');
     await page.waitForSelector('#skip:not([style*="none"]), #after[style*="opacity: 1"]', { timeout: 5000 }).catch(() => {});
     if (await page.locator('[data-act=skipreveal]').isVisible()) await page.click('[data-act=skipreveal]'); }
@@ -336,9 +337,7 @@ test('reveal shows each player exact / how far off as each paddle goes up', asyn
   await page.click('[data-act=danced]');
   const guesses = ['9999', '8888', '3333'];
   for (const g of guesses) { await page.click('[data-act=ready]'); await page.fill('#quick', g); await page.press('#quick', 'Enter'); }
-  // Craig's 9: tap the number, then tap again to confirm; the paddle goes up and the tallies land
-  await page.click('[data-act=jkey][data-n="9"]');
-  assert.match(await page.textContent('#jok'), /Craig's 9/);
+  // Craig's 9: one tap and the paddle goes up and the tallies land
   await page.click('[data-act=jkey][data-n="9"]');
   await page.waitForSelector('.rs.done', { timeout: 3000 });
   assert.equal(await page.locator('.paddle.on').count(), 1);
@@ -367,7 +366,7 @@ test('laptop: score entry fits on screen without scrolling', async () => {
     assert.ok(bottom <= 768, `guess button at ${bottom}px is below the fold`);
   }
   for (let i = 0; i < 3; i++) { if (i) await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
-  for (const sel of ['#jscore', '#jok', '.jkeys']) {
+  for (const sel of ['#jscore', '.jkeys']) {
     const b = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
     assert.ok(b <= 768, `${sel} at ${b}px is below the fold`);
   }
@@ -438,9 +437,9 @@ test("phone: judges' scores by tapping only, no keyboard box", async () => {
   assert.equal(await page.isVisible('#jscore'), false, 'no text box on touch screens');
   for (const n of [8, 7, 9, 6]) {
     await page.tap(`[data-act=jkey][data-n="${n}"]`);
-    await page.tap('#jok');
     assert.notEqual(await page.evaluate(() => document.activeElement && document.activeElement.id), 'jscore', 'keyboard never opens');
   }
+  await page.tap('#jdone');
   await page.waitForFunction(() => window.__strictlyPhase() === 'reveal');
   assert.deepEqual((await state(page)).week.results[(await state(page)).week.entries[0].cid].real, [8, 7, 9, 6]);
   await ctx.close();
@@ -484,7 +483,7 @@ test("phone: slim header and judges' score buttons on screen without scrolling",
   for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); for (const n of [7, 7, 7, 7]) await page.tap(`.gkeys [data-n="${n}"]`); await page.tap('.qlock'); }
   const hdr = await page.$eval('header', e => e.getBoundingClientRect().height);
   assert.ok(hdr <= 52, `header is ${hdr}px tall`);
-  for (const sel of ['#jok', '.jkeys button[data-n="10"]']) {
+  for (const sel of ['.jkeys button[data-n="10"]']) {
     const b = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
     assert.ok(b <= 700, `${sel} at ${Math.round(b)}px needs scrolling`);
   }
@@ -551,4 +550,30 @@ test('Johannes signs off "Back to you, Josh and Emma!" and remembers his pro day
   assert.ok(solo.some(t => /Back to you, Josh and Emma!$/.test(t)), 'catchphrase when Johannes is alone');
   assert.ok(qs.flat().filter(x => x.p === 2).some(x => /pro|danced on this floor|training room/.test(x.t)), 'pro-dancer memories');
   assert.ok(qs.every(q => q.filter(x => x.p !== 2).every(x => !/Back to you, Josh and Emma/.test(x.t))), 'only Johannes says it');
+});
+
+test('judges: one tap per judge, then live corrections recalculate the tallies', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '8888'); await page.press('#quick', 'Enter'); }
+  for (const n of [8, 8, 5, 8]) await page.click(`[data-act=jkey][data-n="${n}"]`);
+  await page.waitForFunction(() => document.querySelectorAll('.rs.done').length === 12);
+  assert.ok(await page.isVisible('#jdone'), 'reveal button once all four are in');
+  let pts = await page.$$eval('.rp .rpts', e => e.map(x => +x.textContent));
+  assert.deepEqual(pts, [9, 9, 9]);                                   // 3+3+0+3
+  // oops: Shirley actually gave an 8, so tap her paddle and fix it
+  await page.click('.paddle[data-i="2"]');
+  assert.match(await page.textContent('#jlabel'), /Fix Shirley/);
+  assert.equal(await page.$eval('.paddle[data-i="2"] .face', e => getComputedStyle(e).opacity), '1', 'paddle stays visible while being fixed');
+  await page.click('[data-act=jkey][data-n="8"]');
+  pts = await page.$$eval('.rp .rpts', e => e.map(x => +x.textContent));
+  assert.deepEqual(pts, [12, 12, 12]);
+  assert.equal(await page.textContent('.paddle[data-i="2"] .face'), '8');
+  await page.click('#jdone');
+  await page.waitForFunction(() => window.__strictlyPhase() === 'reveal');
+  const s = await state(page);
+  assert.deepEqual(s.week.results[s.week.entries[0].cid].real, [8, 8, 8, 8]);
+  assert.deepEqual(Object.values(s.week.totals), [17, 17, 17]);       // 12 + exact total bonus 5
+  assert.deepEqual(page.errors, []);
 });

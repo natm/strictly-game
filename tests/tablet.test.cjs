@@ -54,9 +54,10 @@ for (const [name, device] of Object.entries(TABLETS)) {
     }
     // judges: tap number + ✓, no keyboard box on touch screens
     assert.equal(await page.isVisible('#jscore'), false, 'no text box on tablets');
-    await fits(page, '#jok', name + ' judges');
     await fits(page, '.jkeys button[data-n="10"]', name + ' judges');
-    for (const n of [8, 9, 8, 9]) { await page.tap(`[data-act=jkey][data-n="${n}"]`); await page.tap('#jok'); }
+    for (const n of [8, 9, 8, 9]) await page.tap(`[data-act=jkey][data-n="${n}"]`);
+    await fits(page, '#jdone', name + ' reveal button');
+    await page.tap('#jdone');
     await page.waitForFunction(() => window.__strictlyPhase() === 'reveal');
     await noSideScroll(page, name + ' reveal');
     await page.waitForFunction(() => document.querySelectorAll('.rs.done').length === 12, null, { timeout: 4000 });
