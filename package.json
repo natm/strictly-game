@@ -1,0 +1,11 @@
+{
+  "name": "strictly-game",
+  "private": true,
+  "description": "Strictly Score Guess - family game to play during Strictly Come Dancing",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

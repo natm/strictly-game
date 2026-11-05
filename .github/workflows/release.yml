@@ -1,0 +1,28 @@
+name: release
+# When the deployed site (gh-pages) gets a new VERSION in index.html, create the tag + GitHub release,
+# using that version's section of CHANGELOG.md as the notes. Pushing a v* tag manually also works.
+on:
+  push:
+    branches: [gh-pages]
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Work out version and notes
+        run: |
+          ver="v$(grep -oP "const VERSION='\K[0-9.]+" index.html)"
+          [ "${GITHUB_REF_TYPE}" = "tag" ] && ver="${GITHUB_REF_NAME}"
+          echo "VER=$ver" >> "$GITHUB_ENV"
+          awk -v v="## ${ver} " 'index($0,v)==1{f=1;print;next} /^## /{f=0} f' CHANGELOG.md > notes.md
+          title=$(head -1 notes.md | sed 's/^## //'); echo "TITLE=${title:-$ver}" >> "$GITHUB_ENV"
+          tail -n +2 notes.md > body.md
+      - name: Create release if it does not exist yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$VER" >/dev/null 2>&1; then echo "$VER already released"; exit 0; fi
+          gh release create "$VER" --target "$GITHUB_SHA" --title "$TITLE" --notes-file body.md
