@@ -33,7 +33,8 @@ async function enterReal(page, nums, { skip = true } = {}) {
   if (await page.isVisible('#jdone')) await page.click('#jdone');            // all four in: reveal the total
   if (skip) { await page.waitForFunction(() => window.__strictlyPhase && window.__strictlyPhase() === 'reveal');
     await page.waitForSelector('#skip:not([style*="none"]), #after[style*="opacity: 1"]', { timeout: 5000 }).catch(() => {});
-    if (await page.locator('[data-act=skipreveal]').isVisible()) await page.click('[data-act=skipreveal]'); }
+    // the Skip button hides itself when the presenters finish, so it may vanish just before we click
+    if (await page.locator('[data-act=skipreveal]').isVisible()) await page.click('[data-act=skipreveal]', { timeout: 2000 }).catch(() => {}); }
 }
 async function addCouples(page, names) {   // couples come with the game; tests seed their own
   await page.evaluate(n => { const S = JSON.parse(localStorage.getItem('strictly-v2') || '{"v":2,"jOrder":2}');
@@ -812,4 +813,29 @@ test('Dave Arch sometimes misses Claudia', async () => {
   const dave = await page.evaluate(() => { const o = []; for (let i = 0; i < 1500; i++) o.push(...window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a']).filter(q => q.p === 3).map(q => q.t)); return o; });
   assert.ok(dave.length > 40, 'Dave pops up now and then');
   assert.ok(dave.some(t => /Claudia/.test(t)), 'and sometimes misses Claudia');
+});
+
+test("pros show their country's flag; presenters spot past contestants in the audience", async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
+  assert.ok(await page.locator('.cc .pflag').count() >= 9, 'flags on the pick screen');
+  await page.click('[data-act=pickc] >> nth=0');                                  // Lacey Turner & Vito Coppola
+  await page.waitForTimeout(3500);
+  assert.equal(await page.textContent('.couplebig .pflag'), '🇮🇹');
+  await page.click('[data-act=danced]');
+  const lines = await page.evaluate(() => { const o = []; for (let i = 0; i < 1500; i++) o.push(...window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a']).map(q => q.t)); return o; });
+  assert.ok(lines.some(t => /in the audience|row three|up there/.test(t)), 'audience cameos');
+  assert.ok(lines.some(t => /Ellie Leach|Chris McCausland|Karen Carney|\b20(23|24|25)\b/.test(t)));
+  await page.goto(URL); await page.click('[data-act=nav][data-to=season]'); await page.click('[data-act=stab][data-t=couples]');
+  assert.ok(await page.locator('.board .pflag').count() >= 10, 'flags on the season scoreboard');
+  assert.deepEqual(page.errors, []);
+});
+
+test('presenters sometimes joke about the Strictly curse', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  const lines = await page.evaluate(() => { const o = []; for (let i = 0; i < 1500; i++) o.push(...window.__strictly.makeQuips([9, 9, 8, 9], { a: [7, 7, 7, 7] }, ['a']).map(q => q.t)); return o; });
+  const curse = lines.filter(t => /curse/i.test(t));
+  assert.ok(curse.length > 10, 'curse jokes turn up');
+  assert.ok(curse.length < lines.length / 8, 'but only now and then');
 });

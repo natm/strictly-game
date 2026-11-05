@@ -3,6 +3,11 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.2.0 "Ballroom" (2026-11-05)
+- Every professional dancer has their home country's flag next to their name 🇮🇹🇺🇦🇦🇺🏴󠁧󠁢󠁷󠁬󠁳󠁿: on the stage, the pick screen, week setup and the scoreboards. Countries come from the BBC profiles and Wikipedia.
+- Presenters now and then joke about the "Strictly curse", always playful and never about anyone real: "That's not the curse, that's chemistry!"
+- Presenters sometimes spot past contestants (2023–2025) in the audience: "I've just spotted Chris McCausland in the audience doing all the arm movements…"
+
 ## v3.1.1 "Fringe" (2026-11-05)
 - Dave Arch sometimes mentions how much he misses Claudia.
 
