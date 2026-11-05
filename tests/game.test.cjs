@@ -509,3 +509,11 @@ test('analytics hook is off by default and never sets cookies', async () => {
   assert.equal(await page.evaluate(() => document.cookie), '');
   assert.equal(await page.evaluate(() => typeof window.kdTrack), 'function');
 });
+
+test('dance picker is sorted A-Z', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0');
+  const opts = await page.$$eval('[data-bind^="dance:"] option', o => o.slice(1).map(x => x.textContent));
+  assert.deepEqual(opts, [...opts].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })));
+  assert.equal(opts[0], 'American Smooth');
+});

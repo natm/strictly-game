@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.5.1 "Bolero" (2026-11-05)
+- The dance picker on the stage is sorted A–Z.
+
 ## v2.5.0 "Charleston" (2026-11-05)
 - The Players screen (formerly "Couples, Players & Judges") now only edits players. The 2026 couples, judges and presenters come with the game and load automatically.
 - Optional cookieless analytics hook, switched off by default (see README).

@@ -478,7 +478,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.5.0',RELEASE='Charleston';
+const VERSION='2.5.1',RELEASE='Bolero';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -745,7 +745,7 @@ const QUIPS={
      low:["Hey, hey — shake it off, {couple}! Next week we come back stronger!","Dance is about heart, and you gave us plenty. The points will follow!","Tough one, but I believe in you. Back to practice!"],
      split:["The judges disagree! {topJudge} loved it, {lowJudge} wants more. Drama!"],best:["And {best}! You should be a judge — incredible guessing!"],worst:["{worst}, don't worry — the rhythm will come!"]}
 };
-const DANCES=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha-cha-cha','Rumba','Samba','Salsa','Jive','Paso doble','Charleston','Argentine tango',"Couple's choice",'Showdance'];
+const DANCES=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha-cha-cha','Rumba','Samba','Salsa','Jive','Paso doble','Charleston','Argentine tango',"Couple's choice",'Showdance'].sort((a,b)=>a.localeCompare(b,'en',{sensitivity:'base'}));   // A–Z in the picker
 const STATQ_EXTRA={
   crash:["Oh no, {first}. From {last} last week to {total} tonight. We'll get you back up there, I promise.","From {last} to {total}. That's not a drop, that's a skydive without the parachute.","{last} last week, {total} tonight? That's not you! Back to the studio, we go again!"],
   rocket:["From {last} last week to {total}! That's the biggest jump I've seen. So proud!","{last} to {total}. Who are you and what have you done with last week's couple?","Up {diff} points from last week! That is a transformation!"]
