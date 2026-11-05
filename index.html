@@ -151,6 +151,9 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
   animation:bounce 1s infinite}
 @keyframes bounce{50%{transform:translateY(-10px) rotate(-2deg)}}
 
+.weekpick{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--title);color:#fff;font-size:22px;text-shadow:0 2px 0 var(--ink)}
+.weekpick b{font-size:40px;color:var(--yellow);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;min-width:1.4em;text-align:center}
+.weekpick button{font-size:22px;width:44px;height:44px;padding:0}
 /* presenters */
 .quips{display:flex;flex-direction:column;gap:12px;margin:10px 0 4px}
 .pres{display:flex;align-items:flex-end;gap:12px;animation:fromL .7s cubic-bezier(.2,1.4,.4,1) both}
@@ -511,12 +514,15 @@ function vHome(){
     <div class="bigbtns">
       ${inProg?`<button class="big pink pulse" data-act="resume">▶ Continue Week ${w.n}${w.theme?' · '+esc(w.theme):''} <small style="font-size:.6em">(${phaseName[w.phase]||''})</small></button>
         <button class="white" data-act="quitweek">Abandon this week</button>`
-        :`<button class="big pink pulse" data-act="newweek" ${n?'':'disabled'}>✨ Start Week ${S.weeksDone+1}</button>
+        :`<div class="weekpick"><span>Starting week</span><button class="sm white" data-act="wkstep" data-d="-1" ${nextWeekNo()<=1?'disabled':''}>−</button><b>${nextWeekNo()}</b><button class="sm white" data-act="wkstep" data-d="1">+</button></div>
+        ${S.history.some(h=>h.n===nextWeekNo())?`<div class="center" style="color:var(--yellow);font-family:var(--title)">⚠️ You've already played week ${nextWeekNo()}</div>`:''}
+        ${!S.history.length?`<div class="center" style="color:#fff;font-weight:600">Joining mid-season? Pick the week you're on, and only add the couples still in.</div>`:''}
+        <button class="big pink pulse" data-act="newweek" ${n?'':'disabled'}>✨ Start Week ${nextWeekNo()}</button>
         ${n?'':'<div class="center" style="color:#fff;font-family:var(--title)">Add your couples first 👇</div>'}`}
       <button class="big cyan" data-act="nav" data-to="manage">👯 Couples, Players &amp; Judges</button>
       <button class="big green" data-act="nav" data-to="season">🏆 Season Tables</button>
     </div>
-    <div class="center" style="color:#fff;font-weight:600;text-shadow:0 2px 0 var(--ink)">${n} couple${n===1?'':'s'} still in · ${S.weeksDone} week${S.weeksDone===1?'':'s'} played · saved in this browser</div>`;
+    <div class="center" style="color:#fff;font-weight:600;text-shadow:0 2px 0 var(--ink)">${n} couple${n===1?'':'s'} still in · ${S.history.length} week${S.history.length===1?'':'s'} played · saved in this browser</div>`;
 }
 
 function vRules(){
@@ -790,8 +796,9 @@ function render(){
 }
 
 /* =============== actions =============== */
+const nextWeekNo=()=>S.nextWeek||S.weeksDone+1;
 function newWeek(){
-  const n=S.weeksDone+1;
+  const n=nextWeekNo();S.nextWeek=null;
   const entries=activeCouples().map(c=>({cid:c.id,dance:'',status:'dance'}));
   S.week={n,theme:'',phase:'setup',entries,pids:[],idx:0,order:[],oi:0,guesses:{},totals:{},prevTotals:{},results:{},leaving:[]};
   S.tmp=[null,null,null,null];save();
@@ -832,6 +839,7 @@ document.addEventListener('click',e=>{
   case 'home':overlay='home';return render();
   case 'nav':overlay=b.dataset.to||null;return render();
   case 'resume':overlay=null;return render();
+  case 'wkstep':S.nextWeek=Math.max(1,Math.min(99,nextWeekNo()+(+b.dataset.d)));save();return render();
   case 'newweek':newWeek();overlay=null;return render();
   case 'quitweek':if(confirm('Abandon this week? Nothing from it will be saved.')){S.week=null;overlay=null;save();render()}return;
   case 'stab':S.seasonTab=b.dataset.t;save();return render();
