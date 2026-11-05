@@ -159,6 +159,67 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .weekpick{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--title);color:#fff;font-size:22px;text-shadow:0 2px 0 var(--ink)}
 .weekpick b{font-size:40px;color:var(--yellow);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;min-width:1.4em;text-align:center}
 .weekpick button{font-size:22px;width:44px;height:44px;padding:0}
+/* reveal stage */
+.revhead{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.revgrid{display:grid;grid-template-columns:minmax(180px,240px) 1fr minmax(96px,130px);gap:14px;align-items:start}
+.revmain{min-width:0}
+.revplayers{display:flex;flex-direction:column;gap:8px}
+.rp{background:var(--cream);border:3px solid var(--ink);border-radius:16px;padding:6px 8px;box-shadow:0 3px 0 var(--ink)}
+.rp.hit{animation:wob .6s}
+.rph{display:flex;align-items:center;gap:6px;font-family:var(--title);font-size:16px}
+.rph .rn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rpts{background:var(--yellow);border:3px solid var(--ink);border-radius:10px;padding:0 8px;min-width:34px;text-align:center}
+.rpts.bump{animation:bumpk .5s}
+@keyframes bumpk{40%{transform:scale(1.5) rotate(-8deg);background:var(--green)}}
+.rslots{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:5px}
+.rs{position:relative;display:grid;place-items:center;height:40px;border:3px solid var(--ink);border-radius:10px;background:#fff;font-family:var(--title);overflow:hidden}
+.rs i{font-style:normal;font-size:16px;opacity:.5}
+.rs em{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:12px;opacity:0}
+.rs.done i{opacity:0}.rs.done em{opacity:1;animation:stamp .45s cubic-bezier(.2,1.8,.4,1)}
+.rs.x{background:var(--green)}.rs.x em{font-size:22px}
+.rs.n{background:var(--yellow)}
+.rs.m{background:#ffb3b3;animation:shake .4s}
+@keyframes stamp{from{transform:scale(2.4) rotate(-20deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.rbonus{display:none;margin-top:5px;font-family:var(--title);font-size:13px;text-align:center;background:var(--pink);color:#fff;border:3px solid var(--ink);border-radius:10px;text-shadow:0 1px 0 var(--ink)}
+.rbonus.on{display:block;animation:stamp .5s}
+.revpres{display:flex;flex-direction:column;gap:8px;align-items:center}
+.sp{position:relative;text-align:center;width:100%;max-width:110px}
+.sp .portrait{max-width:none;width:100%;border-width:3px;box-shadow:0 3px 0 var(--ink)}
+.sp small{font-family:var(--title);color:#fff;text-shadow:0 2px 0 var(--ink);font-size:13px}
+.sp .clap{position:absolute;right:-6px;bottom:18px;font-size:30px;display:none}
+.sp.clap .clap{display:block;animation:clap .22s infinite alternate}
+.sp.clap.slow .clap{animation-duration:.6s}
+.sp.clap .portrait{animation:bob .35s infinite alternate}
+.sp.sad .portrait{filter:saturate(.6);transform:rotate(-4deg)}
+@keyframes clap{from{transform:scale(.8) rotate(-12deg)}to{transform:scale(1.15) rotate(10deg)}}
+@media(max-width:900px){.revgrid{grid-template-columns:1fr}.revplayers{order:2;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .revpres{order:-1;flex-direction:row;justify-content:center}.sp{max-width:70px}.sp small{font-size:11px}}
+/* compact keypad on laptops so the whole thing fits without scrolling */
+@media(min-width:700px){
+  .kp{padding:12px 16px}
+  .kp .quick{margin-bottom:8px}.kp .quick input{font-size:26px;padding:4px 10px}
+  .kp .keyrow{margin-bottom:6px;grid-template-columns:minmax(230px,280px) 1fr}
+  .kp .keyrow .portrait{width:48px}
+  .kp .keyrow .jname{font-size:15px;line-height:1.1}
+  .kp .keys button{aspect-ratio:auto;height:min(50px,6.2vh);font-size:clamp(16px,2vw,24px)}
+  .kp .pad{height:min(64px,8.4vh);width:44px}
+  .kp .pcard{font-size:22px}
+  .kp .totalbox{font-size:24px}
+  .realbanner{margin-bottom:4px}
+}
+@media(min-width:700px) and (max-height:900px){
+  h2.t{font-size:clamp(24px,3.6vw,40px)}
+  .sub{margin-bottom:8px}
+  .sub .cart.md{display:none}
+  .actions{margin:10px 0}
+}
+/* did-you-know facts */
+.dyk{max-width:760px;margin:12px auto 0;background:#fff;border:var(--line);border-radius:18px;padding:8px 16px;box-shadow:var(--shadow);font-weight:600;font-size:clamp(14px,1.8vw,19px);display:flex;gap:10px;align-items:center;animation:pop .5s both}
+.dyk b{font-family:var(--title);font-weight:400;color:var(--pink);white-space:nowrap}
+.credits{margin:22px auto 6px;max-width:760px;text-align:center;color:#fff;font-size:12px;opacity:.8;text-shadow:0 1px 0 var(--ink)}
+.credits a{color:var(--yellow)}
+.ver{font-family:var(--title);font-size:11px;letter-spacing:.06em;color:#fff;opacity:.85}
 /* quick type box */
 .quick{margin-bottom:14px}
 .quick label{display:block;font-family:var(--title);font-size:clamp(15px,1.9vw,20px);margin-bottom:4px}
@@ -319,11 +380,13 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 <input type="file" id="photofile" accept="image/*" hidden>
 <input type="file" id="importfile" accept="application/json" hidden>
 
+<script src="data/series2026.js"></script>
 <script>
 (()=>{
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
+const VERSION='2.0.0',RELEASE='Tango';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -337,6 +400,7 @@ const defaultJudges=()=>[   // always shown in this order: Craig, Motsi, Shirley
   {name:'Shirley Ballas',photo:'',style:0},{name:'Anton Du Beke',photo:'',style:2}];
 const mkPlayer=(i,name)=>({id:uid(),name:name||'Player '+(i+1),color:COLORS[i%COLORS.length],av:EMOJI[i%EMOJI.length],here:true});
 const defaultPresenters=()=>[{name:'Emma Willis',photo:''},{name:'Josh Widdicombe',photo:''},{name:'Johannes Radebe',photo:''}];
+const BANDLEADER={name:'Dave Arch',photo:''};   // pops up rarely after the judges
 const defaultState=()=>({v:2,presenters:defaultPresenters(),players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],rounds:[],weeksDone:0,week:null,
   tmp:[null,null,null,null],sound:true,jOrder:2,seasonTab:'players'});
 let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),{jOrder:0},o)}catch(e){}return defaultState()})();
@@ -441,19 +505,21 @@ function avatar(j,i,mood='idle'){
     ${mouth}${extra}</svg>`;
 }
 function presenterAvatar(i,mood){
-  const pr=S.presenters[i];if(pr.photo)return `<img src="${pr.photo}" alt="${esc(pr.name)}">`;
+  const pr=i===3?BANDLEADER:S.presenters[i];if(pr.photo)return `<img src="${pr.photo}" alt="${esc(pr.name)}">`;
   const ink='#1c0a33';
-  const skin=['#ffd8b8','#ffd2b0','#8d5a3c'][i],hair=['#6b3f2a','#5a3a22','#1a1210'][i],top=['#14b8a6','#334155','#7c3aed'][i];
-  const back=[`<path d="M14 124 Q0 56 22 30 Q60 -8 98 30 Q120 56 106 124Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,'',''][i];
+  const skin=['#ffd8b8','#ffd2b0','#8d5a3c','#f6cfae'][i],hair=['#6b3f2a','#5a3a22','#1a1210','#c9c9d1'][i],top=['#14b8a6','#334155','#7c3aed','#111827'][i];
+  const back=[`<path d="M14 124 Q0 56 22 30 Q60 -8 98 30 Q120 56 106 124Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,'','',''][i];
   const front=[
     `<path d="M28 50 Q38 10 66 14 Q96 18 92 50 Q82 30 60 32 Q40 34 28 50Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M28 46 Q24 22 44 14 L52 24 L62 10 L72 24 L88 14 Q100 26 92 46 Q82 30 60 32 Q40 30 28 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
-    `<path d="M30 44 Q34 18 60 18 Q86 18 90 44 Q76 30 60 30 Q44 30 30 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
+    `<path d="M30 44 Q34 18 60 18 Q86 18 90 44 Q76 30 60 30 Q44 30 30 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+    `<path d="M28 48 Q30 20 60 20 Q90 20 92 48 Q80 34 60 34 Q40 34 28 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
   const extra=[
     `<circle cx="28" cy="74" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/><circle cx="92" cy="74" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/>`,
     `<g fill="${ink}" opacity=".5"><circle cx="44" cy="84" r="1.4"/><circle cx="52" cy="88" r="1.4"/><circle cx="60" cy="90" r="1.4"/><circle cx="68" cy="88" r="1.4"/><circle cx="76" cy="84" r="1.4"/></g>`,
-    `<g fill="#ffd93d" stroke="${ink}" stroke-width="2"><circle cx="24" cy="116" r="4"/><circle cx="60" cy="112" r="4"/><circle cx="96" cy="116" r="4"/></g>`][i];
-  const brow=i===1?'M34 42 L52 40 M68 40 L86 42':'M34 40 Q43 33 52 38 M68 38 Q77 33 86 40';
+    `<g fill="#ffd93d" stroke="${ink}" stroke-width="2"><circle cx="24" cy="116" r="4"/><circle cx="60" cy="112" r="4"/><circle cx="96" cy="116" r="4"/></g>`,
+    `<path d="M50 104 L60 110 L70 104 L70 116 L60 110 L50 116Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M96 118 L116 82" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M96 118 L116 82" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><text x="100" y="40" font-size="20">🎵</text>`][i];
+  const brow=mood==='sad'?'M34 36 L52 42 M68 42 L86 36':i===1?'M34 42 L52 40 M68 40 L86 42':'M34 40 Q43 33 52 38 M68 38 Q77 33 86 40';
   const mood2=mood||'idle';
   const mouth=i===1?`<path d="M44 76 Q60 90 76 76" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`
     :`<g class="mouth"><path d="M42 72 Q60 100 78 72Z" fill="#7a1030" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M48 74 H72 V79 H48Z" fill="#fff"/></g>`;
@@ -467,16 +533,17 @@ function presenterAvatar(i,mood){
     <ellipse cx="46" cy="57" rx="9" ry="11" fill="#fff" stroke="${ink}" stroke-width="3.5"/><ellipse cx="74" cy="57" rx="9" ry="11" fill="#fff" stroke="${ink}" stroke-width="3.5"/>
     <circle cx="47" cy="58" r="4.6" fill="${ink}"/><circle cx="73" cy="58" r="4.6" fill="${ink}"/><circle cx="48.6" cy="55.5" r="1.7" fill="#fff"/><circle cx="74.6" cy="55.5" r="1.7" fill="#fff"/>
     <path d="${brow}" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>
-    ${mouthJ}${extra}</svg>`;
+    ${mood==='sad'?`<path d="M46 86 Q60 72 74 86" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/><path d="M40 66 q-3 8 0 11 q3 -3 0 -11z" fill="#5ec8ff" stroke="${ink}" stroke-width="1.5"/>`:mouthJ}${extra}</svg>`;
 }
 /* ---------- cartoon couples ---------- */
 const SKINS=['#ffe3cc','#f6c9a2','#e2a77a','#c4865a','#9a6440','#6e4630'];
 const HAIRS=['#2b1a14','#5a3a22','#8b5a2b','#d9a441','#f2d98a','#b8b8c2','#c0392b','#e05fa0'];
 const OUTFITS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#e0245e','#1d4ed8','#111827','#ffffff'];
-const HSTYLES=['Short','Long','Curly','Bun','Bald','Spiky','Ponytail'];
+const HSTYLES=['Short','Long','Curly','Bun','Bald','Spiky','Ponytail','Buzz','Wavy long','Side part','Slicked back'];
+const FHAIR=['None','Stubble','Beard','Moustache'];
 const hashStr=t=>{let h=2166136261;for(const ch of t){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
-function defaultLook(name,k){const h=hashStr(name+'#'+k);return{s:SKINS[h%SKINS.length],h:HAIRS[(h>>4)%6],hs:(h>>8)%HSTYLES.length,o:OUTFITS[(h>>12)%OUTFITS.length]}}
-function looksOf(c){const parts=c.name.split('&').map(x=>x.trim());return c.look||[defaultLook(parts[0]||c.name,0),defaultLook(parts[1]||c.name+'pro',1)]}
+function defaultLook(name,k){const h=hashStr(name+'#'+k);return{s:SKINS[h%SKINS.length],h:HAIRS[(h>>4)%6],hs:(h>>8)%7,o:OUTFITS[(h>>12)%OUTFITS.length]}}
+function looksOf(c){const parts=c.name.split('&').map(x=>x.trim()),p=presetFor(c);return c.look||(p&&p.look)||[defaultLook(parts[0]||c.name,0),defaultLook(parts[1]||c.name+'pro',1)]}
 function personSVG(cx,L,tilt,pro){
   const ink='#1c0a33',cy=64,S_=`stroke="${ink}" stroke-width="4" stroke-linejoin="round"`;
   const shortF=`<path d="M${cx-25} ${cy-4} Q${cx-27} ${cy-33} ${cx} ${cy-33} Q${cx+27} ${cy-33} ${cx+25} ${cy-4} Q${cx+16} ${cy-20} ${cx} ${cy-21} Q${cx-16} ${cy-20} ${cx-25} ${cy-4}Z" fill="${L.h}" ${S_}/>`;
@@ -485,14 +552,27 @@ function personSVG(cx,L,tilt,pro){
     `<circle cx="${cx}" cy="${cy-14}" r="31" fill="${L.h}" ${S_}/><circle cx="${cx-27}" cy="${cy+2}" r="13" fill="${L.h}" ${S_}/><circle cx="${cx+27}" cy="${cy+2}" r="13" fill="${L.h}" ${S_}/>`,
     `<circle cx="${cx}" cy="${cy-38}" r="12" fill="${L.h}" ${S_}/>`,
     '','',
-    `<ellipse cx="${cx+29}" cy="${cy+10}" rx="9" ry="21" fill="${L.h}" ${S_}/>`][L.hs];
+    `<ellipse cx="${cx+29}" cy="${cy+10}" rx="9" ry="21" fill="${L.h}" ${S_}/>`,
+    '',
+    `<path d="M${cx-30} ${cy+44} Q${cx-40} ${cy+30} ${cx-34} ${cy+18} Q${cx-42} ${cy+4} ${cx-34} ${cy-8} Q${cx-38} ${cy-30} ${cx-16} ${cy-36} Q${cx} ${cy-46} ${cx+16} ${cy-36} Q${cx+38} ${cy-30} ${cx+34} ${cy-8} Q${cx+42} ${cy+4} ${cx+34} ${cy+18} Q${cx+40} ${cy+30} ${cx+30} ${cy+44}Z" fill="${L.h}" ${S_}/>`,
+    '',''][L.hs]||'';
   const front=[shortF,
     `<path d="M${cx-24} ${cy-6} Q${cx-6} ${cy-42} ${cx+26} ${cy-8} Q${cx+8} ${cy-22} ${cx-8} ${cy-18} Q${cx-16} ${cy-14} ${cx-24} ${cy-6}Z" fill="${L.h}" ${S_}/>`,
     `<path d="M${cx-22} ${cy-10} Q${cx} ${cy-30} ${cx+22} ${cy-10} Q${cx} ${cy-20} ${cx-22} ${cy-10}Z" fill="${L.h}" ${S_}/>`,
     shortF,
     `<path d="M${cx-12} ${cy-22} Q${cx-4} ${cy-27} ${cx+4} ${cy-25}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>`,
     `<path d="M${cx-25} ${cy-4} Q${cx-28} ${cy-26} ${cx-14} ${cy-30} L${cx-8} ${cy-42} L${cx} ${cy-30} L${cx+8} ${cy-44} L${cx+12} ${cy-30} Q${cx+28} ${cy-26} ${cx+25} ${cy-4} Q${cx+14} ${cy-20} ${cx} ${cy-20} Q${cx-14} ${cy-20} ${cx-25} ${cy-4}Z" fill="${L.h}" ${S_}/>`,
-    shortF][L.hs];
+    shortF,
+    `<path d="M${cx-25} ${cy-8} Q${cx-26} ${cy-30} ${cx} ${cy-31} Q${cx+26} ${cy-30} ${cx+25} ${cy-8} Q${cx+14} ${cy-25} ${cx} ${cy-26} Q${cx-14} ${cy-25} ${cx-25} ${cy-8}Z" fill="${L.h}" ${S_} opacity=".9"/>`,
+    `<path d="M${cx-24} ${cy-4} Q${cx-14} ${cy-44} ${cx+10} ${cy-30} Q${cx+24} ${cy-26} ${cx+26} ${cy-4} Q${cx+12} ${cy-16} ${cx+2} ${cy-20} Q${cx-12} ${cy-14} ${cx-24} ${cy-4}Z" fill="${L.h}" ${S_}/>`,
+    `<path d="M${cx-25} ${cy-2} Q${cx-27} ${cy-34} ${cx} ${cy-34} Q${cx+27} ${cy-34} ${cx+25} ${cy-6} Q${cx+12} ${cy-26} ${cx-8} ${cy-24} Q${cx-18} ${cy-14} ${cx-25} ${cy-2}Z" fill="${L.h}" ${S_}/><path d="M${cx-8} ${cy-33} Q${cx-10} ${cy-28} ${cx-8} ${cy-24}" fill="none" stroke="${ink}" stroke-width="2"/>`,
+    `<path d="M${cx-25} ${cy-6} Q${cx-26} ${cy-36} ${cx} ${cy-36} Q${cx+26} ${cy-36} ${cx+25} ${cy-6} Q${cx+18} ${cy-22} ${cx} ${cy-23} Q${cx-18} ${cy-22} ${cx-25} ${cy-6}Z" fill="${L.h}" ${S_}/><path d="M${cx-12} ${cy-30} Q${cx} ${cy-34} ${cx+12} ${cy-30} M${cx-14} ${cy-25} Q${cx} ${cy-29} ${cx+14} ${cy-25}" fill="none" stroke="#fff" stroke-width="1.6" opacity=".55"/>`][L.hs]||shortF;
+  const fh=[ '',
+    [[-16,14],[-12,19],[-6,22],[0,23],[6,22],[12,19],[16,14],[-19,8],[19,8],[-9,25],[9,25]].map(([dx,dy])=>`<circle cx="${cx+dx}" cy="${cy+dy}" r="1.3" fill="${ink}" opacity=".55"/>`).join(''),
+    `<path d="M${cx-25} ${cy+2} Q${cx-24} ${cy+30} ${cx} ${cy+32} Q${cx+24} ${cy+30} ${cx+25} ${cy+2} Q${cx+18} ${cy+14} ${cx+12} ${cy+10} Q${cx} ${cy+16} ${cx-12} ${cy+10} Q${cx-18} ${cy+14} ${cx-25} ${cy+2}Z" fill="${L.h}" ${S_}/>`,
+    `<path d="M${cx-11} ${cy+9} Q${cx} ${cy+3} ${cx+11} ${cy+9} Q${cx} ${cy+7} ${cx-11} ${cy+9}Z" fill="${L.h}" ${S_}/>`][L.fh||0]||'';
+  const gl=L.gl?`<g fill="rgba(255,255,255,.25)" stroke="${ink}" stroke-width="3"><rect x="${cx-19}" y="${cy-8}" width="17" height="14" rx="5"/><rect x="${cx+2}" y="${cy-8}" width="17" height="14" rx="5"/></g><path d="M${cx-2} ${cy-2}h4" stroke="${ink}" stroke-width="3"/>`:'';
+  const ear=L.ear?`<circle cx="${cx-26}" cy="${cy+12}" r="3.6" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><circle cx="${cx+26}" cy="${cy+12}" r="3.6" fill="#ffd93d" stroke="${ink}" stroke-width="2"/>`:'';
   const seq=pro?[[-16,128],[0,122],[16,128],[-8,140],[8,140]].map(([dx,y])=>`<circle cx="${cx+dx}" cy="${y}" r="2.6" fill="#fff" opacity=".9"/>`).join(''):'';
   return `<path d="M${cx-36} 156 Q${cx-32} 110 ${cx} 110 Q${cx+32} 110 ${cx+36} 156Z" fill="${L.o}" ${S_}/>${seq}
   <g transform="rotate(${tilt} ${cx} ${cy+10})">${back}
@@ -501,7 +581,8 @@ function personSVG(cx,L,tilt,pro){
     <circle cx="${cx-15}" cy="${cy+12}" r="5" fill="#ff7aa8" opacity=".5"/><circle cx="${cx+15}" cy="${cy+12}" r="5" fill="#ff7aa8" opacity=".5"/>
     <ellipse cx="${cx-10}" cy="${cy-1}" rx="7" ry="8.5" fill="#fff" stroke="${ink}" stroke-width="3"/><ellipse cx="${cx+10}" cy="${cy-1}" rx="7" ry="8.5" fill="#fff" stroke="${ink}" stroke-width="3"/>
     <circle cx="${cx-9}" cy="${cy}" r="3.6" fill="${ink}"/><circle cx="${cx+9}" cy="${cy}" r="3.6" fill="${ink}"/><circle cx="${cx-8}" cy="${cy-2}" r="1.3" fill="#fff"/><circle cx="${cx+10}" cy="${cy-2}" r="1.3" fill="#fff"/>
-    <path d="M${cx-12} ${cy+11} Q${cx} ${cy+27} ${cx+12} ${cy+11}Z" fill="#7a1030" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M${cx-12} ${cy+11} Q${cx} ${cy+27} ${cx+12} ${cy+11}Z" fill="${L.lip?'#d6246e':'#7a1030'}" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>
+    ${fh}${gl}${ear}
   </g>`;
 }
 function coupleSVG(c){
@@ -515,7 +596,8 @@ function coupleSVG(c){
     <path d="M114 126 Q106 100 100 92" fill="none" stroke="${b.o}" stroke-width="5" stroke-linecap="round"/>
     <circle cx="100" cy="90" r="7" fill="${a.s}" stroke="${ink}" stroke-width="3"/></svg>`;
 }
-const art=(c,size='sm')=>c?`<span class="cart ${size}">${c.photo?`<img src="${c.photo}" alt="${esc(c.name)}">`:coupleSVG(c)}</span>`:'';
+function artPhoto(c){if(c.photo)return c.photo;const p=presetFor(c);return p&&p.photo&&c.artMode!=='draw'?p.photo:''}
+const art=(c,size='sm')=>{if(!c)return'';const ph=artPhoto(c);return `<span class="cart ${size}">${ph?`<img src="${ph}" alt="${esc(c.name)}">`:coupleSVG(c)}</span>`};
 /* turn a photo into a cartoon: smooth, posterise, boost colour, add ink outlines */
 function cartoonify(img){
   const N=360,cv=document.createElement('canvas');cv.width=cv.height=N;const x=cv.getContext('2d');
@@ -538,11 +620,14 @@ function vArtEdit(){
   const person=who=>`<div class="card"><h3>${who?'💃 '+esc(parts[1]||'Pro'):'⭐ '+esc(parts[0]||'Celebrity')}</h3>
     <label class="hint">Skin</label>${sw('s',who,SKINS)}<label class="hint">Hair colour</label>${sw('h',who,HAIRS)}
     <label class="hint">Hair style</label><div class="swatches">${HSTYLES.map((n,i)=>`<button class="hsbtn ${L[who].hs===i?'on':'white'}" data-act="artset" data-who="${who}" data-k="hs" data-v="${i}">${n}</button>`).join('')}</div>
-    <label class="hint">Outfit</label>${sw('o',who,OUTFITS)}</div>`;
+    <label class="hint">Outfit</label>${sw('o',who,OUTFITS)}
+    <label class="hint">Facial hair</label><div class="swatches">${FHAIR.map((n,i)=>`<button class="hsbtn ${(L[who].fh||0)===i?'on':'white'}" data-act="artset" data-who="${who}" data-k="fh" data-v="${i}">${n}</button>`).join('')}</div>
+    <div class="swatches">${[['gl','👓 Glasses'],['ear','💛 Earrings'],['lip','💄 Lipstick']].map(([k,n])=>`<button class="hsbtn ${L[who][k]?'on':'white'}" data-act="artset" data-who="${who}" data-k="${k}" data-v="${L[who][k]?0:1}">${n}</button>`).join('')}</div></div>`;
   return `<h2 class="t">${esc(c.name)}</h2><div class="sub">Design their cartoon — or turn a photo into one</div>
     <div class="center">${art(c,'lg')}</div>
+    ${presetFor(c)&&presetFor(c).photo&&!c.photo?`<div class="tabs"><button class="${c.artMode!=='draw'?'act':'white'}" data-act="artmode" data-v="photo">🖼 Photo cartoon</button><button class="${c.artMode==='draw'?'act':'white'}" data-act="artmode" data-v="draw">✏️ Drawn cartoon</button></div>`:''}
     <div class="actions"><button class="cyan" data-act="artphoto">📷 Cartoonify a photo</button>${c.photo?`<button class="white" data-act="artclearphoto">Use drawn cartoon</button>`:''}<button class="white" data-act="artrandom">🎲 Surprise me</button></div>
-    ${c.photo?'<div class="hint center" style="color:#fff">Showing your cartoonified photo. Tap “Use drawn cartoon” to edit the drawing instead.</div>':`<div class="grid2">${person(0)}${person(1)}</div>`}
+    ${artPhoto(c)?'<div class="hint center" style="color:#fff">Showing a cartoonified photo. Switch to the drawn cartoon to edit it.</div>':`<div class="grid2">${person(0)}${person(1)}</div>`}
     <div class="actions"><button class="big pink" data-act="artdone">✔ Done</button></div>`;
 }
 /* original, light-hearted presenter quips — {tokens} are filled in per couple */
@@ -563,6 +648,25 @@ const QUIPS={
      low:["Hey, hey — shake it off, {couple}! Next week we come back stronger!","Dance is about heart, and you gave us plenty. The points will follow!","Tough one, but I believe in you. Back to practice!"],
      split:["The judges disagree! {topJudge} loved it, {lowJudge} wants more. Drama!"],best:["And {best}! You should be a judge — incredible guessing!"],worst:["{worst}, don't worry — the rhythm will come!"]}
 };
+const STATQ={
+  perfect:["Forty! FORTY! {first} and {pro}, that's a perfect score!","Forty out of forty. Well, that's the rest of the series ruined for everyone else.","Perfection! I have no notes. Nobody has any notes!"],
+  seriesFirstTen:["The first 10 of the whole series — from {judge}! What a moment for {first} and {pro}!","The first 10 of the series. {judge} had to blow the dust off that paddle.","The first 10 of 2026! History made right here!"],
+  firstTen:["{first}'s first ever 10 — from {judge}!","A 10 from {judge}. Someone check {judge} is feeling alright.","Their first 10! You earned every bit of it!"],
+  seriesBest:["{total} is the highest score of the whole series so far!","Highest score of the series. Everyone else, you may now quietly panic.","Top score of the series! The bar has been raised!"],
+  pb:["That's your best score of the series, {first} — up from {prev}!","A personal best. The old record was {prev}, so… low bar, but still.","New personal best! From {prev} to {total} — that's growth!"],
+  bestDance:["That's the best {dance} of the series — beating {prevBest}!","Best {dance} of the series. Sorry {prevName}, nobody remembers second place.","The best {dance} we've seen this year! That technique!"],
+  firstDance:["The first {dance} of the series — and what a way to start it!","First {dance} of the series. So technically also the worst one. And the best.","First {dance} of the series! I love it!"],
+  firstNine:["{first}'s first 9 of the series!","Their first 9. It's like spotting a rare bird.","First 9! I'm so proud of you two!"],
+  improved:["Up {diff} points on last week's {last} — brilliant progress!","{diff} points better than last week. Last week must have been rough.","From {last} to {total}! That's what hard work looks like!"],
+  dropped:["A few points down on last week's {last}, but you'll bounce back!","{diff} points down on last week. Going the wrong way, like my dancing.","Last week was {last} — we know you've got that in you!"],
+  worst:["Not your best night, {first} — but we're still cheering!","Lowest score of their series. 'Character building', they call it.","Shake it off! Every champion has a tough week."],
+  sameAll:["Four {n}s! The judges are completely in agreement!","Four {n}s. The judges finally agree on something. Mark the calendar.","A clean sweep of {n}s! Consistency!"],
+  harsh:["{judge} was the toughest tonight with a {lo}!","{judge} gave a {lo}. Shocked. Truly shocked. Said nobody.","{judge} wants more — and I think you can give it!"],
+  tonightTop:["That puts {first} and {pro} top of the leaderboard tonight!","Top of the leaderboard tonight. The others are pretending to be happy for them.","Top of the leaderboard! Yes!"],
+  tonightBottom:["Bottom of the leaderboard tonight, but the public vote counts too!","Bottom of the leaderboard. Get the phones out, Nan.","Bottom for now — but it's not over till the vote!"],
+  fact:["Fun fact: {fact}","I've been handed this card to read: {fact} Riveting.","Did you know? {fact}"]
+};
+const BANDQ=["The band loved that one — we were dancing behind the music stands!","That tempo was not easy. Respect from the whole band.","I've played that song a thousand times. Never seen it danced like that!","The horn section would like a word… a good word!","Brilliant. We'll be humming that all the way home."];
 function makeQuips(real,guesses,order){
   const total=sum(real),tier=total>=36?'top':total>=30?'great':total>=22?'ok':'low';
   const hi=Math.max(...real),lo=Math.min(...real);
@@ -570,18 +674,25 @@ function makeQuips(real,guesses,order){
   const sc=order.map(id=>({id,t:scorePlayer(guesses[id],real).total}));
   const hiS=Math.max(...sc.map(x=>x.t)),loS=Math.min(...sc.map(x=>x.t));
   const bestP=sc.find(x=>x.t===hiS),worstP=sc.slice().reverse().find(x=>x.t===loS);
-  const vars={couple:couple(entry().cid).name,total,topJudge:fn(hi),lowJudge:fn(lo),hi,lo,
+  const cpl=couple(entry().cid),parts=cpl.name.split('&');
+  const vars={couple:cpl.name,first:firstName(parts[0]),pro:firstName(parts[1]||''),total,topJudge:fn(hi),lowJudge:fn(lo),hi,lo,dance:entry().dance||'',
     best:bestP&&player(bestP.id)?player(bestP.id).name:'',worst:worstP&&player(worstP.id)?player(worstP.id).name:''};
   const fill=t=>t.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
   const pickOne=a=>a[Math.floor(Math.random()*a.length)];
-  const ids=shuffle([0,1,2]),n=Math.random()<.6?2:1,out=[];
+  const ids=shuffle([0,1,2]),n=Math.random()<.65?2:1,out=[];
+  const stats=scoreStats(cpl,real,entry().dance);
+  const statLine=(p,st)=>{Object.assign(vars,st);return fill(STATQ[st.k][p])};
   const split=hi-lo>=3&&Math.random()<.35;
-  out.push({p:ids[0],t:fill(pickOne(split?QUIPS[ids[0]].split:QUIPS[ids[0]][tier]))});
+  // presenter 1: the most exciting stat if there is one (usually), otherwise a reaction to the score
+  if(stats.length&&Math.random()<.85)out.push({p:ids[0],t:statLine(ids[0],stats[0])});
+  else out.push({p:ids[0],t:fill(pickOne(split?QUIPS[ids[0]].split:QUIPS[ids[0]][tier]))});
   if(n===2){
-    const q=QUIPS[ids[1]],canGuess=order.length>1&&hiS>loS;
-    const kind=canGuess?(Math.random()<.6?'best':'worst'):tier;
-    out.push({p:ids[1],t:fill(pickOne(q[kind]))});
+    const q=QUIPS[ids[1]],canGuess=order.length>1&&hiS>loS,fact=randomFact(cpl),r=Math.random();
+    if(stats.length>1&&r<.45)out.push({p:ids[1],t:statLine(ids[1],stats[1])});
+    else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(STATQ.fact[ids[1]])})}
+    else out.push({p:ids[1],t:fill(pickOne(q[canGuess?(Math.random()<.6?'best':'worst'):tier]))});
   }
+  if(Math.random()<.08)out.push({p:3,t:pickOne(BANDQ)});   // Dave Arch, rarely
   return out;
 }
 const portrait=(i,mood)=>`<div class="portrait" data-ji="${i}">${avatar(S.judges[i],i,mood)}</div>`;
@@ -635,7 +746,7 @@ function weekCoupleRows(){
 /* =============== views =============== */
 function hdr(){
   const w=W();
-  $('#hdr').innerHTML=(w?`<span class="pill wk">Week ${w.n}${w.theme?' · '+esc(w.theme):''}</span>`:'')+
+  $('#hdr').innerHTML=`<span class="ver" title="Version for bug reports">v${VERSION} “${RELEASE}”</span>`+(w?`<span class="pill wk">Week ${w.n}${w.theme?' · '+esc(w.theme):''}</span>`:'')+
    `<button class="sm cyan" data-act="nav" data-to="home">🏠</button>
     <button class="sm cyan" data-act="nav" data-to="season">🏆 Tables</button>
     <button class="sm cyan" data-act="nav" data-to="rules">❓</button>
@@ -661,9 +772,10 @@ function vHome(){
       <button class="big cyan" data-act="nav" data-to="manage">👯 Couples, Players &amp; Judges</button>
       <button class="big green" data-act="nav" data-to="season">🏆 Season Tables</button>
     </div>
-    <div class="center" style="color:#fff;font-weight:600;text-shadow:0 2px 0 var(--ink)">${n} couple${n===1?'':'s'} still in · ${S.history.length} week${S.history.length===1?'':'s'} played · saved in this browser</div>`;
+    <div class="center" style="color:#fff;font-weight:600;text-shadow:0 2px 0 var(--ink)">${n} couple${n===1?'':'s'} still in · ${S.history.length} week${S.history.length===1?'':'s'} played · saved in this browser</div>${credits()}`;
 }
 
+const credits=()=>`<div class="credits">Photos &amp; profile info: <a href="https://www.bbc.co.uk/programmes/b006m8dq" target="_blank" rel="noopener">BBC Strictly Come Dancing</a> · Scores, dances &amp; facts: <a href="https://en.wikipedia.org/wiki/Strictly_Come_Dancing_series_24" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA) · An unofficial, fan-made family game — not affiliated with the BBC · v${VERSION} “${RELEASE}”</div>`;
 function vRules(){
   return `<div class="card"><h2 class="t" style="font-size:40px">How to play</h2>
   <ol class="rules">
@@ -703,7 +815,7 @@ function vManage(){
     <div style="margin-top:6px"><button class="sm cyan" data-act="ppphoto" data-i="${i}">📷 Own photo</button> ${j.photo?`<button class="sm white" data-act="clearppphoto" data-i="${i}">Remove</button>`:''}</div></div>`).join('')}</div></div>
   <div class="card"><h3>💾 Your data</h3><div class="hint" style="margin:0 0 8px">Saved in this browser only. Export a backup to move devices or keep it safe.</div>
     <div class="actions" style="margin:0"><button class="cyan" data-act="export">Export backup</button><button class="cyan" data-act="import">Import backup</button><button class="red" data-act="wipe">Erase everything</button></div></div>
-  <div class="actions"><button class="big pink" data-act="nav" data-to="">← Done</button></div>`;
+  <div class="actions"><button class="big pink" data-act="nav" data-to="">← Done</button></div>${credits()}`;
 }
 
 function vSeason(){
@@ -726,7 +838,7 @@ function vSeason(){
       <div><b>Week ${h.n}${h.theme?' · '+esc(h.theme):''}</b> · 🏆 ${esc(h.winners.join(' & ')||'–')}<small>${h.out.length?'👋 Left: '+esc(h.out.join(', ')):'Nobody left'}${h.sick.length?' · 🤕 Absent: '+esc(h.sick.join(', ')):''}</small></div></div>`).join('')||'<div class="lrow"><div></div><div>No weeks finished yet…</div><div></div></div>'}</div>`;
   }
   return `<h2 class="t">Season Tables</h2><div class="sub">Points across every week</div>${tabs}${body}
-    <div class="actions"><button class="big pink" data-act="nav" data-to="">← Back</button></div>`;
+    <div class="actions"><button class="big pink" data-act="nav" data-to="">← Back</button></div>${credits()}`;
 }
 
 /* ---------- season stats (only count rounds a player actually guessed) ---------- */
@@ -800,7 +912,8 @@ function vSetup(){
 function progress(){const w=W();const total=w.entries.filter(e=>e.status!=='sick').length,done=w.entries.filter(e=>w.results[e.cid]).length;return `Couple ${done+1} of ${total}`}
 function vPick(){
   const w=W(),rem=remaining(),done=w.entries.filter(e=>w.results[e.cid]).length;
-  return `<h2 class="t">Who's Up Next?</h2><div class="sub">${done?`${done} danced · `:''}${rem.length} still to dance — tap the couple on the floor</div>
+  const fc=shuffle(rem.map(x=>couple(x.e.cid)).filter(c=>factsFor(c).length))[0];
+  return `<h2 class="t">Who's Up Next?</h2>${fc?`<div class="dyk" id="dyk" data-cid="${fc.id}" style="margin-bottom:12px"><b>💡 Did you know?</b><span>${esc(randomFact(fc))}</span></div>`:''}<div class="sub">${done?`${done} danced · `:''}${rem.length} still to dance — tap the couple on the floor</div>
   <div class="cgrid">${rem.map(x=>{const c=couple(x.e.cid);return `<div class="cc" data-act="pickc" data-i="${x.i}">${art(c,'md')}${esc(c.name)}</div>`}).join('')}</div>
   <div class="chips" style="justify-content:center;margin-top:16px">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
@@ -816,6 +929,7 @@ function vDance(){
     <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
   <div class="row" style="max-width:420px;margin:14px auto 0"><input type="text" list="dances" data-bind="dance:${W().idx}" value="${esc(e.dance)}" placeholder="💃 Dance style (optional)"></div>
   <div class="actions"><button class="big pink" data-act="danced">They've danced! 👏 Start guessing</button><button class="white" data-act="cantdance">🤕 Can't dance tonight</button></div>
+  ${factsFor(c).length?`<div class="dyk" id="dyk" data-cid="${c.id}"><b>💡 Did you know?</b><span>${esc(randomFact(c))}</span></div>`:''}
   <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
 
@@ -861,7 +975,8 @@ function vGuess(){
   const w=W(),p=player(w.order[w.oi]);
   if(!ready)return `<div class="pass"><div class="sub">${esc(couple(entry().cid).name)} · guess ${w.oi+1} of ${w.order.length}</div>
     <span class="bigav">${p.av}</span><div style="font-family:var(--title);color:#fff;font-size:24px;text-shadow:0 3px 0 var(--ink)">Pass the controls to…</div>
-    <div class="who" style="color:${p.color}">${esc(p.name)}</div><button class="big pink pulse" data-act="ready">I'm ready! 🙈 no peeking</button></div>`;
+    <div class="who" style="color:${p.color}">${esc(p.name)}</div><button class="big pink pulse" data-act="ready">I'm ready! 🙈 no peeking</button>
+    ${factsFor(couple(entry().cid)).length?`<div class="dyk" id="dyk" data-cid="${entry().cid}"><b>💡 Did you know?</b><span>${esc(randomFact(couple(entry().cid)))}</span></div>`:''}</div>`;
   return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">${art(couple(entry().cid),'md')}<br>Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}`;
 }
 function vReal(){return `<div class="realmode"><div class="realbanner">⭐ OFFICIAL JUDGES' SCORES ⭐</div>
@@ -871,9 +986,16 @@ function vReveal(){
   const w=W(),e=entry(),c=couple(e.cid),res=w.results[e.cid],r=res.real;
   const rows=w.order.map(id=>({p:player(id),g:w.guesses[id],s:scorePlayer(w.guesses[id],r)})).sort((a,b)=>b.s.total-a.s.total);
   const cls=(g,v)=>{const d=Math.abs(g-v);return d===0?'x':d===1?'n':'m'};
-  return `<div class="center">${art(c,'md')}</div><h2 class="t" style="font-size:clamp(24px,4vw,44px)">${esc(c.name)}</h2>
-  <div class="paddles">${r.map((n,i)=>`<div class="paddle" data-n="${n}">${portrait(i,'idle')}<div class="face ${n>=9?'hi':''}">${n}</div></div>`).join('')}</div>
-  <div class="totalbig" id="tot"> </div><div id="banner"></div><div class="quips" id="quips"></div>
+  const live=w.order.map(id=>player(id)).filter(Boolean);
+  return `<div class="revhead">${art(c,'md')}<h2 class="t" style="font-size:clamp(22px,3.4vw,40px);margin:0">${esc(c.name)}</h2></div>
+  <div class="revgrid">
+    <div class="revplayers">${live.map(p=>`<div class="rp" data-pid="${p.id}"><div class="rph"><span class="av" style="background:${p.color};width:1.6em;height:1.6em;font-size:.85em">${p.av}</span><span class="rn">${esc(p.name)}</span><b class="rpts">0</b></div>
+      <div class="rslots">${w.guesses[p.id].map((g,k)=>`<span class="rs" data-k="${k}"><i>${g}</i><em></em></span>`).join('')}</div><div class="rbonus"></div></div>`).join('')}</div>
+    <div class="revmain"><div class="paddles">${r.map((n,i)=>`<div class="paddle" data-n="${n}">${portrait(i,'idle')}<div class="face ${n>=9?'hi':''}">${n}</div></div>`).join('')}</div>
+      <div class="totalbig" id="tot"> </div><div id="banner"></div></div>
+    <div class="revpres">${[0,1,2].map(i=>`<div class="sp" data-pi="${i}"><div class="portrait">${presenterAvatar(i)}</div><span class="clap">👏</span><small>${esc(firstName(S.presenters[i].name))}</small></div>`).join('')}</div>
+  </div>
+  <div class="quips" id="quips"></div>
   <div id="after" style="opacity:0;pointer-events:none;transition:opacity .5s">
     <div class="card" style="margin-top:12px"><table class="res"><tr><th></th>${S.judges.map(j=>`<th>${esc(j.name.split(' ')[0])}</th>`).join('')}<th>Total</th><th>Pts</th></tr>
     ${rows.map((x,i)=>`<tr class="rrow" style="animation-delay:${i*.18}s"><td><span class="av" style="background:${x.p.color};width:1.5em;height:1.5em;font-size:.9em">${x.p.av}</span> ${esc(x.p.name)}</td>
@@ -887,10 +1009,24 @@ function playReveal(){
   const tok=++revealTok,w=W(),res=w.results[entry().cid],r=res.real,total=sum(r);
   const paddles=[...document.querySelectorAll('.paddle')];
   const T=(ms,fn)=>setTimeout(()=>{if(tok===revealTok)fn()},ms);
-  const showOne=(p,i)=>{p.classList.add('on');const n=+p.dataset.n;p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(n));if(n>=9)burstAt(p,50)};
+  const pts={};w.order.forEach(id=>pts[id]=0);
+  const markPlayers=(i,quiet)=>{document.querySelectorAll('.rp').forEach(row=>{
+    const id=row.dataset.pid,g=w.guesses[id][i],d=Math.abs(g-r[i]),slot=row.querySelector(`.rs[data-k="${i}"]`);
+    slot.classList.add(d===0?'x':d===1?'n':'m','done');slot.querySelector('em').textContent=d===0?'🎯':d===1?'1 off':d+' off';
+    const add=d===0?3:d===1?1:0;pts[id]+=add;const el=row.querySelector('.rpts');el.textContent=pts[id];
+    if(add){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
+    if(!quiet&&d===0){burstAt(slot,18);row.classList.remove('hit');void row.offsetWidth;row.classList.add('hit')}});
+    if(!quiet&&document.querySelector(`.rs.x[data-k="${i}"]`))setTimeout(()=>sfx.tone(1046,0,.12,'square',.06),200)};
+  const markBonus=quiet=>{document.querySelectorAll('.rp').forEach(row=>{const s2=scorePlayer(w.guesses[row.dataset.pid],r);
+    if(s2.bonus){const b=row.querySelector('.rbonus');b.textContent=s2.bonus===5?'🔥 Exact total! +5':'✨ Total within 2 +2';b.classList.add('on');
+      pts[row.dataset.pid]+=s2.bonus;row.querySelector('.rpts').textContent=pts[row.dataset.pid];if(!quiet)burstAt(b,30)}})};
+  const react=(n,quiet)=>{document.querySelectorAll('.sp').forEach(sp=>{const i=+sp.dataset.pi,m=n>=8?'clap':n<=4?'sad':'idle';
+    sp.className='sp '+m+(i===1&&m==='clap'?' slow':'');sp.querySelector('.portrait').innerHTML=presenterAvatar(i,m==='sad'?'sad':'')})};
+  const showOne=(p,i)=>{p.classList.add('on');const n=+p.dataset.n;p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(n));if(n>=9)burstAt(p,50);
+    setTimeout(()=>{if(tok===revealTok){markPlayers(i);react(n)}},450)};
   const showAfter=()=>{const a=$('#after');if(a){a.style.opacity=1;a.style.pointerEvents='auto'}const sk=$('#skip');if(sk)sk.style.display='none'};
   const addPres=(q,k)=>{const box=$('#quips');if(!box)return null;const el=document.createElement('div');el.className='pres '+(k%2?'r':'l');
-    el.innerHTML=`<div class="pavatar talk"><div class="portrait">${presenterAvatar(q.p)}</div><div class="pn">${esc(S.presenters[q.p].name)}</div></div><div class="bubble"><b>${esc(S.presenters[q.p].name.split(' ')[0])} says:</b><span class="txt"></span></div>`;
+    const pr=q.p===3?BANDLEADER:S.presenters[q.p];el.innerHTML=`<div class="pavatar talk"><div class="portrait">${presenterAvatar(q.p)}</div><div class="pn">${esc(pr.name)}${q.p===3?'<br><small>Band leader</small>':''}</div></div><div class="bubble"><b>${esc(pr.name.split(' ')[0])} says:</b><span class="txt"></span></div>`;
     box.appendChild(el);el.scrollIntoView({behavior:'smooth',block:'nearest'});return el};
   const runQuips=(t,instant,done)=>{
     const qs=res.quips||[];let k=0;
@@ -903,7 +1039,7 @@ function playReveal(){
       setTimeout(tick,500)};
     next()};
   const finish=(instant)=>{
-    const t=$('#tot');if(!t)return;t.innerHTML=`Total: <span id="tn">0</span> / 40`;countTo($('#tn'),total,instant?1:700);
+    const t=$('#tot');if(!t)return;markBonus(instant);react(total>=32?9:total<=20?3:6);t.innerHTML=`Total: <span id="tn">0</span> / 40`;countTo($('#tn'),total,instant?1:700);
     const b=$('#banner');
     if(total>=36){b.innerHTML='<span class="banner">⭐ STANDING OVATION! ⭐</span>';rain(160);sfx.tada()}
     else if(total>=30){b.innerHTML='<span class="banner">👏 Fabulous!</span>';rain(60);sfx.tada()}
@@ -914,6 +1050,8 @@ function playReveal(){
   paddles.forEach((p,i)=>T(2300+i*1400,()=>{showOne(p,i);sfx.flip(+p.dataset.n)}));
   T(2300+3*1400+1100,()=>finish(false));
   window.__skip=()=>{revealTok++;paddles.forEach((p,i)=>{p.classList.add('on');p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(+p.dataset.n))});
+    w.order.forEach(id=>pts[id]=0);document.querySelectorAll('.rs').forEach(x=>{x.className='rs';x.querySelector('em').textContent=''});document.querySelectorAll('.rbonus').forEach(x=>{x.className='rbonus';x.textContent=''});
+    r.forEach((n,i)=>markPlayers(i,true));
     const q=$('#quips');if(q)q.innerHTML='';finish(true)};
 }
 
@@ -964,6 +1102,8 @@ function render(){
   const v=$('#view');v.style.animation='none';v.offsetWidth;v.style.animation='';
   v.innerHTML=h;$('#main').scrollTop=0;
   runCounts();
+  clearInterval(window.__dykT);if($('#dyk'))window.__dykT=setInterval(()=>{const d=$('#dyk');if(!d){clearInterval(window.__dykT);return}
+    const c=couple(d.dataset.cid);if(!c)return;const sp=d.querySelector('span');d.style.animation='none';void d.offsetWidth;d.style.animation='';sp.textContent=randomFact(c)},8000);
   if(!overlay&&W()&&(W().phase==='real'||(W().phase==='guess'&&ready))&&matchMedia('(pointer:fine)').matches){const q=$('#quick');if(q&&document.activeElement!==q){q.focus({preventScroll:true});if(S.tmp.every(x=>x))q.select();else q.setSelectionRange(q.value.length,q.value.length)}}
   if(!overlay&&W()){const p=W().phase;
     if(p==='reveal')playReveal();
@@ -972,9 +1112,52 @@ function render(){
 }
 
 /* =============== actions =============== */
-/* 2026 series: couples still in after week 6 (Halloween, 1 Nov 2026). Editable on the Cast screen. */
-const SERIES_2026={afterWeek:6,couples:['Lacey Turner & Vito Coppola','Dani Dyer & Nikita Kuzmin','Delta Goodrem & Kai Widdrington','Cach Mercer & Maddie Ingoldsby',
-  'Tabby Stoecker & Mark Karmalita','Bethany Antonia & Nancy Xu','Jaime Winstone & Carlos Gu','Will Best & Dianne Buswell','Graeme Hall & Lauren Oakley','John Nellis']};
+/* 2026 series data (couples, looks, photos, facts, every score so far) lives in data/series2026.js */
+const SD=window.SERIES_2026||{afterWeek:6,couples:[],dances:[],weekThemes:{}};
+const SERIES_2026={afterWeek:SD.afterWeek,couples:SD.couples.map(c=>c.name)};
+const normName=n=>(n||'').trim().toLowerCase().replace(/\s+/g,' ');
+const celebOf=n=>normName((n||'').split('&')[0]);
+function presetFor(c){return c&&SD.couples.find(p=>normName(p.name)===normName(c.name)||celebOf(p.name)===celebOf(c.name))}
+/* keep saved couples in step with the series data (e.g. "John Nellis" -> "John Nellis & Katya Jones") */
+function applySeries(){let ch=false;S.couples.forEach(c=>{const p=presetFor(c);if(p&&!c.name.includes('&')&&normName(p.name)!==normName(c.name)){c.name=p.name;ch=true}});if(ch)save()}
+const firstName=n=>(n||'').trim().split(/\s+/)[0];
+function factsFor(c){const p=presetFor(c);if(!p||!p.facts)return[];return[...(p.facts.celebrity||[]),...(p.facts.pro||[])]}
+function randomFact(c){const f=factsFor(c);return f.length?f[Math.floor(Math.random()*f.length)]:''}
+const normDance=d=>(d||'').toLowerCase().replace(/[^a-z]/g,'').replace(/^chacha$/,'chachacha');
+/* every scored dance this series: the real series so far + anything played in the game */
+function seriesDances(){
+  const out=SD.dances.map(([w,cel,pro,d,r])=>({w,key:normName(cel),name:cel+' & '+pro,d,r}));
+  const has=(key,w)=>out.some(o=>o.key===key&&o.w===w);
+  S.couples.forEach(c=>(c.scores||[]).forEach(x=>{const key=celebOf(c.name);if(!has(key,x.week))out.push({w:x.week,key,name:c.name,d:x.dance,r:x.real})}));
+  if(S.week)Object.entries(S.week.results).forEach(([cid,res])=>{const c=couple(cid);if(!c)return;const e=S.week.entries.find(x=>x.cid===cid),key=celebOf(c.name);
+    if(!has(key,S.week.n))out.push({w:S.week.n,key,name:c.name,d:e?e.dance:'',r:res.real,tonight:true})});
+  return out;
+}
+/* interesting facts about this score, most exciting first */
+function scoreStats(c,real,dance){
+  const all=seriesDances(),key=celebOf(c.name),mine=all.filter(x=>x.key===key),total=sum(real),out=[];
+  const tot=x=>sum(x.r),J=i=>firstName(S.judges[i].name);
+  const n=S.week?S.week.n:0,tonight=all.filter(x=>x.w===n);
+  if(total===40)out.push({k:'perfect'});
+  const tens=real.map((v,i)=>v===10?i:-1).filter(i=>i>=0);
+  if(tens.length&&!all.some(x=>x.r.includes(10)))out.push({k:'seriesFirstTen',judge:J(tens[0])});
+  else if(tens.length&&!mine.some(x=>x.r.includes(10)))out.push({k:'firstTen',judge:J(tens[0])});
+  if(all.length&&total>Math.max(...all.map(tot)))out.push({k:'seriesBest'});
+  if(mine.length&&total>Math.max(...mine.map(tot)))out.push({k:'pb',prev:Math.max(...mine.map(tot))});
+  const nd=normDance(dance);
+  if(nd){const same=all.filter(x=>normDance(x.d)===nd);
+    if(!same.length)out.push({k:'firstDance'});
+    else{const best=same.reduce((a,b)=>tot(b)>tot(a)?b:a);if(total>tot(best))out.push({k:'bestDance',prevBest:tot(best),prevName:firstName(best.name)})}}
+  if(real.includes(9)&&!real.includes(10)&&mine.length&&!mine.some(x=>x.r.some(v=>v>=9)))out.push({k:'firstNine'});
+  const last=mine.filter(x=>x.w<n).sort((a,b)=>b.w-a.w)[0];
+  if(last){const d=total-tot(last);if(d>=5)out.push({k:'improved',diff:d,last:tot(last)});else if(d<=-5)out.push({k:'dropped',diff:-d,last:tot(last)})}
+  if(mine.length>=2&&total<Math.min(...mine.map(tot)))out.push({k:'worst'});
+  if(real.every(v=>v===real[0]))out.push({k:'sameAll',n:real[0]});
+  const lo=Math.min(...real),hi=Math.max(...real);
+  if(hi-lo>=2&&real.filter(v=>v===lo).length===1)out.push({k:'harsh',judge:J(real.indexOf(lo)),lo});
+  if(tonight.length){if(total>Math.max(...tonight.map(tot)))out.push({k:'tonightTop'});else if(total<Math.min(...tonight.map(tot)))out.push({k:'tonightBottom'})}
+  return out;
+}
 function load2026(){
   const have=new Set(S.couples.map(c=>c.name.trim().toLowerCase()));let added=0;
   SERIES_2026.couples.forEach(n=>{if(!have.has(n.toLowerCase())){S.couples.push({id:uid(),name:n,out:null,scores:[]});added++}});
@@ -1026,8 +1209,9 @@ document.addEventListener('click',e=>{
   case 'nav':overlay=b.dataset.to||null;return render();
   case 'resume':overlay=null;return render();
   case 'editart':artEdit=id;overlay='art';return render();
+  case 'artmode':couple(artEdit).artMode=b.dataset.v;save();return render();
   case 'artdone':overlay='manage';return render();
-  case 'artset':{const c=couple(artEdit),L=looksOf(c).map(o=>Object.assign({},o)),k=b.dataset.k;L[+b.dataset.who][k]=k==='hs'?+b.dataset.v:b.dataset.v;c.look=L;save();return render()}
+  case 'artset':{const c=couple(artEdit),L=looksOf(c).map(o=>Object.assign({},o)),k=b.dataset.k;c.artMode='draw';L[+b.dataset.who][k]=k==='hs'||k==='fh'?+b.dataset.v:['gl','ear','lip'].includes(k)?b.dataset.v==='1':b.dataset.v;c.look=L;save();return render()}
   case 'artrandom':{const c=couple(artEdit),r=Math.random().toString(36);c.look=[defaultLook(r,0),defaultLook(r,1)];c.photo='';save();return render()}
   case 'artphoto':photoFor=artEdit;photoKind='couple';$('#photofile').click();return;
   case 'artclearphoto':couple(artEdit).photo='';save();return render();
@@ -1106,6 +1290,8 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
   if(/^[0-9]$/.test(e.key)){let n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0){S.tmp=[null,null,null,null];j=0}S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
+window.__strictly={scoreStats,seriesDances,presetFor,factsFor};   // for tests and debugging
+applySeries();
 $('#dances').innerHTML=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha Cha Cha','Rumba','Samba','Salsa','Jive','Paso Doble','Charleston','Argentine Tango',"Couple's Choice",'Street/Commercial','Showdance','Musical Theatre','Contemporary'].map(d=>`<option value="${d}">`).join('');
 render();
 })();

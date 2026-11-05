@@ -310,3 +310,86 @@ test('real scores screen looks different from guessing', async () => {
   const bg = await page.$eval('.realmode .card', e => getComputedStyle(e).backgroundImage);
   assert.match(bg, /gradient/);
 });
+
+test('2026 data: couples have cartoons and facts; stats use the real series scores', async () => {
+  const page = await open();
+  await page.click('[data-act=load2026]');
+  const info = await page.evaluate(() => {
+    const S = JSON.parse(localStorage.getItem('strictly-v2'));
+    const lacey = S.couples.find(c => c.name.startsWith('Lacey'));
+    const t = window.__strictly;
+    return {
+      names: S.couples.map(c => c.name),
+      facts: t.factsFor(lacey).length,
+      photo: (t.presetFor(lacey) || {}).photo,
+      dances: t.seriesDances().length,
+      perfect: t.scoreStats(lacey, [10, 10, 10, 10], 'Foxtrot').map(x => x.k),
+      meh: t.scoreStats(lacey, [5, 5, 5, 5], '').map(x => x.k),
+    };
+  });
+  assert.ok(info.names.includes('John Nellis & Katya Jones'));
+  assert.ok(info.facts >= 10, 'facts for Lacey and Vito');
+  assert.equal(info.photo, 'img/couples/lacey-vito.jpg');
+  assert.equal(info.dances, 79, 'all real series dances from weeks 1-6');
+  for (const k of ['perfect', 'seriesBest', 'pb', 'sameAll']) assert.ok(info.perfect.includes(k), k);
+  assert.ok(info.meh.includes('worst'), 'lowest score of their series');
+  // the photo cartoon loads on the stage
+  await page.click('[data-act=newweek]');
+  await page.click('[data-act=startweek]');
+  await page.click('[data-act=pickc] >> nth=0');
+  await page.waitForFunction(() => { const i = document.querySelector('.stage .cart img'); return i && i.complete && i.naturalWidth > 0; });
+  assert.equal(await page.locator('#dyk').count(), 1, 'did-you-know fact on stage');
+  assert.deepEqual(page.errors, []);
+});
+
+test('older saves: "John Nellis" gains his partner from the series data', async () => {
+  const page = await open();
+  await page.evaluate(() => localStorage.setItem('strictly-v2', JSON.stringify({ v: 2, jOrder: 2, couples: [{ id: 'j', name: 'John Nellis', out: null, scores: [] }] })));
+  await page.reloadCalm();
+  assert.equal((await state(page)).couples[0].name, 'John Nellis & Katya Jones');
+});
+
+test('reveal shows each player exact / how far off, and presenters react', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]');
+  await page.click('[data-act=startweek]');
+  await page.click('[data-act=danced]');
+  const guesses = ['9999', '8888', '3333'];
+  for (const g of guesses) { await page.click('[data-act=ready]'); await page.fill('#quick', g); await page.press('#quick', 'Enter'); }
+  await page.fill('#quick', '9999'); await page.press('#quick', 'Enter');
+  // let the first paddle land for real, then skip the rest
+  await page.waitForSelector('.rs.done', { timeout: 6000 });
+  assert.ok(await page.locator('.sp.clap').count() === 3, 'presenters clap a 9');
+  await page.click('[data-act=skipreveal]');
+  assert.equal(await page.locator('.rs.done').count(), 12);
+  assert.equal(await page.locator('.rs.x').count(), 4, 'one player exact on all four');
+  assert.equal(await page.locator('.rs.n').count(), 4);
+  const pts = await page.$$eval('.rp .rpts', els => els.map(e => +e.textContent).sort((a, b) => b - a));
+  assert.deepEqual(pts, [17, 4, 0]);
+  assert.match(await page.textContent('.rbonus.on'), /\+5/);
+  assert.deepEqual(page.errors, []);
+});
+
+test('laptop: score entry fits on screen without scrolling', async () => {
+  const page = await open({ width: 1366, height: 768 });
+  await addCouples(page, ['Lacey Turner & Vito Coppola']);
+  await page.click('[data-act=newweek]');
+  await page.click('[data-act=startweek]');
+  await page.click('[data-act=danced]');
+  await page.click('[data-act=ready]');
+  for (const sel of ['[data-act=confirm]']) {
+    const bottom = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
+    assert.ok(bottom <= 768, `guess button at ${bottom}px is below the fold`);
+  }
+  for (let i = 0; i < 3; i++) { if (i) await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
+  const bottom = await page.$eval('[data-act=confirm]', e => e.getBoundingClientRect().bottom);
+  assert.ok(bottom <= 768, `real-scores button at ${bottom}px is below the fold`);
+});
+
+test('footer credits BBC and Wikipedia and shows the version', async () => {
+  const page = await open();
+  const txt = await page.textContent('.credits');
+  assert.match(txt, /BBC/); assert.match(txt, /Wikipedia/); assert.match(txt, /v\d+\.\d+\.\d+/);
+  assert.match(await page.textContent('.ver'), /v\d+\.\d+\.\d+ “\w+”/);
+});
