@@ -161,7 +161,7 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .weekpick button{font-size:22px;width:44px;height:44px;padding:0}
 /* reveal stage */
 .revhead{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px;flex-wrap:wrap}
-.revgrid{display:grid;grid-template-columns:minmax(180px,240px) 1fr minmax(96px,130px);gap:14px;align-items:start}
+.revgrid{display:grid;grid-template-columns:minmax(180px,240px) 1fr;gap:14px;align-items:start}
 .revmain{min-width:0}
 .revplayers{display:flex;flex-direction:column;gap:8px}
 .rp{background:var(--cream);border:3px solid var(--ink);border-radius:16px;padding:6px 8px;box-shadow:0 3px 0 var(--ink)}
@@ -195,6 +195,42 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 @keyframes clap{from{transform:scale(.8) rotate(-12deg)}to{transform:scale(1.15) rotate(10deg)}}
 @media(max-width:900px){.revgrid{grid-template-columns:1fr}.revplayers{order:2;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
   .revpres{order:-1;flex-direction:row;justify-content:center}.sp{max-width:70px}.sp small{font-size:11px}}
+/* live judge entry */
+.paddle.on.static .face{animation:none;transform:none;opacity:1}
+.paddle .await{display:none}
+.paddle:not(.on) .await{display:grid;place-items:center;aspect-ratio:1;width:min(100%,220px);margin:6px auto 0;border:4px dashed #ffffff66;border-radius:50%;
+  font-family:var(--title);color:#fff;font-size:clamp(13px,1.8vw,24px);text-shadow:0 2px 0 var(--ink)}
+.paddle.active .await{border-color:var(--yellow);color:var(--yellow);animation:pulse 1.2s infinite}
+.paddle .face.preview{opacity:.35;transform:none;animation:none}
+.paddle:not(.on) .face{display:none}
+.paddle.active .await.num{font-size:clamp(34px,6vw,80px);color:#fff;border-style:solid;animation:none}
+.revhead .realbanner{font-size:clamp(13px,1.6vw,20px);padding:2px 14px}
+.paddle.active .portrait{box-shadow:0 0 0 6px var(--yellow),var(--shadow)}
+.jctl{background:linear-gradient(180deg,#1c0a33,#3b1470);border:var(--line);border-color:var(--yellow);border-radius:20px;padding:10px 14px;margin:8px auto 0;max-width:640px;box-shadow:0 6px 0 var(--yellow);color:#fff;text-align:center}
+.jctl label{font-family:var(--title);font-size:clamp(18px,2.4vw,26px)}
+.jrow{display:flex;gap:10px;justify-content:center;margin:6px 0}
+.jrow input{width:130px;font-family:var(--title);font-size:30px;text-align:center;border-color:var(--yellow);background:#fff8d6}
+.jrow button.big{padding:8px 22px;font-size:clamp(16px,2vw,22px)}
+.jkeys{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.jkeys button{padding:6px 0;font-size:18px;border-width:3px;background:#2b0f4d;color:var(--yellow);border-color:var(--yellow);box-shadow:0 3px 0 var(--yellow)}
+.jkeys button.sel{background:var(--yellow);color:var(--ink)}
+.jctl .hint{color:#fff;opacity:.75}
+@media(max-width:560px){.jkeys{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:700px){
+  .revhead .cart.md{width:84px;height:63px}
+  .revgrid .paddle .portrait{max-width:min(120px,12vh)}
+  .revgrid .paddle .face,.revgrid .paddle:not(.on) .await{width:min(100%,19vh);font-size:min(10vw,9vh)}
+  .revgrid .paddles{margin-bottom:min(60px,6vh)!important}
+  .revgrid .sp{max-width:min(110px,12vh)}
+  .jctl{padding:6px 12px}.jctl .hint{display:none}.jrow{margin:4px 0}.jrow input{font-size:24px;padding:4px}
+  .jkeys button{padding:3px 0;font-size:16px}
+}
+/* judge speech bubbles */
+.paddle{position:relative}
+.jbub{position:absolute;left:50%;top:4%;z-index:5;white-space:nowrap;font-family:var(--title);font-size:clamp(13px,1.6vw,20px);background:#fff;color:var(--ink);
+  border:3px solid var(--ink);border-radius:16px;padding:4px 12px;box-shadow:0 3px 0 var(--ink);pointer-events:none;animation:jrise 2.8s ease-out forwards}
+.jbub:after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:9px solid var(--ink)}
+@keyframes jrise{0%{transform:translate(-50%,30px) scale(.3);opacity:0}15%{transform:translate(-50%,-18px) scale(1.1);opacity:1}25%{transform:translate(-50%,-14px) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-50px);opacity:0}}
 /* compact keypad on laptops so the whole thing fits without scrolling */
 @media(min-width:700px){
   .kp{padding:12px 16px}
@@ -221,6 +257,7 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .credits a{color:var(--yellow)}
 .ver{font-family:var(--title);font-size:11px;letter-spacing:.06em;color:#fff;opacity:.85}
 /* quick type box */
+.qrow{display:flex;gap:8px}.qrow input{flex:1;min-width:0}.qrow .qlock{flex:none;white-space:nowrap}
 .quick{margin-bottom:14px}
 .quick label{display:block;font-family:var(--title);font-size:clamp(15px,1.9vw,20px);margin-bottom:4px}
 .quick input{font-family:var(--title);font-size:clamp(24px,4vw,36px);letter-spacing:.12em;text-align:center;padding:8px 12px;border-width:4px}
@@ -251,6 +288,19 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .hsbtn{font-size:13px;padding:4px 10px;border-width:3px;box-shadow:0 2px 0 var(--ink)}
 .hsbtn.on{background:var(--pink);color:#fff}
 .stagecontent{padding-top:80px}
+.stage{flex-direction:column}
+.stagectl{position:relative;z-index:4;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;padding:0 14px 16px;width:100%}
+.stagectl input{max-width:240px;flex:1 1 180px}
+.stagectl button.big{font-size:clamp(17px,2.2vw,26px);padding:12px 26px}
+@media(min-width:700px){
+  .stage{height:calc(100dvh - 120px);min-height:400px;max-height:780px}
+  .stagecontent{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 14px 0}
+  .stage .cart.lg{height:min(240px,24vh);width:min(320px,32vh)}
+  .stage .ballwrap .mball{font-size:min(80px,9vh)}
+  .stage .upnext{font-size:min(26px,3.4vh)}
+  .stage .dancetag{font-size:min(34px,4.2vh);padding:2px 18px}
+  .stage .couplebig{margin:min(10px,1.4vh) 0}
+}
 /* presenters */
 .quips{display:flex;flex-direction:column;gap:12px;margin:10px 0 4px}
 .pres{display:flex;align-items:flex-end;gap:12px;animation:fromL .7s cubic-bezier(.2,1.4,.4,1) both}
@@ -386,7 +436,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.0.0',RELEASE='Tango';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
+const VERSION='2.1.0',RELEASE='Cha-Cha';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -716,7 +766,7 @@ function stageName(name,delay){
   const lines=name.split('&').map(x=>x.trim()).filter(Boolean);
   const L=Math.max(...lines.map(l=>l.length))+(lines.length>1?2:0);let k=0;
   const html=lines.map((ln,li)=>`<span class="ln">${li?'<span class="amp">&amp; </span>':''}${ln.split(/\s+/).map(w=>`<span class="wd">${[...w].map(ch=>`<span style="animation-delay:${delay+(k++)*.045}s">${esc(ch)}</span>`).join('')}</span>`).join(' ')}</span>`).join('');
-  return `<div class="couplebig" style="font-size:min(clamp(30px,8vw,92px),${(88/(.62*L)).toFixed(2)}vw)">${html}</div>`;
+  return `<div class="couplebig" style="font-size:min(clamp(30px,8vw,92px),${(88/(.62*L)).toFixed(2)}vw,7vh)">${html}</div>`;
 }
 const letters=(s,delay=.9)=>[...s].map((c,i)=>`<span style="animation-delay:${delay+i*.05}s">${c===' '?'&nbsp;':esc(c)}</span>`).join('');
 
@@ -912,8 +962,7 @@ function vSetup(){
 function progress(){const w=W();const total=w.entries.filter(e=>e.status!=='sick').length,done=w.entries.filter(e=>w.results[e.cid]).length;return `Couple ${done+1} of ${total}`}
 function vPick(){
   const w=W(),rem=remaining(),done=w.entries.filter(e=>w.results[e.cid]).length;
-  const fc=shuffle(rem.map(x=>couple(x.e.cid)).filter(c=>factsFor(c).length))[0];
-  return `<h2 class="t">Who's Up Next?</h2>${fc?`<div class="dyk" id="dyk" data-cid="${fc.id}" style="margin-bottom:12px"><b>💡 Did you know?</b><span>${esc(randomFact(fc))}</span></div>`:''}<div class="sub">${done?`${done} danced · `:''}${rem.length} still to dance — tap the couple on the floor</div>
+  return `<h2 class="t">Who's Up Next?</h2><div class="sub">${done?`${done} danced · `:''}${rem.length} still to dance — tap the couple on the floor</div>
   <div class="cgrid">${rem.map(x=>{const c=couple(x.e.cid);return `<div class="cc" data-act="pickc" data-i="${x.i}">${art(c,'md')}${esc(c.name)}</div>`}).join('')}</div>
   <div class="chips" style="justify-content:center;margin-top:16px">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
@@ -926,18 +975,18 @@ function vDance(){
     <div class="stagecontent">${art(c,'lg')}<br><div class="upnext">${progress()} · UP NEXT!</div>
       ${stageName(c.name,1.9)}
       <div class="dancetag" id="dtag" style="${e.dance?'':'display:none'}">💃 <span>${esc(e.dance)}</span></div></div>
+    <div class="stagectl"><input type="text" list="dances" data-bind="dance:${W().idx}" value="${esc(e.dance)}" placeholder="💃 Dance (optional)">
+      <button class="big pink" data-act="danced">They've danced! 👏</button><button class="white" data-act="cantdance">🤕 Can't dance</button></div>
     <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
-  <div class="row" style="max-width:420px;margin:14px auto 0"><input type="text" list="dances" data-bind="dance:${W().idx}" value="${esc(e.dance)}" placeholder="💃 Dance style (optional)"></div>
-  <div class="actions"><button class="big pink" data-act="danced">They've danced! 👏 Start guessing</button><button class="white" data-act="cantdance">🤕 Can't dance tonight</button></div>
-  ${factsFor(c).length?`<div class="dyk" id="dyk" data-cid="${c.id}"><b>💡 Did you know?</b><span>${esc(randomFact(c))}</span></div>`:''}
   <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
 
 function keypad(btn){
   const done=S.tmp.every(x=>x),js=justSet;justSet=-1;
   return `<div class="card kp">
-    <div class="quick"><label for="quick">⌨️ Type the four scores, then press Enter</label>
-      <input id="quick" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="e.g. 7 8 6 10" value="${S.tmp.filter(x=>x).join(' ')}"></div>
+    <div class="quick"><label for="quick">⌨️ Type the four scores, then press Enter or ✓</label>
+      <div class="qrow"><input id="quick" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="e.g. 7 8 6 10" value="${S.tmp.filter(x=>x).join(' ')}">
+      <button class="pink qlock ${done?'pulse':''}" data-act="confirm" ${done?'':'disabled'}>✓ Lock in</button></div></div>
     ${S.judges.map((j,i)=>`<div class="keyrow" data-row="${i}">
     <div class="judge"><div class="portrait">${avatar(j,i,S.tmp[i]?moodFor(S.tmp[i]):'idle')}</div><div class="jname">${esc(j.name)}</div>
       <div class="pad ${S.tmp[i]?'has':''}"><div class="hint0">?</div><div class="pup ${i===js?'lift':''}"><div class="pstick"></div><div class="pcard ${S.tmp[i]>=9?'hi':''}">${S.tmp[i]||''}</div></div><div class="phand">✊</div></div></div>
@@ -966,8 +1015,10 @@ function syncKeypad(prev){
     if(n&&n!==prev[i]){pup.classList.remove('lift');void pup.offsetWidth;pup.classList.add('lift');sfx.key()}
     if(n!==prev[i])row.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,n?moodFor(n):'idle');
   });
-  const done=S.tmp.every(x=>x),b=document.querySelector('[data-act=confirm]');
-  if(b){b.disabled=!done;b.classList.toggle('pulse',done)}
+  const done=S.tmp.every(x=>x);
+  document.querySelectorAll('[data-act=confirm]').forEach(b=>{b.disabled=!done;b.classList.toggle('pulse',done)});
+  // phones: number keyboards have no Enter key, so close the keyboard once all four are in and the ✓ shows
+  const q=$('#quick');if(done&&q&&document.activeElement===q&&matchMedia('(pointer:coarse)').matches&&parseQuick(q.value).length===4&&!/1$/.test(q.value.trim()))q.blur();
   const t=$('#ktot');if(t)t.textContent=done?sum(S.tmp):'–';
 }
 function focusQuick(){const q=$('#quick');if(q&&matchMedia('(pointer:fine)').matches===false){q.focus()}else if(q)q.focus({preventScroll:true})}
@@ -979,80 +1030,118 @@ function vGuess(){
     ${factsFor(couple(entry().cid)).length?`<div class="dyk" id="dyk" data-cid="${entry().cid}"><b>💡 Did you know?</b><span>${esc(randomFact(couple(entry().cid)))}</span></div>`:''}</div>`;
   return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">${art(couple(entry().cid),'md')}<br>Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}`;
 }
-function vReal(){return `<div class="realmode"><div class="realbanner">⭐ OFFICIAL JUDGES' SCORES ⭐</div>
-  <h2 class="t">The Real Scores</h2><div class="sub">No guessing now — enter exactly what the judges gave ${esc(couple(entry().cid).name)}</div>${keypad('Reveal the scores! 🥁')}</div>`}
-
-function vReveal(){
-  const w=W(),e=entry(),c=couple(e.cid),res=w.results[e.cid],r=res.real;
-  const rows=w.order.map(id=>({p:player(id),g:w.guesses[id],s:scorePlayer(w.guesses[id],r)})).sort((a,b)=>b.s.total-a.s.total);
+/* ---------- real scores + reveal on one screen: enter each judge's score, confirm, the paddle goes up ---------- */
+const realDone=()=>W().phase==='reveal';
+const liveReal=()=>realDone()?W().results[entry().cid].real:S.tmp;
+const liveStep=()=>{const r=liveReal(),k=r.findIndex(x=>!x);return k<0?4:k};
+const ptsFor=(g,v)=>{const d=Math.abs(g-v);return d===0?3:d===1?1:0};
+function afterHtml(){
+  const w=W(),r=w.results[entry().cid].real;
+  const rows=w.order.map(id=>({p:player(id),g:w.guesses[id],s:scorePlayer(w.guesses[id],r)})).filter(x=>x.p).sort((a,b)=>b.s.total-a.s.total);
   const cls=(g,v)=>{const d=Math.abs(g-v);return d===0?'x':d===1?'n':'m'};
-  const live=w.order.map(id=>player(id)).filter(Boolean);
-  return `<div class="revhead">${art(c,'md')}<h2 class="t" style="font-size:clamp(22px,3.4vw,40px);margin:0">${esc(c.name)}</h2></div>
-  <div class="revgrid">
-    <div class="revplayers">${live.map(p=>`<div class="rp" data-pid="${p.id}"><div class="rph"><span class="av" style="background:${p.color};width:1.6em;height:1.6em;font-size:.85em">${p.av}</span><span class="rn">${esc(p.name)}</span><b class="rpts">0</b></div>
-      <div class="rslots">${w.guesses[p.id].map((g,k)=>`<span class="rs" data-k="${k}"><i>${g}</i><em></em></span>`).join('')}</div><div class="rbonus"></div></div>`).join('')}</div>
-    <div class="revmain"><div class="paddles">${r.map((n,i)=>`<div class="paddle" data-n="${n}">${portrait(i,'idle')}<div class="face ${n>=9?'hi':''}">${n}</div></div>`).join('')}</div>
-      <div class="totalbig" id="tot"> </div><div id="banner"></div></div>
-    <div class="revpres">${[0,1,2].map(i=>`<div class="sp" data-pi="${i}"><div class="portrait">${presenterAvatar(i)}</div><span class="clap">👏</span><small>${esc(firstName(S.presenters[i].name))}</small></div>`).join('')}</div>
-  </div>
-  <div class="quips" id="quips"></div>
-  <div id="after" style="opacity:0;pointer-events:none;transition:opacity .5s">
-    <div class="card" style="margin-top:12px"><table class="res"><tr><th></th>${S.judges.map(j=>`<th>${esc(j.name.split(' ')[0])}</th>`).join('')}<th>Total</th><th>Pts</th></tr>
+  return `<div class="card" style="margin-top:12px"><table class="res"><tr><th></th>${S.judges.map(j=>`<th>${esc(j.name.split(' ')[0])}</th>`).join('')}<th>Total</th><th>Pts</th></tr>
     ${rows.map((x,i)=>`<tr class="rrow" style="animation-delay:${i*.18}s"><td><span class="av" style="background:${x.p.color};width:1.5em;height:1.5em;font-size:.9em">${x.p.av}</span> ${esc(x.p.name)}</td>
       ${x.g.map((g,k)=>`<td><span class="g ${cls(g,r[k])}">${g}</span></td>`).join('')}
       <td>${sum(x.g)}${x.s.bonus?` <small style="color:var(--pink)">+${x.s.bonus}</small>`:''}</td><td class="pts">+${x.s.total}</td></tr>`).join('')}</table>
     <div class="hint center">🟩 exact = 3 · 🟨 one away = 1 · total bonus: exact +5, within 2 +2</div></div>
-    <div class="actions"><button class="big pink" data-act="board">Leaderboards! 🏆</button><button class="white" data-act="fixscores">✏️ Fix scores</button></div></div>
-  <div class="actions" id="skip"><button class="sm white" data-act="skipreveal">Skip ⏭</button></div>`;
+    <div class="actions"><button class="big pink" data-act="board">Leaderboards! 🏆</button><button class="white" data-act="fixscores">✏️ Fix scores</button></div>`;
 }
-function playReveal(){
-  const tok=++revealTok,w=W(),res=w.results[entry().cid],r=res.real,total=sum(r);
-  const paddles=[...document.querySelectorAll('.paddle')];
-  const T=(ms,fn)=>setTimeout(()=>{if(tok===revealTok)fn()},ms);
-  const pts={};w.order.forEach(id=>pts[id]=0);
-  const markPlayers=(i,quiet)=>{document.querySelectorAll('.rp').forEach(row=>{
+function vLive(){
+  const w=W(),e=entry(),c=couple(e.cid),r=liveReal(),k=liveStep(),done=realDone();
+  const live=w.order.map(id=>player(id)).filter(Boolean);
+  const slot=(p,i)=>{const g=w.guesses[p.id][i];if(i>=k)return `<span class="rs" data-k="${i}"><i>${g}</i><em></em></span>`;
+    const d=Math.abs(g-r[i]);return `<span class="rs done ${d===0?'x':d===1?'n':'m'}" data-k="${i}"><i>${g}</i><em>${d===0?'🎯':d===1?'1 off':d+' off'}</em></span>`};
+  const pts=p=>r.reduce((a,v,i)=>i<k?a+ptsFor(w.guesses[p.id][i],v):a,0);
+  const mood=k>0?moodFor(r[k-1]):'';
+  return `<div class="${done?'':'realmode'}"><div class="revhead">${art(c,'md')}<h2 class="t" style="font-size:clamp(22px,3.4vw,40px);margin:0">${esc(c.name)}</h2>${done?'':'<span class="realbanner" style="margin:0">⭐ OFFICIAL JUDGES\' SCORES ⭐</span>'}</div>
+  <div class="revgrid">
+    <div class="revplayers">${live.map(p=>`<div class="rp" data-pid="${p.id}"><div class="rph"><span class="av" style="background:${p.color};width:1.6em;height:1.6em;font-size:.85em">${p.av}</span><span class="rn">${esc(p.name)}</span><b class="rpts">${pts(p)}</b></div>
+      <div class="rslots">${w.guesses[p.id].map((g,i)=>slot(p,i)).join('')}</div><div class="rbonus"></div></div>`).join('')}</div>
+    <div class="revmain"><div class="paddles">${S.judges.map((j,i)=>`<div class="paddle ${i<k?'on static':''} ${i===k?'active':''}" data-i="${i}">${portrait(i,i<k?moodFor(r[i]):'idle')}<div class="face ${r[i]>=9?'hi':''}">${i<k?r[i]:''}</div><div class="await">${i===k?'⬇ Next':'?'}</div></div>`).join('')}</div>
+      ${done?'':`<div class="jctl" id="jctl"><label for="jscore">⭐ <span id="jname">${esc(firstName(S.judges[Math.min(k,3)].name))}</span>'s real score</label>
+        <div class="jrow"><input id="jscore" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" maxlength="2" placeholder="1–10">
+        <button class="big pink" data-act="jconfirm" id="jok" disabled>Show paddle ✓</button></div>
+        <div class="jkeys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="jkey" data-n="${n}">${n}</button>`).join('')}</div>
+        <div class="hint">Type or tap the score, then press Enter (or tap ✓) to lift the paddle</div></div>`}
+      <div class="totalbig" id="tot"> </div><div id="banner"></div></div>
+  </div>
+  <div class="quips" id="quips"></div>
+  <div id="after" style="opacity:0;pointer-events:none;transition:opacity .5s">${done?afterHtml():''}</div>
+  <div class="actions" id="skip" style="display:none"><button class="sm white" data-act="skipreveal">Skip ⏭</button></div></div>`;
+}
+function liveMarkPlayers(i,quiet){
+  const w=W(),r=liveReal();
+  document.querySelectorAll('.rp').forEach(row=>{
     const id=row.dataset.pid,g=w.guesses[id][i],d=Math.abs(g-r[i]),slot=row.querySelector(`.rs[data-k="${i}"]`);
     slot.classList.add(d===0?'x':d===1?'n':'m','done');slot.querySelector('em').textContent=d===0?'🎯':d===1?'1 off':d+' off';
-    const add=d===0?3:d===1?1:0;pts[id]+=add;const el=row.querySelector('.rpts');el.textContent=pts[id];
+    const el=row.querySelector('.rpts'),add=ptsFor(g,r[i]);el.textContent=+el.textContent+add;
     if(add){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
     if(!quiet&&d===0){burstAt(slot,18);row.classList.remove('hit');void row.offsetWidth;row.classList.add('hit')}});
-    if(!quiet&&document.querySelector(`.rs.x[data-k="${i}"]`))setTimeout(()=>sfx.tone(1046,0,.12,'square',.06),200)};
-  const markBonus=quiet=>{document.querySelectorAll('.rp').forEach(row=>{const s2=scorePlayer(w.guesses[row.dataset.pid],r);
-    if(s2.bonus){const b=row.querySelector('.rbonus');b.textContent=s2.bonus===5?'🔥 Exact total! +5':'✨ Total within 2 +2';b.classList.add('on');
-      pts[row.dataset.pid]+=s2.bonus;row.querySelector('.rpts').textContent=pts[row.dataset.pid];if(!quiet)burstAt(b,30)}})};
-  const react=(n,quiet)=>{document.querySelectorAll('.sp').forEach(sp=>{const i=+sp.dataset.pi,m=n>=8?'clap':n<=4?'sad':'idle';
-    sp.className='sp '+m+(i===1&&m==='clap'?' slow':'');sp.querySelector('.portrait').innerHTML=presenterAvatar(i,m==='sad'?'sad':'')})};
-  const showOne=(p,i)=>{p.classList.add('on');const n=+p.dataset.n;p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(n));if(n>=9)burstAt(p,50);
-    setTimeout(()=>{if(tok===revealTok){markPlayers(i);react(n)}},450)};
+  if(!quiet&&document.querySelector(`.rs.x[data-k="${i}"]`))setTimeout(()=>sfx.tone(1046,0,.12,'square',.06),200);
+}
+function liveReact(n){document.querySelectorAll('.sp').forEach(sp=>{const i=+sp.dataset.pi,m=n>=8?'clap':n<=4?'sad':'idle';
+  sp.className='sp '+m+(i===1&&m==='clap'?' slow':'');sp.querySelector('.portrait').innerHTML=presenterAvatar(i,m==='sad'?'sad':'')})}
+function liveSetPending(n){
+  const ok=$('#jok'),valid=n>=1&&n<=10;if(!ok)return;ok.disabled=!valid;ok.classList.toggle('pulse',valid);
+  ok.textContent=valid?`Show ${firstName(S.judges[liveStep()].name)}'s ${n} ✓`:'Show paddle ✓';
+  document.querySelectorAll('.jkeys button').forEach(b=>b.classList.toggle('sel',+b.dataset.n===n));
+  const aw=document.querySelector(`.paddle[data-i="${liveStep()}"] .await`);if(aw){aw.textContent=valid?n:'⬇ Next';aw.classList.toggle('num',valid)}
+}
+const jVal=()=>{const v=parseInt(($('#jscore')||{}).value,10);return v>=1&&v<=10?v:(($('#jscore')||{}).value||'').trim()==='0'?10:NaN};
+/* playful catchphrase-style reactions, keyed by each judge's cartoon (0 Shirley, 1 Motsi, 2 Anton, 3 Craig) */
+const JUDGEQ={3:{hi:['Fab-u-lous!','A-MAZ-ING!'],mid:['Musicality, darling.','Not bad. Not good either.'],lo:['Dis-AS-ter, darling!','Lacklustre.']},
+  1:{hi:['Jabulous!','You were on fire! 🔥'],mid:['I want more drama!','Lovely energy!'],lo:['Keep working on it!','Where was the hip action?']},
+  0:{hi:['Spectacular!','Beautiful footwork!'],mid:['Let me show you…','Watch your frame!'],lo:['Keep working on it.','Let me show you how it\'s done…']},
+  2:{hi:['That was a joy!','Ooh, the rise and fall!'],mid:['Lovely, lovely!','Tidy up those feet.'],lo:['Bless you, keep going!','It needs more polish.']}};
+function judgeBubble(i,n){
+  const j=S.judges[i],st=j.style!=null?j.style:i,set=JUDGEQ[st];if(!set||(Math.random()>.4&&n<10))return;
+  const pool=set[n>=8?'hi':n>=5?'mid':'lo'],pd=document.querySelector(`.paddle[data-i="${i}"]`);if(!pd)return;
+  const b=document.createElement('div');b.className='jbub';b.textContent=pool[Math.floor(Math.random()*pool.length)];pd.appendChild(b);setTimeout(()=>b.remove(),2900);
+}
+function liveConfirm(){
+  const w=W(),k=liveStep(),n=jVal();if(realDone()||k>3||!(n>=1&&n<=10))return;
+  S.tmp[k]=n;save();
+  const pd=document.querySelector(`.paddle[data-i="${k}"]`),face=pd.querySelector('.face');
+  pd.classList.remove('active');face.textContent=n;face.classList.toggle('hi',n>=9);pd.classList.add('on');
+  pd.querySelector('.portrait').innerHTML=avatar(S.judges[k],k,moodFor(n));if(n>=9)burstAt(pd,50);sfx.flip(n);
+  setTimeout(()=>{liveMarkPlayers(k);liveReact(n);judgeBubble(k,n)},450);
+  const q=$('#jscore');q.value='';liveSetPending(NaN);
+  if(k<3){const nx=document.querySelector(`.paddle[data-i="${k+1}"]`);nx.classList.add('active');nx.querySelector('.await').textContent='⬇ Next';
+    $('#jname').textContent=firstName(S.judges[k+1].name);q.focus({preventScroll:true});return}
+  // all four in: score the round, then total, banner and presenters
+  $('#jctl').style.display='none';const rb=document.querySelector('.realbanner');if(rb)rb.remove();
+  const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses)),quips:makeQuips(r,w.guesses,w.order)};
+  w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});
+  S.tmp=[null,null,null,null];w.phase='reveal';save();
+  $('#after').innerHTML=afterHtml();
+  setTimeout(()=>liveFinish(false),1100);
+}
+function liveFinish(instant){
+  const tok=++revealTok,w=W(),res=w.results[entry().cid],r=res.real,total=sum(r);
+  const t=$('#tot');if(!t)return;
   const showAfter=()=>{const a=$('#after');if(a){a.style.opacity=1;a.style.pointerEvents='auto'}const sk=$('#skip');if(sk)sk.style.display='none'};
-  const addPres=(q,k)=>{const box=$('#quips');if(!box)return null;const el=document.createElement('div');el.className='pres '+(k%2?'r':'l');
+  document.querySelectorAll('.rp').forEach(row=>{const s2=scorePlayer(w.guesses[row.dataset.pid],r),b=row.querySelector('.rbonus');
+    row.querySelector('.rpts').textContent=s2.total;
+    if(s2.bonus&&!b.classList.contains('on')){b.textContent=s2.bonus===5?'🔥 Exact total! +5':'✨ Total within 2 +2';b.classList.add('on');if(!instant)burstAt(b,30)}});
+  liveReact(total>=32?9:total<=20?3:6);
+  t.innerHTML=`Total: <span id="tn">0</span> / 40`;countTo($('#tn'),total,instant?1:700);
+  const b=$('#banner');
+  if(total>=36){b.innerHTML='<span class="banner">⭐ STANDING OVATION! ⭐</span>';if(!instant){rain(160);sfx.tada()}}
+  else if(total>=30){b.innerHTML='<span class="banner">👏 Fabulous!</span>';if(!instant){rain(60);sfx.tada()}}
+  else if(total<=16){b.innerHTML='<span class="banner" style="color:#fff">😬 Oh dear…</span>';if(!instant)sfx.boo()}
+  const box=$('#quips');box.innerHTML='';const qs=res.quips||[];let k=0;
+  const sk=$('#skip');if(sk&&!instant)sk.style.display='';
+  const addPres=(q,i)=>{const el=document.createElement('div');el.className='pres '+(i%2?'r':'l');
     const pr=q.p===3?BANDLEADER:S.presenters[q.p];el.innerHTML=`<div class="pavatar talk"><div class="portrait">${presenterAvatar(q.p)}</div><div class="pn">${esc(pr.name)}${q.p===3?'<br><small>Band leader</small>':''}</div></div><div class="bubble"><b>${esc(pr.name.split(' ')[0])} says:</b><span class="txt"></span></div>`;
-    box.appendChild(el);el.scrollIntoView({behavior:'smooth',block:'nearest'});return el};
-  const runQuips=(t,instant,done)=>{
-    const qs=res.quips||[];let k=0;
-    const next=()=>{if(t!==revealTok)return;if(k>=qs.length){done();return}
-      const q=qs[k],el=addPres(q,k);k++;if(!el){done();return}
-      const txt=el.querySelector('.txt'),av=el.querySelector('.pavatar');
-      if(instant){txt.textContent=q.t;av.classList.remove('talk');next();return}
-      let i=0;const tick=()=>{if(t!==revealTok)return;i++;txt.textContent=q.t.slice(0,i);if(i%3===0)sfx.blip(300+q.p*120+(i%2)*40);
-        if(i<q.t.length)setTimeout(tick,28);else{av.classList.remove('talk');setTimeout(next,1100)}};
-      setTimeout(tick,500)};
-    next()};
-  const finish=(instant)=>{
-    const t=$('#tot');if(!t)return;markBonus(instant);react(total>=32?9:total<=20?3:6);t.innerHTML=`Total: <span id="tn">0</span> / 40`;countTo($('#tn'),total,instant?1:700);
-    const b=$('#banner');
-    if(total>=36){b.innerHTML='<span class="banner">⭐ STANDING OVATION! ⭐</span>';rain(160);sfx.tada()}
-    else if(total>=30){b.innerHTML='<span class="banner">👏 Fabulous!</span>';rain(60);sfx.tada()}
-    else if(total<=16){b.innerHTML='<span class="banner" style="color:#fff">😬 Oh dear…</span>';sfx.boo()}
-    const t2=revealTok;setTimeout(()=>{if(t2===revealTok)runQuips(t2,!!instant,showAfter)},instant?0:900);
-  };
-  sfx.drum(2.4);
-  paddles.forEach((p,i)=>T(2300+i*1400,()=>{showOne(p,i);sfx.flip(+p.dataset.n)}));
-  T(2300+3*1400+1100,()=>finish(false));
-  window.__skip=()=>{revealTok++;paddles.forEach((p,i)=>{p.classList.add('on');p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(+p.dataset.n))});
-    w.order.forEach(id=>pts[id]=0);document.querySelectorAll('.rs').forEach(x=>{x.className='rs';x.querySelector('em').textContent=''});document.querySelectorAll('.rbonus').forEach(x=>{x.className='rbonus';x.textContent=''});
-    r.forEach((n,i)=>markPlayers(i,true));
-    const q=$('#quips');if(q)q.innerHTML='';finish(true)};
+    box.appendChild(el);if(!instant)el.scrollIntoView({behavior:'smooth',block:'nearest'});return el};
+  const next=()=>{if(tok!==revealTok)return;if(k>=qs.length){showAfter();return}
+    const q=qs[k],el=addPres(q,k);k++;const txt=el.querySelector('.txt'),av=el.querySelector('.pavatar');
+    if(instant){txt.textContent=q.t;av.classList.remove('talk');next();return}
+    let i=0;const tick=()=>{if(tok!==revealTok)return;i++;txt.textContent=q.t.slice(0,i);if(i%3===0)sfx.blip(300+q.p*120+(i%2)*40);
+      if(i<q.t.length)setTimeout(tick,28);else{av.classList.remove('talk');setTimeout(next,1100)}};
+    setTimeout(tick,500)};
+  setTimeout(next,instant?0:900);
+  window.__skip=()=>liveFinish(true);
 }
 
 function vBoard(){
@@ -1098,15 +1187,16 @@ function render(){
   else if(overlay==='season')h=vSeason();
   else if(overlay==='art')h=vArtEdit();
   else if(overlay==='home'||!W())h=vHome();
-  else h={setup:vSetup,pick:vPick,dance:vDance,guess:vGuess,real:vReal,reveal:vReveal,board:vBoard,wrap:vWrap,elim:vElim}[W().phase]();
+  else h={setup:vSetup,pick:vPick,dance:vDance,guess:vGuess,real:vLive,reveal:vLive,board:vBoard,wrap:vWrap,elim:vElim}[W().phase]();
   const v=$('#view');v.style.animation='none';v.offsetWidth;v.style.animation='';
   v.innerHTML=h;$('#main').scrollTop=0;
   runCounts();
   clearInterval(window.__dykT);if($('#dyk'))window.__dykT=setInterval(()=>{const d=$('#dyk');if(!d){clearInterval(window.__dykT);return}
     const c=couple(d.dataset.cid);if(!c)return;const sp=d.querySelector('span');d.style.animation='none';void d.offsetWidth;d.style.animation='';sp.textContent=randomFact(c)},8000);
-  if(!overlay&&W()&&(W().phase==='real'||(W().phase==='guess'&&ready))&&matchMedia('(pointer:fine)').matches){const q=$('#quick');if(q&&document.activeElement!==q){q.focus({preventScroll:true});if(S.tmp.every(x=>x))q.select();else q.setSelectionRange(q.value.length,q.value.length)}}
+  if(!overlay&&W()&&W().phase==='guess'&&ready&&matchMedia('(pointer:fine)').matches){const q=$('#quick');if(q&&document.activeElement!==q){q.focus({preventScroll:true});if(S.tmp.every(x=>x))q.select();else q.setSelectionRange(q.value.length,q.value.length)}}
   if(!overlay&&W()){const p=W().phase;
-    if(p==='reveal')playReveal();
+    if(p==='reveal')liveFinish(true);
+    if(p==='real'&&matchMedia('(pointer:fine)').matches){const q=$('#jscore');if(q)q.focus({preventScroll:true})}
     if(p==='wrap'){rain(180);sfx.tada()}
   }
 }
@@ -1255,7 +1345,9 @@ document.addEventListener('click',e=>{
       w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});S.tmp=[null,null,null,null];w.phase='reveal'}
     save();return render();
   case 'fixscores':{const res=w.results[entry().cid];w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)-scorePlayer(res.guesses[pid],res.real).total});
-    S.tmp=res.real.slice();delete w.results[entry().cid];w.phase='real';save();return render()}
+    S.tmp=[null,null,null,null];delete w.results[entry().cid];w.phase='real';save();return render()}
+  case 'jkey':{const q=$('#jscore'),n=+b.dataset.n;if(jVal()===n){liveConfirm();return}q.value=n;liveSetPending(n);return}
+  case 'jconfirm':liveConfirm();return;
   case 'skipreveal':window.__skip&&window.__skip();return;
   case 'board':w.phase='board';save();return render();
   case 'next':advance();return;
@@ -1266,6 +1358,7 @@ document.addEventListener('click',e=>{
 });
 /* text inputs write straight into state (no re-render so focus is kept) */
 document.addEventListener('input',e=>{
+  if(e.target.id==='jscore'){liveSetPending(jVal());return}
   if(e.target.id==='quick'){const prev=S.tmp.slice(),v=parseQuick(e.target.value);S.tmp=[0,1,2,3].map(i=>v[i]||null);save();syncKeypad(prev);return}
   const t=e.target,d=t.dataset.bind;if(!d)return;const [k,id,f]=d.split(':');
   if(k==='weekn'){W().n=Math.max(1,parseInt(t.value)||1);save();hdr();return}
@@ -1283,14 +1376,15 @@ document.addEventListener('change',e=>{
 });
 
 document.addEventListener('keydown',e=>{
+  if(e.target.id==='jscore'&&e.key==='Enter'){e.preventDefault();liveConfirm();return}
   if(e.target.id==='quick'&&e.key==='Enter'){e.preventDefault();const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
   if(!overlay&&W()&&W().phase==='guess'&&!ready&&(e.key==='Enter'||e.key===' ')&&!e.target.matches('input,textarea')){e.preventDefault();ready=true;render();focusQuick();return}
-  const w=W();if(overlay||!w||!['guess','real'].includes(w.phase)||(w.phase==='guess'&&!ready)||e.target.matches('input,textarea'))return;
+  const w=W();if(overlay||!w||w.phase!=='guess'||(w.phase==='guess'&&!ready)||e.target.matches('input,textarea'))return;
   if(e.key==='Enter'){const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
   if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
   if(/^[0-9]$/.test(e.key)){let n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0){S.tmp=[null,null,null,null];j=0}S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
-window.__strictly={scoreStats,seriesDances,presetFor,factsFor};   // for tests and debugging
+window.__strictly={scoreStats,seriesDances,presetFor,factsFor};window.__strictlyPhase=()=>W()&&W().phase;   // for tests and debugging
 applySeries();
 $('#dances').innerHTML=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha Cha Cha','Rumba','Samba','Salsa','Jive','Paso Doble','Charleston','Argentine Tango',"Couple's Choice",'Street/Commercial','Showdance','Musical Theatre','Contemporary'].map(d=>`<option value="${d}">`).join('');
 render();

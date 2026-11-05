@@ -3,6 +3,13 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.1.0 "Cha-Cha" (2026-11-05)
+- Real scores and the reveal are one screen. Enter each judge's score (type it or tap it), confirm with Enter or ✓, and their paddle goes up while every player's tally updates on the left.
+- Judges sometimes get a speech bubble when their paddle goes up: "Fab-u-lous!", "Jabulous!", "Let me show you…", "Keep working on it!" and more.
+- The stage fits short laptop windows: the dance box and buttons sit on the stage floor.
+- "Did you know?" facts only appear while passing the controls, so the other screens are less busy.
+- No presenters beside the judges while the scores go up; they still comment afterwards.
+
 ## v2.0.0 "Tango" (2026-11-05)
 - Real 2026 series data from Wikipedia: all 10 couples still in (John Nellis is with Katya Jones) and every score from weeks 1–6.
 - Each couple has a cartoon made from their BBC press shots, as a cartoonified photo or a drawn cartoon you can edit.

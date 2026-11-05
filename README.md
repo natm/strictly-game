@@ -20,7 +20,7 @@ Or just open `index.html` in a browser.
 |---|---|
 | ![Home](docs/screenshots/home.jpg) **Keep dancing!** Load the 2026 couples in one tap | ![Who's up next](docs/screenshots/pick.jpg) **Who's up next?** No running order needed |
 | ![Stage](docs/screenshots/stage.jpg) **Curtains up**: cartoon couples, the week's theme and "Did you know?" facts | ![Guessing](docs/screenshots/guess.jpg) **Guess the paddles**: type `8 9 8 9` and press Enter |
-| ![Real scores](docs/screenshots/real.jpg) **The official scores**: the gold judges' desk | ![Reveal](docs/screenshots/reveal.jpg) **The reveal**: everyone's 🎯 or "2 off" lands live as the paddles go up, while Emma, Josh and Johannes clap |
+| ![Real scores](docs/screenshots/real.jpg) **The official scores**: enter each judge, confirm, and up goes the paddle | ![Reveal](docs/screenshots/reveal.jpg) **The reveal**: everyone's 🎯 or "2 off" lands live as each paddle goes up, with the odd "Fab-u-lous!" |
 | ![Presenters](docs/screenshots/presenters.jpg) **Presenter banter** using real series stats (Josh is always snarky) | ![Leaderboard](docs/screenshots/leaderboard.jpg) **Leaderboards** for the family and the judges |
 
 ## Releases

@@ -27,6 +27,13 @@ async function open(viewport = { width: 1280, height: 800 }) {
 const state = page => page.evaluate(() => JSON.parse(localStorage.getItem('strictly-v2')));
 const typeScores = async (page, nums) => { for (const n of nums) await page.keyboard.press(String(n % 10)); };
 
+// Real scores: one judge at a time, Enter lifts each paddle. Skips the presenters at the end.
+async function enterReal(page, nums, { skip = true } = {}) {
+  for (const n of nums) { await page.fill('#jscore', String(n)); await page.press('#jscore', 'Enter'); }
+  if (skip) { await page.waitForFunction(() => window.__strictlyPhase && window.__strictlyPhase() === 'reveal');
+    await page.waitForSelector('#skip:not([style*="none"]), #after[style*="opacity: 1"]', { timeout: 5000 }).catch(() => {});
+    if (await page.locator('[data-act=skipreveal]').isVisible()) await page.click('[data-act=skipreveal]'); }
+}
 async function addCouples(page, names) {
   await page.click('[data-act=nav][data-to=manage]');
   await page.fill('#newcouples', names.join('\n'));
@@ -48,9 +55,7 @@ async function playCouple(page, guess, real) {
     await typeScores(page, guess(i));
     await page.keyboard.press('Enter');
   }
-  await typeScores(page, real);
-  await page.keyboard.press('Enter');
-  await page.click('[data-act=skipreveal]');
+  await enterReal(page, real);
   await page.click('[data-act=board]');
   await page.click('[data-act=next]');
 }
@@ -89,13 +94,9 @@ test('full week: theme, sick couple, scoring, fix scores, eliminations', async (
     await typeScores(page, i === 0 ? [8, 8, 8, 8] : [7, 7, 7, 7]);
     await page.keyboard.press('Enter');
   }
-  await typeScores(page, [5, 5, 5, 5]);   // oops, wrong real scores...
-  await page.keyboard.press('Enter');
-  await page.click('[data-act=skipreveal]');
+  await enterReal(page, [5, 5, 5, 5]);   // oops, wrong real scores...
   await page.click('[data-act=fixscores]'); // ...fix them
-  await typeScores(page, [8, 8, 8, 8]);
-  await page.keyboard.press('Enter');
-  await page.click('[data-act=skipreveal]');
+  await enterReal(page, [8, 8, 8, 8]);
   await page.waitForSelector('.pres', { timeout: 3000 }); // a presenter reacts
   let s = await state(page);
   const pts = Object.values(s.week.totals).sort((a, b) => b - a);
@@ -107,8 +108,7 @@ test('full week: theme, sick couple, scoring, fix scores, eliminations', async (
   assert.match(await page.textContent('.couplebig'), /C/);
   await page.click('[data-act=danced]');
   for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await typeScores(page, [6, 6, 6, 6]); await page.keyboard.press('Enter'); }
-  await typeScores(page, [6, 6, 6, 6]); await page.keyboard.press('Enter');
-  await page.click('[data-act=skipreveal]');
+  await enterReal(page, [6, 6, 6, 6]);
   await page.click('[data-act=board]');
   assert.match(await page.textContent('[data-act=next]'), /wrap/);
   await page.click('[data-act=next]');
@@ -307,7 +307,7 @@ test('real scores screen looks different from guessing', async () => {
   await page.click('[data-act=danced]');
   for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
   assert.equal(await page.locator('.realmode .realbanner').count(), 1);
-  const bg = await page.$eval('.realmode .card', e => getComputedStyle(e).backgroundImage);
+  const bg = await page.$eval('.realmode .jctl', e => getComputedStyle(e).backgroundImage);
   assert.match(bg, /gradient/);
 });
 
@@ -338,7 +338,9 @@ test('2026 data: couples have cartoons and facts; stats use the real series scor
   await page.click('[data-act=startweek]');
   await page.click('[data-act=pickc] >> nth=0');
   await page.waitForFunction(() => { const i = document.querySelector('.stage .cart img'); return i && i.complete && i.naturalWidth > 0; });
-  assert.equal(await page.locator('#dyk').count(), 1, 'did-you-know fact on stage');
+  assert.equal(await page.locator('#dyk').count(), 0, 'no facts on the stage');
+  await page.click('[data-act=danced]');
+  assert.equal(await page.locator('#dyk').count(), 1, 'did-you-know fact while passing the controls');
   assert.deepEqual(page.errors, []);
 });
 
@@ -349,7 +351,7 @@ test('older saves: "John Nellis" gains his partner from the series data', async 
   assert.equal((await state(page)).couples[0].name, 'John Nellis & Katya Jones');
 });
 
-test('reveal shows each player exact / how far off, and presenters react', async () => {
+test('reveal shows each player exact / how far off as each paddle goes up', async () => {
   const page = await open();
   await addCouples(page, ['Ann & A']);
   await page.click('[data-act=newweek]');
@@ -357,11 +359,16 @@ test('reveal shows each player exact / how far off, and presenters react', async
   await page.click('[data-act=danced]');
   const guesses = ['9999', '8888', '3333'];
   for (const g of guesses) { await page.click('[data-act=ready]'); await page.fill('#quick', g); await page.press('#quick', 'Enter'); }
-  await page.fill('#quick', '9999'); await page.press('#quick', 'Enter');
-  // let the first paddle land for real, then skip the rest
-  await page.waitForSelector('.rs.done', { timeout: 6000 });
-  assert.ok(await page.locator('.sp.clap').count() === 3, 'presenters clap a 9');
-  await page.click('[data-act=skipreveal]');
+  // Craig's 9: tap the number, then tap again to confirm; the paddle goes up and the tallies land
+  await page.click('[data-act=jkey][data-n="9"]');
+  assert.match(await page.textContent('#jok'), /Craig's 9/);
+  await page.click('[data-act=jkey][data-n="9"]');
+  await page.waitForSelector('.rs.done', { timeout: 3000 });
+  assert.equal(await page.locator('.paddle.on').count(), 1);
+  assert.equal(await page.locator('.sp').count(), 0, 'no presenters beside the judges');
+  assert.match(await page.textContent('#jname'), /Motsi/);
+  // the rest by keyboard: type + Enter
+  await enterReal(page, [9, 9, 9]);
   assert.equal(await page.locator('.rs.done').count(), 12);
   assert.equal(await page.locator('.rs.x').count(), 4, 'one player exact on all four');
   assert.equal(await page.locator('.rs.n').count(), 4);
@@ -383,13 +390,56 @@ test('laptop: score entry fits on screen without scrolling', async () => {
     assert.ok(bottom <= 768, `guess button at ${bottom}px is below the fold`);
   }
   for (let i = 0; i < 3; i++) { if (i) await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
-  const bottom = await page.$eval('[data-act=confirm]', e => e.getBoundingClientRect().bottom);
-  assert.ok(bottom <= 768, `real-scores button at ${bottom}px is below the fold`);
+  for (const sel of ['#jscore', '#jok', '.jkeys']) {
+    const b = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
+    assert.ok(b <= 768, `${sel} at ${b}px is below the fold`);
+  }
 });
 
 test('footer credits BBC and Wikipedia and shows the version', async () => {
   const page = await open();
   const txt = await page.textContent('.credits');
   assert.match(txt, /BBC/); assert.match(txt, /Wikipedia/); assert.match(txt, /v\d+\.\d+\.\d+/);
-  assert.match(await page.textContent('.ver'), /v\d+\.\d+\.\d+ “\w+”/);
+  assert.match(await page.textContent('.ver'), /v\d+\.\d+\.\d+ “[\w-]+”/);
+});
+
+test('short laptop window: the stage and its buttons fit without scrolling', async () => {
+  for (const vp of [{ width: 1000, height: 560 }, { width: 1366, height: 768 }, { width: 1920, height: 1000 }]) {
+    const page = await open(vp);
+    await page.click('[data-act=load2026]');
+    await page.click('[data-act=newweek]');
+    await page.click('[data-act=startweek]');
+    await page.click('[data-act=pickc] >> nth=8');   // Graeme Hall & Lauren Oakley
+    await page.waitForTimeout(4200);
+    for (const sel of ['[data-act=danced]', '[data-bind^="dance:"]', '.couplebig']) {
+      const b = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
+      assert.ok(b <= vp.height, `${sel} bottom ${Math.round(b)} > ${vp.height} at ${vp.width}x${vp.height}`);
+    }
+    assert.deepEqual(page.errors, []);
+  }
+});
+
+test('a judge speech bubble rises when a 10 goes up', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]');
+  await page.click('[data-act=startweek]');
+  await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '8888'); await page.press('#quick', 'Enter'); }
+  await page.fill('#jscore', '10'); await page.press('#jscore', 'Enter');
+  await page.waitForSelector('.paddle[data-i="0"] .jbub', { timeout: 2000 });
+  assert.match(await page.textContent('.jbub'), /\S/);
+});
+
+test('phone: lock in typed guesses without an Enter key', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await ctx.newPage(); page.on('dialog', d => d.accept());
+  await page.goto(URL); await page.addStyleTag({ content: CALM });
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  await page.tap('[data-act=ready]');
+  await page.fill('#quick', '7 8 6 9');
+  await page.tap('.qlock');                           // the ✓ next to the box
+  assert.equal(Object.keys((await state(page)).week.guesses).length, 1);
+  await ctx.close();
 });
