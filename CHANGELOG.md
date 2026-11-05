@@ -3,6 +3,11 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.4.0 "Jive" (2026-11-05)
+- Skip a player for one couple ("out of the room") from the pass-the-controls or guessing screen. They score nothing for that couple, and their stats aren't affected.
+- Presenter cartoons match the BBC's 2026 photo: Emma's short dark crop, Josh's curls and glasses, Johannes in green.
+- New iPad/tablet test suite (portrait and landscape).
+
 ## v2.3.1 "Swing" (2026-11-05)
 - Phones: a slim one-row header (version moved to the footer) and a tighter judges' scores screen, so there's much less scrolling.
 

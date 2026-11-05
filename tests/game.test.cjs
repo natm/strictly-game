@@ -508,3 +508,23 @@ test("phone: slim header and judges' score buttons on screen without scrolling",
   }
   await ctx.close();
 });
+
+test('skip a player who is out of the room: no points, not counted in stats', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  const order = (await state(page)).week.order;
+  await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter');
+  await page.click('[data-act=skipplayer]');                      // second player gone to the loo
+  await page.click('[data-act=ready]'); await page.fill('#quick', '8888'); await page.press('#quick', 'Enter');
+  await enterReal(page, [8, 8, 8, 8]);
+  const s = await state(page), res = s.week.results[s.week.entries[0].cid];
+  assert.deepEqual(Object.keys(res.guesses).sort(), [order[0], order[2]].sort());
+  assert.equal(s.week.totals[order[1]], 0);
+  assert.equal(await page.locator('.rp').count(), 2, 'only players who guessed appear in the tally');
+  await page.click('[data-act=board]'); await page.click('[data-act=next]');
+  await page.click('[data-act=toelim]'); await page.click('[data-act=finishweek]');
+  const s2 = await state(page);
+  assert.equal(Object.keys(s2.rounds[0].g).length, 2);
+  assert.deepEqual(page.errors, []);
+});

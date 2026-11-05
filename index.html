@@ -223,6 +223,8 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
   .revhead .cart.md{width:84px;height:63px}
   .revgrid .paddle .portrait{max-width:min(120px,12vh)}
   .revgrid .paddle .face,.revgrid .paddle:not(.on) .await{width:min(100%,19vh);font-size:min(10vw,9vh)}
+  .revgrid .paddle:not(.on) .await{font-size:min(2.6vw,2.8vh,26px)}
+  .revgrid .paddle.active .await.num{font-size:min(8vw,7vh)}
   .revgrid .paddles{margin-bottom:min(60px,6vh)!important}
   .revgrid .sp{max-width:min(110px,12vh)}
   .jctl{padding:6px 12px}.jctl .hint{display:none}.jrow{margin:4px 0}.jrow input{font-size:24px;padding:4px}
@@ -476,7 +478,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.3.1',RELEASE='Swing';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
+const VERSION='2.4.0',RELEASE='Jive';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -597,23 +599,25 @@ function avatar(j,i,mood='idle'){
 function presenterAvatar(i,mood){
   const pr=i===3?BANDLEADER:S.presenters[i];if(pr.photo)return `<img src="${pr.photo}" alt="${esc(pr.name)}">`;
   const ink='#1c0a33';
-  const skin=['#ffd8b8','#ffd2b0','#8d5a3c','#f6cfae'][i],hair=['#6b3f2a','#5a3a22','#1a1210','#c9c9d1'][i],top=['#14b8a6','#334155','#7c3aed','#111827'][i];
-  const back=[`<path d="M14 124 Q0 56 22 30 Q60 -8 98 30 Q120 56 106 124Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,'','',''][i];
+  // looks based on the BBC's 2026 presenter photo: Emma short dark crop, Josh curly hair + glasses + suit, Johannes short black hair + green
+  const skin=['#f6d2b6','#ffd8bd','#7a4a2c','#f6cfae'][i],hair=['#3a2418','#9a6a3a','#141010','#c9c9d1'][i],top=['#2c3e66','#1f2a44','#1f7a4d','#111827'][i];
+  const back=[`<path d="M30 30 Q34 4 60 6 Q88 4 92 30 Q80 18 60 18 Q40 18 30 30Z" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="60" cy="10" r="13" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
+    `<g fill="${hair}" stroke="${ink}" stroke-width="4"><circle cx="34" cy="30" r="12"/><circle cx="50" cy="20" r="13"/><circle cx="68" cy="19" r="13"/><circle cx="85" cy="29" r="12"/></g>`,'',''][i];
   const front=[
-    `<path d="M28 50 Q38 10 66 14 Q96 18 92 50 Q82 30 60 32 Q40 34 28 50Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
-    `<path d="M28 46 Q24 22 44 14 L52 24 L62 10 L72 24 L88 14 Q100 26 92 46 Q82 30 60 32 Q40 30 28 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+    `<path d="M27 52 Q24 24 46 20 Q60 16 76 22 Q96 26 93 52 Q86 34 72 32 Q58 40 44 34 Q32 38 27 52Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M27 52 Q25 62 30 70" fill="none" stroke="${hair}" stroke-width="5" stroke-linecap="round"/>`,
+    `<path d="M28 46 Q26 26 40 24 Q46 16 56 20 Q64 14 72 20 Q84 18 88 28 Q96 32 92 46 Q84 34 72 34 Q60 30 48 34 Q36 34 28 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M30 44 Q34 18 60 18 Q86 18 90 44 Q76 30 60 30 Q44 30 30 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M28 48 Q30 20 60 20 Q90 20 92 48 Q80 34 60 34 Q40 34 28 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
   const extra=[
-    `<circle cx="28" cy="74" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/><circle cx="92" cy="74" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/>`,
-    `<g fill="${ink}" opacity=".5"><circle cx="44" cy="84" r="1.4"/><circle cx="52" cy="88" r="1.4"/><circle cx="60" cy="90" r="1.4"/><circle cx="68" cy="88" r="1.4"/><circle cx="76" cy="84" r="1.4"/></g>`,
-    `<g fill="#ffd93d" stroke="${ink}" stroke-width="2"><circle cx="24" cy="116" r="4"/><circle cx="60" cy="112" r="4"/><circle cx="96" cy="116" r="4"/></g>`,
+    `<circle cx="28" cy="72" r="4" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><circle cx="92" cy="72" r="4" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><path d="M46 102 Q60 116 74 102" fill="none" stroke="#ffd93d" stroke-width="2.5"/><circle cx="60" cy="112" r="3.5" fill="#ffd93d" stroke="${ink}" stroke-width="1.5"/>`,
+    `<g fill="rgba(255,255,255,.3)" stroke="${ink}" stroke-width="4"><circle cx="46" cy="57" r="12"/><circle cx="74" cy="57" r="12"/></g><path d="M58 57h4" stroke="${ink}" stroke-width="4"/><path d="M50 100 L60 108 L70 100 L66 120 L60 124 L54 120Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M57 106 L63 106 L65 126 L60 130 L55 126Z" fill="#3b5b8a" stroke="${ink}" stroke-width="2.5"/>`,
+    `<path d="M30 104 Q60 126 90 104 L96 120 Q60 140 24 120Z" fill="#2a9d63" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>`,
     `<path d="M50 104 L60 110 L70 104 L70 116 L60 110 L50 116Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M96 118 L116 82" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M96 118 L116 82" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><text x="100" y="40" font-size="20">🎵</text>`][i];
   const brow=mood==='sad'?'M34 36 L52 42 M68 42 L86 36':i===1?'M34 42 L52 40 M68 40 L86 42':'M34 40 Q43 33 52 38 M68 38 Q77 33 86 40';
   const mood2=mood||'idle';
-  const mouth=i===1?`<path d="M44 76 Q60 90 76 76" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`
+  const mouth=i===1?`<g class="mouth"><path d="M42 74 Q60 98 78 74Z" fill="#7a1030" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M47 76 H73 V80 H47Z" fill="#fff"/></g>`
     :`<g class="mouth"><path d="M42 72 Q60 100 78 72Z" fill="#7a1030" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M48 74 H72 V79 H48Z" fill="#fff"/></g>`;
-  const mouthJ=i===1?`<g class="mouth"><ellipse cx="60" cy="80" rx="12" ry="8" fill="#7a1030" stroke="${ink}" stroke-width="4"/></g>`:mouth;
+  const mouthJ=mouth;
   return `<svg viewBox="0 0 120 120">${back}
     <path d="M8 130 Q12 100 60 100 Q108 100 112 130Z" fill="${top}" stroke="${ink}" stroke-width="4"/>
     <rect x="50" y="86" width="20" height="18" fill="${skin}" stroke="${ink}" stroke-width="4"/>
@@ -1103,8 +1107,9 @@ function vGuess(){
   if(!ready)return `<div class="pass"><div class="sub">${esc(couple(entry().cid).name)} · guess ${w.oi+1} of ${w.order.length}</div>
     <span class="bigav">${p.av}</span><div style="font-family:var(--title);color:#fff;font-size:24px;text-shadow:0 3px 0 var(--ink)">Pass the controls to…</div>
     <div class="who" style="color:${p.color}">${esc(p.name)}</div><button class="big pink pulse" data-act="ready">I'm ready! 🙈 no peeking</button>
+    <div style="margin-top:14px"><button class="white" data-act="skipplayer">🚽 ${esc(p.name)}'s out of the room, skip them</button></div>
     ${factsFor(couple(entry().cid)).length?`<div class="dyk" id="dyk" data-cid="${entry().cid}"><b>💡 Did you know?</b><span>${esc(randomFact(couple(entry().cid)))}</span></div>`:''}</div>`;
-  return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">${art(couple(entry().cid),'md')}<br>Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}`;
+  return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">${art(couple(entry().cid),'md')}<br>Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}<div class="center"><button class="sm white" data-act="skipplayer">Skip ${esc(p.name)} for this couple</button></div>`;
 }
 /* ---------- real scores + reveal on one screen: enter each judge's score, confirm, the paddle goes up ---------- */
 const realDone=()=>W().phase==='reveal';
@@ -1145,8 +1150,8 @@ function vLive(){
   <div id="after" style="opacity:0;pointer-events:none;transition:opacity .5s">${done?afterHtml():''}</div>
   <div class="actions" id="skip" style="display:none"><button class="sm white" data-act="skipreveal">Skip ⏭</button></div></div>`;
 }
-function liveMarkPlayers(i,quiet){
-  const w=W(),r=liveReal();
+function liveMarkPlayers(i,quiet,val){
+  const w=W(),r=liveReal().slice();if(val!=null)r[i]=val;   // use the confirmed value: S.tmp may already be cleared
   document.querySelectorAll('.rp').forEach(row=>{
     const id=row.dataset.pid,g=w.guesses[id][i],d=Math.abs(g-r[i]),slot=row.querySelector(`.rs[data-k="${i}"]`);
     slot.classList.add(d===0?'x':d===1?'n':'m','done');slot.querySelector('em').textContent=d===0?'🎯':d===1?'1 off':d+' off';
@@ -1185,7 +1190,7 @@ function liveConfirm(){
   const pd=document.querySelector(`.paddle[data-i="${k}"]`),face=pd.querySelector('.face');
   pd.classList.remove('active');face.textContent=n;face.classList.toggle('hi',n>=9);pd.classList.add('on');
   pd.querySelector('.portrait').innerHTML=avatar(S.judges[k],k,moodFor(n));if(n>=9)burstAt(pd,50);sfx.flip(n);
-  setTimeout(()=>{liveMarkPlayers(k);liveReact(n);judgeBubble(k,n)},450);
+  setTimeout(()=>{liveMarkPlayers(k,false,n);liveReact(n);judgeBubble(k,n)},450);
   const q=$('#jscore');q.value='';liveSetPending(NaN);
   if(k<3){const nx=document.querySelector(`.paddle[data-i="${k+1}"]`);nx.classList.add('active');nx.querySelector('.await').textContent='⬇ Next';
     $('#jname').textContent=firstName(S.judges[k+1].name);if(matchMedia('(pointer:fine)').matches)q.focus({preventScroll:true});return}
@@ -1429,6 +1434,10 @@ document.addEventListener('click',e=>{
   case 'pickc':w.idx=+b.dataset.i;w.phase='dance';save();return render();
   case 'danced':startCouple();w.phase='guess';save();return render();
   case 'cantdance':if(confirm('Mark this couple as absent this week and skip them?')){entry().status='sick';advance()}return;
+  case 'skipplayer':{const nm=(player(w.order[w.oi])||{}).name;
+    w.order.splice(w.oi,1);S.tmp=[null,null,null,null];ready=false;
+    if(w.oi>=w.order.length)w.phase='real';
+    save();render();toast(`${nm} skipped for this couple, no points`);return}
   case 'ready':ready=true;render();focusQuick();return;
   case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;justSet=+b.dataset.j;save();return render();
   case 'confirm':
