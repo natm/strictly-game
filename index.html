@@ -91,7 +91,7 @@ textarea{min-height:90px;resize:vertical}
 .jname{font-family:var(--title);font-size:clamp(14px,1.8vw,20px)}
 
 /* keypad */
-.keyrow{display:grid;grid-template-columns:minmax(110px,190px) 1fr;gap:14px;align-items:center;margin-bottom:12px}
+.keyrow{display:grid;grid-template-columns:minmax(230px,300px) 1fr;gap:14px;align-items:center;margin-bottom:12px}
 .keyrow .judge{display:flex;align-items:center;gap:10px;text-align:left}
 .keyrow .portrait{width:clamp(46px,7vw,74px);margin:0;flex:none;box-shadow:0 3px 0 var(--ink);border-width:3px}
 .keys{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(3px,.8vw,9px)}
@@ -150,6 +150,32 @@ textarea{min-height:90px;resize:vertical}
   animation:bounce 1s infinite}
 @keyframes bounce{50%{transform:translateY(-10px) rotate(-2deg)}}
 
+/* lifted paddles in keypad */
+.pad{position:relative;width:clamp(54px,9vw,90px);height:clamp(84px,13vw,128px);flex:none;overflow:hidden;margin-left:auto}
+.pad .pup{position:absolute;inset:0;transform:translateY(104%)}
+.pad.has .pup{transform:none}
+.pad .pup.lift{animation:lift .75s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes lift{0%{transform:translateY(104%) rotate(-14deg)}55%{transform:translateY(-8%) rotate(6deg)}78%{transform:translateY(2%) rotate(-3deg)}100%{transform:none}}
+.pcard{position:absolute;left:0;right:0;top:0;height:60%;background:#fff;border:3px solid var(--ink);border-radius:12px;display:grid;place-items:center;
+  font-family:var(--title);font-size:clamp(26px,5vw,52px);color:var(--red);box-shadow:0 3px 0 var(--ink)}
+.pcard.hi{color:#16a34a}
+.pstick{position:absolute;left:50%;top:56%;bottom:0;width:10px;margin-left:-5px;background:#d99a4e;border:3px solid var(--ink);border-radius:4px}
+.phand{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font-size:clamp(26px,4vw,40px);line-height:1;z-index:2;filter:drop-shadow(0 2px 0 var(--ink))}
+.pad .hint0{position:absolute;left:0;right:0;top:20%;text-align:center;font-family:var(--title);opacity:.35;font-size:clamp(22px,4vw,40px)}
+.pad.has .hint0{display:none}
+.keyrow .judge{min-width:0}
+.keyrow .judge .jname{min-width:0}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:16px}
+.awardcard{background:#fff;border:var(--line);border-radius:18px;padding:10px 12px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;animation:pop .5s both}
+.awardcard .e{font-size:34px;line-height:1}
+.awardcard .tt{font-family:var(--title);font-size:17px;line-height:1.1}
+.awardcard .who{font-family:var(--title);font-size:20px;color:var(--pink)}
+.awardcard small{display:block;opacity:.75;font-weight:600;font-size:13px}
+.pcardx{background:var(--cream);border:var(--line);border-radius:20px;padding:12px;box-shadow:var(--shadow)}
+.pcardx h4{font-family:var(--title);font-weight:400;font-size:22px;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.pcardx ul{list-style:none;font-weight:600;font-size:15px}.pcardx li{margin:3px 0}
+.badge{display:inline-block;background:var(--yellow);border:3px solid var(--ink);border-radius:999px;font-family:var(--title);font-size:13px;padding:0 9px;margin:2px 2px 0 0}
+.sh{font-family:var(--title);color:#fff;font-size:clamp(20px,2.6vw,28px);text-shadow:0 3px 0 var(--ink);margin:6px 0 10px}
 /* tables */
 table.res{width:100%;border-collapse:separate;border-spacing:0 6px;font-weight:600}
 table.res th{font-family:var(--title);font-weight:400;font-size:clamp(12px,1.6vw,17px);padding:2px 4px}
@@ -248,13 +274,14 @@ const defaultJudges=()=>[
   {name:'Shirley Ballas',photo:''},{name:'Motsi Mabuse',photo:''},
   {name:'Anton Du Beke',photo:''},{name:'Craig Revel Horwood',photo:''}];
 const mkPlayer=(i,name)=>({id:uid(),name:name||'Player '+(i+1),color:COLORS[i%COLORS.length],av:EMOJI[i%EMOJI.length],here:true});
-const defaultState=()=>({v:2,players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],weeksDone:0,week:null,
+const defaultState=()=>({v:2,players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],rounds:[],weeksDone:0,week:null,
   tmp:[null,null,null,null],sound:true,seasonTab:'players'});
 let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),o)}catch(e){}return defaultState()})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save – storage full?')}};
 let overlay=null;         // 'home' | 'manage' | 'season' | 'rules' | null (=show current game phase)
 let ready=false;          // pass-the-controls gate (not saved on purpose)
 let revealTok=0;
+let justSet=-1;          // which keypad row just got a number (so only that paddle animates)
 
 /* =============== sound =============== */
 const sfx={ctx:null,
@@ -441,11 +468,15 @@ function vManage(){
 
 function vSeason(){
   const tab=S.seasonTab;
-  const tabs=`<div class="tabs">${['players','couples','weeks'].map(t=>`<button class="${tab===t?'act':'white'}" data-act="stab" data-t="${t}">${{players:'🎉 Players',couples:'💃 Couples',weeks:'📅 Weeks'}[t]}</button>`).join('')}</div>`;
+  const tabs=`<div class="tabs">${['players','stats','couples','weeks'].map(t=>`<button class="${tab===t?'act':'white'}" data-act="stab" data-t="${t}">${{players:'🎉 Players',stats:'📊 Fun Stats',couples:'💃 Couples',weeks:'📅 Weeks'}[t]}</button>`).join('')}</div>`;
   let body='';
   if(tab==='players'){
-    const rows=Object.values(S.season).sort((a,b)=>b.pts-a.pts).map(p=>({name:p.name,color:p.color,av:p.av,score:p.pts,sub:`${p.weeks} week${p.weeks===1?'':'s'} · ${p.wins||0} win${p.wins===1?'':'s'}`}));
-    body=board(rows,'Season Standings');
+    const st=computeStats();
+    const rows=Object.entries(S.season).sort((a,b)=>b[1].pts-a[1].pts).map(([id,p])=>({name:p.name,color:p.color,av:p.av,score:p.pts,
+      sub:`${p.weeks} week${p.weeks===1?'':'s'} · ${p.wins||0} win${p.wins===1?'':'s'}${st[id]?` · avg ${st[id].ppr.toFixed(1)} per couple`:''}`}));
+    body=board(rows,'Season Standings')+'<div class="hint center" style="color:#fff">Missed a week? No problem — see 📊 Fun Stats for fair per-couple averages.</div>';
+  }else if(tab==='stats'){
+    body=vStats();
   }else if(tab==='couples'){
     const rows=S.couples.map(c=>({name:c.name,score:sum(c.scores.map(s=>sum(s.real))),gone:c.out!=null,
       sub:c.out!=null?`Left in week ${c.out}`:(c.scores.length?`${c.scores.length} dance${c.scores.length===1?'':'s'} · best ${Math.max(...c.scores.map(s=>sum(s.real)))}`:'Not danced yet')})).sort((a,b)=>b.score-a.score);
@@ -458,6 +489,54 @@ function vSeason(){
     <div class="actions"><button class="big pink" data-act="nav" data-to="">← Back</button></div>`;
 }
 
+/* ---------- season stats (only count rounds a player actually guessed) ---------- */
+function computeStats(){
+  const st={};
+  S.rounds.forEach(r=>Object.entries(r.g).forEach(([pid,g])=>{
+    const q=st[pid]=st[pid]||{pid,n:0,abs:0,sg:0,exact:0,near:0,oracle:0,pts:0,best:0,pj:[0,0,0,0],wk:new Set()};
+    q.n++;g.forEach((v,i)=>{const d=v-r.r[i];q.abs+=Math.abs(d);q.sg+=d;q.pj[i]+=Math.abs(d);if(d===0)q.exact++;else if(Math.abs(d)===1)q.near++});
+    const sc=scorePlayer(g,r.r).total;q.pts+=sc;q.best=Math.max(q.best,sc);if(sum(g)===sum(r.r))q.oracle++;q.wk.add(r.w)}));
+  Object.values(st).forEach(q=>{q.err=q.abs/(q.n*4);q.bias=q.sg/(q.n*4);q.exactPct=Math.round(100*q.exact/(q.n*4));q.ppr=q.pts/q.n;q.weeks=q.wk.size;q.jerr=q.pj.map(x=>x/q.n)});
+  return st;
+}
+const pinfo=pid=>{const p=player(pid)||S.season[pid]||{};return{name:p.name||'?',av:p.av||'🙂',color:p.color||'#ccc'}};
+function seasonAwards(st){
+  const all=Object.values(st);if(!all.length)return[];
+  let q=all.filter(x=>x.n>=3);if(!q.length)q=all;
+  const pick=(arr,f,dir=1)=>arr.slice().sort((a,b)=>dir*(f(a)-f(b)))[0];
+  const A=[];let x;
+  x=pick(q,y=>y.err);A.push({e:'🎯',t:'Sharpshooter',x,d:`just ${x.err.toFixed(2)} off per guess`});
+  x=pick(q,y=>y.ppr,-1);A.push({e:'⭐',t:'Hot Shot',x,d:`${x.ppr.toFixed(1)} pts per couple`});
+  x=pick(q,y=>y.exact,-1);if(x.exact)A.push({e:'💥',t:'Bullseye Machine',x,d:`${x.exact} exact hits (${x.exactPct}%)`});
+  x=pick(q,y=>y.oracle,-1);if(x.oracle)A.push({e:'🔮',t:'The Oracle',x,d:`${x.oracle} spot-on total${x.oracle>1?'s':''}`});
+  x=pick(q,y=>y.bias,-1);if(x.bias>.05)A.push({e:'🎅',t:'Santa Claus',x,d:`guesses run ${x.bias.toFixed(2)} too generous`});
+  x=pick(q,y=>y.bias,1);if(x.bias<-.05)A.push({e:'😈',t:'Craig Mode',x,d:`guesses run ${Math.abs(x.bias).toFixed(2)} too harsh`});
+  S.judges.forEach((j,i)=>{x=pick(q,y=>y.jerr[i]);A.push({e:'🧠',t:`${j.name.split(' ')[0]}'s Mind-Reader`,x,d:`only ${x.jerr[i].toFixed(2)} off on average`})});
+  x=pick(all,y=>y.best,-1);A.push({e:'🚀',t:'Biggest Night',x,d:`${x.best} pts on a single couple`});
+  const tw=new Set(S.rounds.map(r=>r.w)).size;
+  if(tw>1){const full=all.filter(y=>y.weeks===tw);if(full.length)A.push({e:'🎟',t:'Never Misses',x:full[0],d:`here for all ${tw} weeks`})}
+  return A;
+}
+function vStats(){
+  const st=computeStats(),list=Object.values(st);
+  if(!list.length)return `<div class="card center"><h3>📊 Stats appear after your first full week</h3><div class="hint">Every guess is remembered. Players who miss a week are only judged on the couples they actually guessed.</div></div>`;
+  const awards=seasonAwards(st),tw=new Set(S.rounds.map(r=>r.w)).size,won={};
+  awards.forEach(a=>(won[a.x.pid]=won[a.x.pid]||[]).push(a.e+' '+a.t));
+  const cards=awards.map((a,i)=>{const p=pinfo(a.x.pid);return `<div class="awardcard" style="animation-delay:${i*.07}s"><div class="e">${a.e}</div>
+    <div><div class="tt">${esc(a.t)}</div><div class="who"><span class="av" style="background:${p.color};width:1.4em;height:1.4em;font-size:.8em">${p.av}</span> ${esc(p.name)}</div><small>${esc(a.d)}</small></div></div>`}).join('');
+  const pc=list.sort((a,b)=>b.ppr-a.ppr).map(x=>{const p=pinfo(x.pid),bi=x.jerr.indexOf(Math.min(...x.jerr)),wi=x.jerr.indexOf(Math.max(...x.jerr));
+    const mood=x.bias>.3?'Optimist 🌞':x.bias<-.3?'Tough crowd 🌧':'Balanced ⚖️';
+    return `<div class="pcardx"><h4><span class="av" style="background:${p.color}">${p.av}</span>${esc(p.name)}</h4>
+    <div>${(won[x.pid]||[]).map(b=>`<span class="badge">${esc(b)}</span>`).join('')}</div>
+    <ul><li>🎟 Here for <b>${x.weeks}</b> of ${tw} week${tw===1?'':'s'} · ${x.n} couple${x.n===1?'':'s'} guessed</li>
+    <li>🎯 Avg <b>${x.err.toFixed(2)}</b> off per guess · 💥 <b>${x.exactPct}%</b> exact</li>
+    <li>⭐ <b>${x.ppr.toFixed(1)}</b> pts per couple · best night ${x.best}</li>
+    <li>🧭 ${mood}</li>
+    <li>❤️ Reads ${esc(S.judges[bi].name.split(' ')[0])} best · 😖 struggles with ${esc(S.judges[wi].name.split(' ')[0])}</li></ul></div>`}).join('');
+  return `<div class="sh">🏅 Hall of Fame</div><div class="statgrid">${cards}</div>
+    <div class="sh">🎉 Player Cards</div><div class="statgrid">${pc}</div>
+    <div class="hint center" style="color:#fff">Stats only count couples a player actually guessed, so missing a week never hurts you.</div>`;
+}
 function stepbar(i){return `<div class="steps">${['1 · Players','2 · Couples','3 · Go!'].map((s,k)=>`<span class="step ${k<i?'done':k===i?'on':''}">${s}</span>`).join('')}</div>`}
 
 function vSetup(){
@@ -496,9 +575,10 @@ function vDance(){
 }
 
 function keypad(btn){
-  const done=S.tmp.every(x=>x);
+  const done=S.tmp.every(x=>x),js=justSet;justSet=-1;
   return `<div class="card">${S.judges.map((j,i)=>`<div class="keyrow">
-    <div class="judge"><div class="portrait">${avatar(j,i,S.tmp[i]?moodFor(S.tmp[i]):'idle')}</div><div class="jname">${esc(j.name)}</div></div>
+    <div class="judge"><div class="portrait">${avatar(j,i,S.tmp[i]?moodFor(S.tmp[i]):'idle')}</div><div class="jname">${esc(j.name)}</div>
+      <div class="pad ${S.tmp[i]?'has':''}"><div class="hint0">?</div><div class="pup ${i===js?'lift':''}"><div class="pstick"></div><div class="pcard ${S.tmp[i]>=9?'hi':''}">${S.tmp[i]||''}</div></div><div class="phand">✊</div></div></div>
     <div class="keys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="key" data-j="${i}" data-n="${n}" class="${S.tmp[i]===n?'sel':''}">${n}</button>`).join('')}</div></div>`).join('')}
     <div class="totalbox">Total: ${done?sum(S.tmp):'–'} <span style="opacity:.5">/ 40</span></div></div>
   <div class="actions"><button class="big pink ${done?'pulse':''}" data-act="confirm" ${done?'':'disabled'}>${btn}</button></div>`;
@@ -625,6 +705,7 @@ function finishWeek(){
   const winners=best>0?rows.filter(r=>r.score===best).map(r=>r.name):[];
   w.pids.forEach(id=>{const p=player(id);if(!p)return;const s=S.season[id]=S.season[id]||{pts:0,weeks:0,wins:0};
     s.name=p.name;s.color=p.color;s.av=p.av;s.pts+=w.totals[id]||0;s.weeks++;if(best>0&&(w.totals[id]||0)===best)s.wins++});
+  w.entries.forEach(e=>{const r=w.results[e.cid];if(r&&r.guesses)S.rounds.push({w:w.n,c:couple(e.cid).name,d:e.dance||'',r:r.real,g:r.guesses})});
   w.leaving.forEach(id=>{couple(id).out=w.n});
   S.history.push({n:w.n,theme:w.theme||'',winners,out:w.leaving.map(id=>couple(id).name),sick:w.entries.filter(e=>e.status==='sick').map(e=>couple(e.cid).name)});
   S.weeksDone=Math.max(S.weeksDone,w.n);S.week=null;overlay=null;save();render();
@@ -670,7 +751,7 @@ document.addEventListener('click',e=>{
   case 'danced':startCouple();w.phase='guess';save();return render();
   case 'cantdance':if(confirm('Mark this couple as absent this week and skip them?')){entry().status='sick';advance()}return;
   case 'ready':ready=true;return render();
-  case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;save();return render();
+  case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;justSet=+b.dataset.j;save();return render();
   case 'confirm':
     if(w.phase==='guess'){w.guesses[w.order[w.oi]]=S.tmp.slice();S.tmp=[null,null,null,null];ready=false;w.oi++;if(w.oi>=w.order.length)w.phase='real'}
     else if(w.phase==='real'){const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses))};
@@ -706,7 +787,7 @@ document.addEventListener('keydown',e=>{
   const w=W();if(overlay||!w||!['guess','real'].includes(w.phase)||(w.phase==='guess'&&!ready)||e.target.matches('input,textarea'))return;
   if(e.key==='Enter'){const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
   if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
-  if(/^[0-9]$/.test(e.key)){const n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0)return;S.tmp[j]=n;sfx.key();save();render()}
+  if(/^[0-9]$/.test(e.key)){const n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0)return;S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
 render();
 })();
