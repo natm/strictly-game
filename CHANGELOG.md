@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.0.3 "Hush" (2026-11-05)
+- Sound is off by default. Tap 🔇 in the header to turn it on, and the game remembers your choice.
+
 ## v3.0.2 "Promenade" (2026-11-05)
 - Week setup: change player names right there while picking who's playing, and a new player's name box is ready to type in.
 - Help screen and footer link to the code on GitHub.

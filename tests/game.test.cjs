@@ -721,3 +721,17 @@ test('week setup: rename players in place; help and footer link to the repo', as
   assert.ok(await page.locator('#view a[href="https://github.com/natm/strictly-game"]').count() >= 1, 'help links to the repo');
   assert.ok(await page.locator('.credits a[href="https://github.com/natm/strictly-game"]').count() >= 1, 'footer links to the repo');
 });
+
+test('sound is off by default and remembers when you turn it on', async () => {
+  const page = await open();
+  assert.equal((await state(page) || {}).sound || false, false);
+  assert.match(await page.textContent('[data-act=snd]'), /🔇/);
+  await page.click('[data-act=snd]');
+  assert.equal((await state(page)).sound, true);
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  assert.match(await page.textContent('[data-act=snd]'), /🔊/, 'stays on after a reload once chosen');
+  // an older save that had sound on by default gets switched off
+  await page.evaluate(() => { const S = JSON.parse(localStorage.getItem('strictly-v2')); S.sound = true; delete S.soundSet; localStorage.setItem('strictly-v2', JSON.stringify(S)); });
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  assert.match(await page.textContent('[data-act=snd]'), /🔇/);
+});

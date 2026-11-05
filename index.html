@@ -507,7 +507,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.0.2',RELEASE='Promenade';
+const VERSION='3.0.3',RELEASE='Hush';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -526,9 +526,10 @@ const mkPlayer=(i,name)=>({id:uid(),name:name||'Player '+(i+1),color:COLORS[i%CO
 const defaultPresenters=()=>[{name:'Emma Willis',photo:''},{name:'Josh Widdicombe',photo:''},{name:'Johannes Radebe',photo:''}];
 const BANDLEADER={name:'Dave Arch',photo:''};   // pops up rarely after the judges
 const defaultState=()=>({v:2,presenters:defaultPresenters(),players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],rounds:[],weeksDone:0,week:null,
-  tmp:[null,null,null,null],sound:true,jOrder:2,seasonTab:'players'});
+  tmp:[null,null,null,null],sound:false,jOrder:2,seasonTab:'players'});
 let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),{jOrder:0},o)}catch(e){}return defaultState()})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save – storage full?')}};
+if(!S.soundSet)S.sound=false;
 /* one-off: put judges in show order (Craig, Motsi, Shirley, Anton) and re-order every saved score to match */
 (function migrateJudgeOrder(){
   if(S.jOrder===2)return;
@@ -1534,7 +1535,7 @@ document.addEventListener('click',e=>{
   if(['key','togglehere','leave','mv'].indexOf(a)<0)sfx.pop();
   switch(a){
   case 'fs':{const d=document.documentElement;document.fullscreenElement?document.exitFullscreen():(d.requestFullscreen||d.webkitRequestFullscreen).call(d);return}
-  case 'snd':S.sound=!S.sound;save();if(S.sound)sfx.init();return render();
+  case 'snd':S.sound=!S.sound;S.soundSet=true;save();if(S.sound)sfx.init();return render();
   case 'home':overlay='home';return render();
   case 'nav':overlay=b.dataset.to||null;return render();
   case 'resume':overlay=null;return render();
