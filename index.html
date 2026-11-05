@@ -436,6 +436,7 @@ table.res tr.rrow{opacity:0;animation:slidein .5s forwards}
 .lrow .mv.up{color:#0a9a4f}.lrow .mv.dn{color:var(--red)}
 .lrow.gone{opacity:.55;filter:grayscale(.7)}
 .miniscore{display:inline-flex;gap:3px;margin-left:10px;vertical-align:middle}
+.lrow .nm .t small+.miniscore{display:flex;flex-wrap:wrap;margin:3px 0 0;white-space:normal}
 .miniscore b{background:#fff;color:var(--red);border:2px solid var(--ink);border-radius:6px;padding:0 6px;font-size:.7em}
 
 /* misc */
@@ -496,7 +497,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.9.0',RELEASE='Spin';
+const VERSION='2.9.1',RELEASE='Pivot';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -989,9 +990,17 @@ function vSeason(){
   }else if(tab==='stats'){
     body=vStats();
   }else if(tab==='couples'){
-    const rows=S.couples.map(c=>({name:c.name,art:art(c,'sm'),score:sum(c.scores.map(s=>sum(s.real))),gone:c.out!=null,
-      sub:c.out!=null?`Left in week ${c.out}`:(c.scores.length?`${c.scores.length} dance${c.scores.length===1?'':'s'} · best ${Math.max(...c.scores.map(s=>sum(s.real)))}`:'Not danced yet')})).sort((a,b)=>b.score-a.score);
-    body=board(rows,"Judges' Season Scoreboard");
+    // every real score this series (Wikipedia) + weeks played here, ranked by average judges' score
+    const all=seriesDances(),groups={};
+    all.forEach(x=>{(groups[x.key]=groups[x.key]||{key:x.key,name:x.name,d:[]}).d.push(x)});
+    const outWeek=key=>{const c=S.couples.find(c=>celebOf(c.name)===key);if(c&&c.out!=null)return c.out;const e=(SD.eliminated||[]).find(e=>normName(e[1])===key);return e?e[0]:null};
+    const rows=Object.values(groups).map(g=>{const c=S.couples.find(c=>celebOf(c.name)===g.key),name=c?c.name:g.name,tots=g.d.sort((a,b)=>a.w-b.w).map(x=>sum(x.r));
+      const avg=sum(tots)/tots.length,best=g.d.reduce((a,b)=>sum(b.r)>sum(a.r)?b:a),out=outWeek(g.key);
+      return{name,art:c?art(c,'sm'):'',score:Math.round(avg*10)/10,gone:out!=null,
+        sub:`${out!=null?`👋 Left week ${out} · `:''}${tots.length} dance${tots.length===1?'':'s'} · best ${sum(best.r)}${best.d?` (${esc(best.d)})`:''}`,
+        mini:`<div class="miniscore">${tots.slice(-6).map(t=>`<b>${t}</b>`).join('')}</div>`}});
+    rows.sort((a,b)=>(a.gone-b.gone)||b.score-a.score);
+    body=board(rows,"Judges' Season Scoreboard")+'<div class="hint center" style="color:#fff">Average judges\' score per dance across the whole series · recent totals shown under each couple</div>';
   }else{
     body=`<div class="board"><div class="bh">Week by week</div>${S.history.slice().reverse().map(h=>`<div class="lrow" style="grid-template-columns:1fr;font-size:18px">
       <div><b>Week ${h.n}${h.theme?' · '+esc(h.theme):''}</b> · 🏆 ${esc(h.winners.join(' & ')||'–')}<small>${h.out.length?'👋 Left: '+esc(h.out.join(', ')):'Nobody left'}${h.sick.length?' · 🤕 Absent: '+esc(h.sick.join(', ')):''}</small></div></div>`).join('')||'<div class="lrow"><div></div><div>No weeks finished yet…</div><div></div></div>'}</div>`;

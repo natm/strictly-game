@@ -629,3 +629,15 @@ test('a week saved before this change, stuck on "who went home", gets counted on
   const s = await state(page);
   assert.equal(s.history.length, 1); assert.equal(s.rounds.length, 1);
 });
+
+test('couples season scoreboard uses the real series scores', async () => {
+  const page = await open();
+  await page.click('[data-act=nav][data-to=season]'); await page.click('[data-act=stab][data-t=couples]');
+  const txt = await page.textContent('#view');
+  assert.doesNotMatch(txt, /Not danced yet/);
+  assert.match(txt, /Lacey Turner/); assert.match(txt, /Charleston/);           // Lacey's best: week 6 Charleston, 36
+  assert.match(txt, /Left week 2/);                                              // Chris & Amy, eliminated in the real series
+  const first = await page.$eval('.board .lrow .sc', e => e.textContent.trim());
+  assert.ok(+first > 25, 'top average looks like a real Strictly average');
+  assert.equal(await page.locator('.board .lrow.gone').count(), 5, 'the 5 couples already eliminated are greyed out');
+});

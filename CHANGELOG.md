@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.9.1 "Pivot" (2026-11-05)
+- The couples' season scoreboard uses every real score this series plus the weeks you play. Couples are ranked by average judges' score, with dances, best dance and recent totals. Eliminated couples are greyed out at the bottom.
+
 ## v2.9.0 "Spin" (2026-11-05)
 - A week counts as soon as its results podium appears: season points, wins, Fun Stats and the Weeks table. Before, it only counted after "Who went home?" was confirmed. "Who went home?" now just records eliminations.
 - A week already on the results or "who went home" screen is saved as soon as the game opens.
