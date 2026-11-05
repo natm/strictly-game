@@ -31,6 +31,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
   -webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);cursor:pointer;white-space:nowrap}
 .logo small{display:block;font-size:.34em;letter-spacing:.35em;color:#fff;text-shadow:0 2px 0 var(--ink);-webkit-text-stroke:1px var(--ink);margin-top:2px}
 .hdr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.pill.wk{max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.themetag{position:absolute;z-index:4;top:46px;left:14px;max-width:70%;font-family:var(--title);background:var(--cyan);border:var(--line);border-radius:14px;padding:2px 14px;font-size:clamp(14px,2vw,22px);transform:rotate(-2deg);box-shadow:0 4px 0 var(--ink);opacity:0;animation:drop .7s 2.2s cubic-bezier(.2,1.8,.4,1) forwards}
+.award{display:flex;gap:10px;align-items:center;font-family:var(--title);font-size:clamp(15px,2vw,22px);padding:6px 0;border-bottom:3px dashed #0002}
+.award:last-child{border:0}
+label.hint{display:block;margin:0 0 2px;font-weight:600}
 .pill{font-family:var(--title);background:var(--cream);border:3px solid var(--ink);border-radius:999px;padding:2px 12px;font-size:clamp(12px,1.5vw,16px);box-shadow:0 3px 0 var(--ink)}
 main{flex:1;overflow:auto;padding:clamp(10px,2.2vw,26px);display:flex;flex-direction:column;-webkit-overflow-scrolling:touch}
 .wrap{width:100%;max-width:1150px;margin:auto;animation:pop .45s cubic-bezier(.2,1.6,.4,1) both}
@@ -371,7 +376,7 @@ function weekCoupleRows(){
 /* =============== views =============== */
 function hdr(){
   const w=W();
-  $('#hdr').innerHTML=(w?`<span class="pill">Week ${w.n}</span>`:'')+
+  $('#hdr').innerHTML=(w?`<span class="pill wk">Week ${w.n}${w.theme?' · '+esc(w.theme):''}</span>`:'')+
    `<button class="sm cyan" data-act="nav" data-to="home">🏠</button>
     <button class="sm cyan" data-act="nav" data-to="season">🏆 Tables</button>
     <button class="sm cyan" data-act="nav" data-to="rules">❓</button>
@@ -386,7 +391,7 @@ function vHome(){
   return `<div class="hero"><div class="ball">🪩</div>
     <h2 class="t">${letters('Keep Dancing!',0)}</h2><div class="sub">The family score-guessing game</div></div>
     <div class="bigbtns">
-      ${inProg?`<button class="big pink pulse" data-act="resume">▶ Continue Week ${w.n} <small style="font-size:.6em">(${phaseName[w.phase]||''})</small></button>
+      ${inProg?`<button class="big pink pulse" data-act="resume">▶ Continue Week ${w.n}${w.theme?' · '+esc(w.theme):''} <small style="font-size:.6em">(${phaseName[w.phase]||''})</small></button>
         <button class="white" data-act="quitweek">Abandon this week</button>`
         :`<button class="big pink pulse" data-act="newweek" ${n?'':'disabled'}>✨ Start Week ${S.weeksDone+1}</button>
         ${n?'':'<div class="center" style="color:#fff;font-family:var(--title)">Add your couples first 👇</div>'}`}
@@ -447,7 +452,7 @@ function vSeason(){
     body=board(rows,"Judges' Season Scoreboard");
   }else{
     body=`<div class="board"><div class="bh">Week by week</div>${S.history.slice().reverse().map(h=>`<div class="lrow" style="grid-template-columns:1fr;font-size:18px">
-      <div><b>Week ${h.n}</b> · 🏆 ${esc(h.winners.join(' & ')||'–')}<small>${h.out.length?'👋 Left: '+esc(h.out.join(', ')):'Nobody left'}${h.sick.length?' · 🤕 Absent: '+esc(h.sick.join(', ')):''}</small></div></div>`).join('')||'<div class="lrow"><div></div><div>No weeks finished yet…</div><div></div></div>'}</div>`;
+      <div><b>Week ${h.n}${h.theme?' · '+esc(h.theme):''}</b> · 🏆 ${esc(h.winners.join(' & ')||'–')}<small>${h.out.length?'👋 Left: '+esc(h.out.join(', ')):'Nobody left'}${h.sick.length?' · 🤕 Absent: '+esc(h.sick.join(', ')):''}</small></div></div>`).join('')||'<div class="lrow"><div></div><div>No weeks finished yet…</div><div></div></div>'}</div>`;
   }
   return `<h2 class="t">Season Tables</h2><div class="sub">Points across every week</div>${tabs}${body}
     <div class="actions"><button class="big pink" data-act="nav" data-to="">← Back</button></div>`;
@@ -458,7 +463,9 @@ function stepbar(i){return `<div class="steps">${['1 · Players','2 · Couples',
 function vSetup(){
   const w=W();
   const ok=S.players.some(p=>p.here)&&w.entries.some(e=>e.status==='dance');
-  return `<h2 class="t">Week ${w.n}</h2><div class="sub">Who's playing and who's dancing tonight?</div>
+  return `<h2 class="t">Week ${w.n}${w.theme?`<br><span style="font-size:.55em">${esc(w.theme)}</span>`:''}</h2><div class="sub">Who's playing and who's dancing tonight?</div>
+  <div class="card"><h3>📅 This week</h3><div class="row"><div style="width:110px"><label class="hint">Week number</label><input type="number" min="1" max="99" data-bind="weekn" value="${w.n}"></div>
+    <div class="grow"><label class="hint">Theme (optional)</label><input type="text" data-bind="theme" maxlength="40" value="${esc(w.theme||'')}" placeholder="e.g. Movie Week, Halloween, Musicals…"></div></div></div>
   <div class="card"><h3>🎉 Who's playing tonight? <span class="hint">(tap to switch on/off)</span></h3>
     <div class="chips">${S.players.map(p=>`<div class="chip ${p.here?'':'off'}" data-act="togglehere" data-id="${p.id}"><span class="av" style="background:${p.color}">${p.av}</span>${esc(p.name)}</div>`).join('')}
     <button class="sm green" data-act="addplayerhere">+ New player</button></div></div>
@@ -466,9 +473,10 @@ function vSetup(){
     ${w.entries.map((e,i)=>{const c=couple(e.cid);return `<div class="entry ${e.status==='sick'?'sick':''}">
       <div class="mv"><button data-act="mv" data-i="${i}" data-d="-1">▲</button><button data-act="mv" data-i="${i}" data-d="1">▼</button></div>
       <div class="n">${i+1}. ${esc(c.name)}</div>
-      <input type="text" data-bind="dance:${i}" value="${esc(e.dance)}" placeholder="Dance (e.g. Waltz)">
+      <input type="text" list="dances" data-bind="dance:${i}" value="${esc(e.dance)}" placeholder="Dance (e.g. Waltz)">
       <button class="sm ${e.status==='sick'?'orange':'green'}" style="${e.status==='sick'?'background:var(--orange)':''}" data-act="togglesick" data-i="${i}">${e.status==='sick'?'🤕 Not dancing':'✅ Dancing'}</button></div>`}).join('')||'<div class="hint">No couples left! Add some under Couples, Players &amp; Judges.</div>'}
     <div class="actions" style="margin:6px 0 0"><button class="cyan" data-act="shuffleorder">🔀 Shuffle order</button><button class="white" data-act="nav" data-to="manage">Edit couples</button></div></div>
+  <datalist id="dances">${['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha Cha Cha','Rumba','Samba','Salsa','Jive','Paso Doble','Charleston','Argentine Tango','Couple\'s Choice','Street/Commercial','Showdance','Musical Theatre','Contemporary','Ballroom Showdance'].map(d=>`<option value="${d}">`).join('')}</datalist>
   <div class="actions"><button class="big pink" data-act="startweek" ${ok?'':'disabled'}>🎬 Lights, camera, dance!</button><button class="white" data-act="quitweek">Cancel</button></div>`;
 }
 
@@ -478,6 +486,7 @@ function vDance(){
   const e=entry(),c=couple(e.cid);
   return `<div class="stage"><div class="beam b1"></div><div class="beam b2"></div>
     <div class="ballwrap"><div class="string"></div><div class="mball">🪩</div></div>
+    ${W().theme?`<div class="themetag">🎬 ${esc(W().theme)}</div>`:''}
     <div class="stagecontent"><div class="upnext">${progress()} · UP NEXT!</div>
       <div class="couplebig">${letters(c.name,1.9)}</div>
       ${e.dance?`<div class="dancetag">💃 ${esc(e.dance)}</div>`:''}</div>
@@ -517,7 +526,7 @@ function vReveal(){
       ${x.g.map((g,k)=>`<td><span class="g ${cls(g,r[k])}">${g}</span></td>`).join('')}
       <td>${sum(x.g)}${x.s.bonus?` <small style="color:var(--pink)">+${x.s.bonus}</small>`:''}</td><td class="pts">+${x.s.total}</td></tr>`).join('')}</table>
     <div class="hint center">🟩 exact = 3 · 🟨 one away = 1 · total bonus: exact +5, within 2 +2</div></div>
-    <div class="actions"><button class="big pink" data-act="board">Leaderboards! 🏆</button></div></div>
+    <div class="actions"><button class="big pink" data-act="board">Leaderboards! 🏆</button><button class="white" data-act="fixscores">✏️ Fix scores</button></div></div>
   <div class="actions" id="skip"><button class="sm white" data-act="skipreveal">Skip ⏭</button></div>`;
 }
 function playReveal(){
@@ -546,12 +555,22 @@ function vBoard(){
   <div class="actions"><button class="big pink pulse" data-act="next">${last?"That's a wrap! 🎬":'Next couple →'}</button></div>`;
 }
 
+function awardsHtml(){
+  const w=W(),out=[];
+  S.judges.forEach((j,ji)=>{const pts={};w.pids.forEach(id=>pts[id]=0);
+    Object.values(w.results).forEach(res=>{if(!res.guesses)return;w.pids.forEach(id=>{const g=res.guesses[id];if(g){const d=Math.abs(g[ji]-res.real[ji]);pts[id]+=d===0?3:d===1?1:0}})});
+    const top=Object.entries(pts).sort((a,b)=>b[1]-a[1])[0];
+    if(top&&top[1]>0&&player(top[0]))out.push(`<div class="award"><span class="av" style="background:${player(top[0]).color}">${player(top[0]).av}</span><span>${esc(player(top[0]).name)} <small style="opacity:.7">is ${esc(j.name.split(' ')[0])}'s mind-reader (${top[1]} pts)</small></span></div>`)});
+  const best=weekCoupleRows()[0];
+  if(best)out.unshift(`<div class="award"><span class="av" style="background:var(--yellow)">⭐</span><span>${esc(best.name)} <small style="opacity:.7">danced the night's best: ${best.score}/40</small></span></div>`);
+  return out.length?`<div class="card"><h3>🏅 Tonight's awards</h3>${out.join('')}</div>`:'';
+}
 function vWrap(){
   const rows=weekPlayerRows(false),top=rows[0];
   const pod=[1,0,2].map(i=>rows[i]?`<div class="pod p${i+1}"><div style="font-size:2em">${['🥇','🥈','🥉'][i]}</div><div class="n">${rows[i].av} ${esc(rows[i].name)}</div><div class="p">${rows[i].score}</div></div>`:'').join('');
-  return `<div class="center"><h2 class="t">${top&&top.score>0?`${esc(top.name)} wins Week ${W().n}!`:`Week ${W().n} complete!`}</h2><div class="sub">👏 Clap clap clap clap clap! 👏</div></div>
+  return `<div class="center"><h2 class="t">${top&&top.score>0?`${esc(top.name)} wins Week ${W().n}!`:`Week ${W().n} complete!`}</h2><div class="sub">${W().theme?esc(W().theme)+' · ':''}👏 Clap clap clap clap clap! 👏</div></div>
   <div class="podium">${pod}</div>
-  <div class="grid2">${board(rows,'Week Results')}${board(weekCoupleRows(),"Judges' Scoreboard")}</div>
+  ${awardsHtml()}<div class="grid2">${board(rows,'Week Results')}${board(weekCoupleRows(),"Judges' Scoreboard")}</div>
   <div class="actions"><button class="big pink pulse" data-act="toelim">Who went home? 👋</button></div>`;
 }
 
@@ -585,7 +604,7 @@ function render(){
 function newWeek(){
   const n=S.weeksDone+1;
   const entries=activeCouples().map(c=>({cid:c.id,dance:'',status:'dance'}));
-  S.week={n,phase:'setup',entries,pids:[],idx:0,order:[],oi:0,guesses:{},totals:{},prevTotals:{},results:{},leaving:[]};
+  S.week={n,theme:'',phase:'setup',entries,pids:[],idx:0,order:[],oi:0,guesses:{},totals:{},prevTotals:{},results:{},leaving:[]};
   S.tmp=[null,null,null,null];save();
 }
 function resizePhoto(file,i){
@@ -607,7 +626,7 @@ function finishWeek(){
   w.pids.forEach(id=>{const p=player(id);if(!p)return;const s=S.season[id]=S.season[id]||{pts:0,weeks:0,wins:0};
     s.name=p.name;s.color=p.color;s.av=p.av;s.pts+=w.totals[id]||0;s.weeks++;if(best>0&&(w.totals[id]||0)===best)s.wins++});
   w.leaving.forEach(id=>{couple(id).out=w.n});
-  S.history.push({n:w.n,winners,out:w.leaving.map(id=>couple(id).name),sick:w.entries.filter(e=>e.status==='sick').map(e=>couple(e.cid).name)});
+  S.history.push({n:w.n,theme:w.theme||'',winners,out:w.leaving.map(id=>couple(id).name),sick:w.entries.filter(e=>e.status==='sick').map(e=>couple(e.cid).name)});
   S.weeksDone=Math.max(S.weeksDone,w.n);S.week=null;overlay=null;save();render();
   toast(`Week ${w.n} saved! ${w.leaving.length?'👋 '+w.leaving.length+' left':''}`);
 }
@@ -654,9 +673,11 @@ document.addEventListener('click',e=>{
   case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;save();return render();
   case 'confirm':
     if(w.phase==='guess'){w.guesses[w.order[w.oi]]=S.tmp.slice();S.tmp=[null,null,null,null];ready=false;w.oi++;if(w.oi>=w.order.length)w.phase='real'}
-    else if(w.phase==='real'){const r=S.tmp.slice();w.results[entry().cid]={real:r};
+    else if(w.phase==='real'){const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses))};
       w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});S.tmp=[null,null,null,null];w.phase='reveal'}
     save();return render();
+  case 'fixscores':{const res=w.results[entry().cid];w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)-scorePlayer(res.guesses[pid],res.real).total});
+    S.tmp=res.real.slice();delete w.results[entry().cid];w.phase='real';save();return render()}
   case 'skipreveal':window.__skip&&window.__skip();return;
   case 'board':w.phase='board';save();return render();
   case 'next':advance();return;
@@ -668,6 +689,8 @@ document.addEventListener('click',e=>{
 /* text inputs write straight into state (no re-render so focus is kept) */
 document.addEventListener('input',e=>{
   const t=e.target,d=t.dataset.bind;if(!d)return;const [k,id,f]=d.split(':');
+  if(k==='weekn'){W().n=Math.max(1,parseInt(t.value)||1);save();hdr();return}
+  if(k==='theme'){W().theme=t.value;save();hdr();return}
   if(k==='couple')couple(id)[f]=t.value;
   else if(k==='player')player(id)[f]=t.value;
   else if(k==='judge')S.judges[+id][f]=t.value;
@@ -679,6 +702,12 @@ document.addEventListener('change',e=>{
   if(e.target.id==='importfile'&&e.target.files[0]){const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(o.v!==2)throw 0;S=Object.assign(defaultState(),o);save();overlay=null;render();toast('Backup restored!')}catch(x){alert('That file is not a valid backup.')}};fr.readAsText(e.target.files[0]);e.target.value=''}
 });
 
+document.addEventListener('keydown',e=>{
+  const w=W();if(overlay||!w||!['guess','real'].includes(w.phase)||(w.phase==='guess'&&!ready)||e.target.matches('input,textarea'))return;
+  if(e.key==='Enter'){const b=document.querySelector('[data-act=confirm]');if(b&&!b.disabled)b.click();return}
+  if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
+  if(/^[0-9]$/.test(e.key)){const n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0)return;S.tmp[j]=n;sfx.key();save();render()}
+});
 render();
 })();
 </script>
