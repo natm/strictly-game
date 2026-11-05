@@ -2,447 +2,682 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b0f4d">
 <title>Strictly Score Guess</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
 <style>
 :root{
-  --gold:#f5d27a; --gold2:#c9972e; --deep:#12041f; --plum:#2a0a45; --pink:#ff3d8b; --cream:#fff6dc;
-  --green:#2fd27a; --amber:#ffb020; --red:#ff5a5a;
-  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
-  --sans:'Montserrat','Segoe UI',Arial,sans-serif;
+  --ink:#1c0a33; --purple:#3b1470; --purple2:#2b0f4d; --pink:#ff4fa0; --yellow:#ffd93d; --cyan:#35d0ff; --green:#3ddc84; --orange:#ff9f1c; --red:#ff4d4d;
+  --cream:#fff7e0; --cream2:#ffeab5;
+  --title:'Lilita One','Arial Rounded MT Bold','Chalkboard SE',ui-rounded,system-ui,sans-serif;
+  --body:'Fredoka','Arial Rounded MT Bold','Trebuchet MS',ui-rounded,system-ui,sans-serif;
+  --line:4px solid var(--ink);
+  --shadow:0 6px 0 var(--ink);
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{
-  font-family:var(--sans);color:var(--cream);overflow:hidden;
-  background:
-    radial-gradient(ellipse at 50% -10%,#6a1b9a55,transparent 60%),
-    radial-gradient(ellipse at 10% 110%,#ff3d8b33,transparent 50%),
-    radial-gradient(ellipse at 90% 110%,#f5d27a22,transparent 50%),
-    linear-gradient(180deg,#1b0630,#0a0214);
-}
-#sparkles{position:fixed;inset:0;pointer-events:none;z-index:0}
+body{font-family:var(--body);font-weight:500;color:var(--ink);overflow:hidden;
+  background:radial-gradient(ellipse at 50% 0%,#7a2fd0 0%,transparent 60%),radial-gradient(ellipse at 0% 100%,#ff4fa088 0%,transparent 50%),
+  radial-gradient(ellipse at 100% 100%,#35d0ff66 0%,transparent 50%),linear-gradient(180deg,#3b1470,#1c0a33)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
 #app{position:relative;z-index:1;height:100vh;height:100dvh;display:flex;flex-direction:column}
-header{display:flex;align-items:center;justify-content:space-between;padding:12px clamp(12px,3vw,32px);gap:10px;
-  border-bottom:2px solid var(--gold2);background:linear-gradient(180deg,#00000066,#00000022)}
-.logo{font-family:var(--serif);font-weight:900;font-size:clamp(20px,3.2vw,38px);letter-spacing:.04em;
-  background:linear-gradient(180deg,#fff4c9,var(--gold) 45%,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;
-  text-shadow:0 0 30px #f5d27a44}
-.logo small{display:block;font-family:var(--sans);font-size:.32em;letter-spacing:.5em;font-weight:600;color:var(--pink);-webkit-text-fill-color:var(--pink)}
-.hdr-right{display:flex;gap:8px;align-items:center}
-main{flex:1;overflow:auto;padding:clamp(12px,2.5vw,28px);display:flex;flex-direction:column;align-items:center}
-.wrap{width:100%;max-width:1200px;margin:auto}
-h1,h2,h3{font-family:var(--serif)}
-h2{font-size:clamp(24px,4vw,46px);color:var(--gold);text-align:center;margin-bottom:10px}
-h3{font-size:clamp(18px,2.2vw,26px);color:var(--gold);margin-bottom:8px}
-.sub{text-align:center;opacity:.8;letter-spacing:.15em;text-transform:uppercase;font-size:clamp(11px,1.4vw,14px);margin-bottom:14px}
-button{font-family:var(--sans);cursor:pointer;border:0;color:#2b1200;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-  background:linear-gradient(180deg,#ffe9a8,var(--gold) 50%,var(--gold2));border-radius:999px;padding:12px 26px;font-size:clamp(13px,1.5vw,17px);
-  box-shadow:0 4px 0 #7a5410,0 8px 22px #0008;transition:transform .08s}
-button:active{transform:translateY(3px);box-shadow:0 1px 0 #7a5410}
-button.big{font-size:clamp(16px,2.2vw,26px);padding:16px 38px}
-button.ghost{background:transparent;color:var(--gold);border:2px solid var(--gold2);box-shadow:none}
-button.pink{background:linear-gradient(180deg,#ff8cba,var(--pink));color:#fff;box-shadow:0 4px 0 #8c1650,0 8px 22px #0008}
-button.sm{padding:6px 14px;font-size:12px}
-button:disabled{opacity:.4;cursor:not-allowed}
-.card{background:linear-gradient(180deg,#2a0a45cc,#12041fcc);border:2px solid var(--gold2);border-radius:18px;padding:18px;
-  box-shadow:0 0 0 3px #00000066,0 10px 40px #000a, inset 0 0 40px #f5d27a11}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px clamp(10px,2.5vw,26px);flex:none;
+  background:linear-gradient(180deg,var(--pink),#d1257a);border-bottom:var(--line);box-shadow:0 4px 0 #0005}
+.logo{font-family:var(--title);font-size:clamp(20px,3.4vw,40px);color:var(--yellow);letter-spacing:.03em;line-height:1;
+  -webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);cursor:pointer;white-space:nowrap}
+.logo small{display:block;font-size:.34em;letter-spacing:.35em;color:#fff;text-shadow:0 2px 0 var(--ink);-webkit-text-stroke:1px var(--ink);margin-top:2px}
+.hdr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-family:var(--title);background:var(--cream);border:3px solid var(--ink);border-radius:999px;padding:2px 12px;font-size:clamp(12px,1.5vw,16px);box-shadow:0 3px 0 var(--ink)}
+main{flex:1;overflow:auto;padding:clamp(10px,2.2vw,26px);display:flex;flex-direction:column;-webkit-overflow-scrolling:touch}
+.wrap{width:100%;max-width:1150px;margin:auto;animation:pop .45s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:scale(.88) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+
+h1,h2,h3{font-family:var(--title);font-weight:400}
+h2.t{font-size:clamp(28px,5vw,58px);color:var(--yellow);text-align:center;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);line-height:1.05;margin-bottom:6px}
+.sub{font-family:var(--title);text-align:center;color:#fff;font-size:clamp(14px,2vw,22px);margin-bottom:16px;text-shadow:0 2px 0 var(--ink);letter-spacing:.04em}
+h3{font-size:clamp(20px,2.4vw,28px);margin-bottom:10px}
+
+button{font-family:var(--title);font-size:clamp(14px,1.7vw,19px);letter-spacing:.03em;cursor:pointer;color:var(--ink);background:var(--yellow);
+  border:var(--line);border-radius:16px;padding:10px 20px;box-shadow:var(--shadow);transition:transform .08s,box-shadow .08s;position:relative}
+button:hover{transform:translateY(-2px) rotate(-1deg)}
+button:active{transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+button.pink{background:var(--pink);color:#fff;text-shadow:0 2px 0 var(--ink)}
+button.cyan{background:var(--cyan)}
+button.green{background:var(--green)}
+button.white{background:#fff}
+button.red{background:var(--red);color:#fff}
+button.big{font-size:clamp(18px,2.6vw,30px);padding:14px 34px;border-radius:22px}
+button.sm{font-size:13px;padding:5px 12px;border-width:3px;border-radius:12px;box-shadow:0 3px 0 var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.6)}
+button.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+
+.card{background:var(--cream);border:var(--line);border-radius:22px;padding:clamp(12px,2vw,22px);box-shadow:var(--shadow),0 14px 30px #0006;margin-bottom:16px}
+.card.dark{background:var(--purple2);color:#fff}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:800px){.grid2{grid-template-columns:1fr}}
-input[type=text],textarea{width:100%;background:#0a0214;border:2px solid #5b2a85;border-radius:10px;color:var(--cream);padding:10px 12px;font:600 15px var(--sans)}
-input[type=text]:focus,textarea:focus{outline:none;border-color:var(--gold)}
-textarea{min-height:170px;resize:vertical}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0}
 .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.dot{width:26px;height:26px;border-radius:50%;flex:none;border:2px solid #fff8}
+.grow{flex:1;min-width:0}
+input[type=text],input[type=number],textarea{width:100%;border:3px solid var(--ink);border-radius:12px;padding:8px 12px;font:600 16px var(--body);background:#fff;color:var(--ink)}
+input:focus,textarea:focus{outline:none;box-shadow:0 0 0 4px var(--cyan)}
+textarea{min-height:90px;resize:vertical}
+.hint{font-size:13px;opacity:.7;margin-top:4px}
 .center{text-align:center}
-.mt{margin-top:18px}
-.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+
+/* avatars & chips */
+.av{display:inline-grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;border:3px solid var(--ink);font-size:1em;flex:none;line-height:1}
+.chip{display:inline-flex;align-items:center;gap:8px;border:3px solid var(--ink);border-radius:999px;padding:4px 14px 4px 5px;background:#fff;font-family:var(--title);font-size:18px;
+  box-shadow:0 3px 0 var(--ink);cursor:pointer;user-select:none;transition:transform .1s}
+.chip:active{transform:translateY(3px);box-shadow:none}
+.chip.off{opacity:.45;filter:grayscale(1);background:#ddd}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
 
 /* judges */
-.judges{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.6vw,20px)}
-@media(max-width:600px){.judges{grid-template-columns:repeat(2,1fr)}}
+.judges{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:620px){.judges{grid-template-columns:repeat(2,1fr)}}
 .judge{text-align:center}
-.portrait{width:100%;aspect-ratio:1;border-radius:50%;border:4px solid var(--gold);background:radial-gradient(circle at 50% 30%,#5b2a85,#1b0630);overflow:hidden;
-  box-shadow:0 0 24px #f5d27a66,0 6px 20px #000a;max-width:170px;margin:0 auto 6px}
+.portrait{width:100%;max-width:170px;aspect-ratio:1;border-radius:50%;border:var(--line);background:radial-gradient(circle at 50% 25%,#ffe27a,#ff9ecb);overflow:hidden;margin:0 auto 6px;box-shadow:var(--shadow)}
 .portrait img,.portrait svg{width:100%;height:100%;object-fit:cover;display:block}
-.jname{font-family:var(--serif);font-weight:700;font-size:clamp(13px,1.6vw,19px);color:var(--gold)}
-.jrole{font-size:10px;letter-spacing:.2em;opacity:.7;text-transform:uppercase}
+.jname{font-family:var(--title);font-size:clamp(14px,1.8vw,20px)}
 
 /* keypad */
-.keyrow{display:grid;grid-template-columns:minmax(90px,150px) 1fr;gap:12px;align-items:center;margin-bottom:10px}
+.keyrow{display:grid;grid-template-columns:minmax(110px,190px) 1fr;gap:14px;align-items:center;margin-bottom:12px}
 .keyrow .judge{display:flex;align-items:center;gap:10px;text-align:left}
-.keyrow .portrait{width:clamp(44px,7vw,70px);margin:0;flex:none}
-.keys{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(3px,.8vw,8px)}
-.keys button{padding:0;aspect-ratio:1;border-radius:12px;font-size:clamp(14px,2.4vw,28px);font-family:var(--serif);box-shadow:0 3px 0 #7a5410;
-  background:linear-gradient(180deg,#3a1260,#1b0630);color:var(--gold);border:2px solid var(--gold2)}
-.keys button.sel{background:linear-gradient(180deg,#fff4c9,var(--gold));color:#2b1200}
+.keyrow .portrait{width:clamp(46px,7vw,74px);margin:0;flex:none;box-shadow:0 3px 0 var(--ink);border-width:3px}
+.keys{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(3px,.8vw,9px)}
+.keys button{padding:0;aspect-ratio:1;font-size:clamp(15px,2.8vw,32px);border-radius:14px;border-width:3px;background:#fff;box-shadow:0 4px 0 var(--ink)}
+.keys button:hover{background:var(--cream2)}
+.keys button.sel{background:var(--pink);color:#fff;transform:translateY(-4px) scale(1.12);text-shadow:0 2px 0 var(--ink);animation:wob .4s}
+@keyframes wob{30%{transform:translateY(-8px) scale(1.2) rotate(-6deg)}60%{transform:translateY(-3px) scale(1.1) rotate(4deg)}}
 @media(max-width:560px){.keyrow{grid-template-columns:1fr}.keys{grid-template-columns:repeat(5,1fr)}}
+.totalbox{font-family:var(--title);text-align:center;font-size:clamp(22px,3.2vw,36px)}
+
+/* stage */
+.stage{position:relative;overflow:hidden;border:var(--line);border-radius:26px;box-shadow:var(--shadow),0 16px 40px #000a;min-height:clamp(320px,62vh,640px);
+  background:radial-gradient(ellipse at 50% 120%,#ffd93d 0%,#ff9f1c55 25%,transparent 60%),linear-gradient(180deg,#2b0f4d,#12041f);display:flex;align-items:center;justify-content:center}
+.stage:after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:repeating-linear-gradient(90deg,#7a4a18 0 60px,#8d5a22 60px 120px);border-top:var(--line);z-index:1}
+.beam{position:absolute;top:-10%;width:34%;height:130%;transform-origin:50% 0;opacity:.35;mix-blend-mode:screen;
+  background:linear-gradient(180deg,#fff 0%,transparent 80%);clip-path:polygon(45% 0,55% 0,100% 100%,0 100%)}
+.beam.b1{left:8%;animation:sweepL 5s ease-in-out infinite alternate;background:linear-gradient(180deg,#ff4fa0,transparent 85%)}
+.beam.b2{right:8%;animation:sweepR 6s ease-in-out infinite alternate;background:linear-gradient(180deg,#35d0ff,transparent 85%)}
+@keyframes sweepL{from{transform:rotate(-24deg)}to{transform:rotate(14deg)}}
+@keyframes sweepR{from{transform:rotate(24deg)}to{transform:rotate(-14deg)}}
+.curtain{position:absolute;top:0;bottom:0;width:52%;z-index:5;border:var(--line);
+  background:repeating-linear-gradient(90deg,#c1121f 0 28px,#e63946 28px 56px,#a50f1a 56px 70px)}
+.curtain.l{left:0;border-left:0;animation:openL 1.5s .5s cubic-bezier(.7,0,.3,1) forwards}
+.curtain.r{right:0;border-right:0;animation:openR 1.5s .5s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes openL{to{transform:translateX(-102%)}}
+@keyframes openR{to{transform:translateX(102%)}}
+.pelmet{position:absolute;top:0;left:0;right:0;height:34px;z-index:6;background:var(--yellow);border-bottom:var(--line);
+  background-image:radial-gradient(circle at 20px 34px,var(--pink) 18px,transparent 19px);background-size:40px 100%}
+.ballwrap{position:absolute;top:34px;left:50%;z-index:2;transform-origin:50% 0;animation:swing 3s ease-in-out infinite alternate}
+.ballwrap .string{width:3px;height:34px;background:var(--ink);margin:0 auto}
+.ballwrap .mball{font-size:clamp(50px,9vw,96px);line-height:1;margin-left:-.5em;margin-top:-4px;filter:drop-shadow(0 0 20px #fff)}
+@keyframes swing{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+.stagecontent{position:relative;z-index:3;text-align:center;padding:90px 14px 70px;max-width:100%}
+.upnext{display:inline-block;font-family:var(--title);font-size:clamp(16px,2.6vw,28px);background:var(--pink);color:#fff;border:var(--line);border-radius:999px;
+  padding:4px 22px;box-shadow:0 4px 0 var(--ink);transform:rotate(-3deg);animation:drop .7s 1.6s cubic-bezier(.2,1.8,.4,1) both;text-shadow:0 2px 0 var(--ink)}
+@keyframes drop{from{transform:translateY(-120px) rotate(-3deg);opacity:0}to{transform:rotate(-3deg);opacity:1}}
+.couplebig{font-family:var(--title);font-size:clamp(34px,8vw,96px);line-height:1.05;color:#fff;margin:12px 0;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink)}
+.couplebig span{display:inline-block;opacity:0;animation:letter .6s cubic-bezier(.2,1.8,.4,1) forwards}
+@keyframes letter{from{transform:translateY(-80px) rotate(-30deg) scale(.3);opacity:0}to{transform:none;opacity:1}}
+.dancetag{display:inline-block;font-family:var(--title);font-size:clamp(18px,3.4vw,38px);color:var(--ink);background:var(--yellow);border:var(--line);border-radius:18px;padding:4px 22px;
+  transform:rotate(2deg);box-shadow:0 5px 0 var(--ink);opacity:0;animation:drop .7s 2.4s cubic-bezier(.2,1.8,.4,1) forwards}
 
 /* paddles */
-.paddles{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);margin:10px 0 20px}
-.paddle{perspective:800px;text-align:center}
-.paddle .face{background:#fff;color:#c1121f;font-family:var(--serif);font-weight:900;font-size:clamp(50px,13vw,150px);line-height:1.1;border-radius:14px;
-  border:6px solid var(--gold);box-shadow:0 12px 30px #000a;padding:4px 0;transform:rotateX(90deg);opacity:0;animation:flip .7s forwards}
-@keyframes flip{to{transform:rotateX(0);opacity:1}}
-.total{font-family:var(--serif);text-align:center;font-size:clamp(20px,3vw,34px);color:var(--gold)}
+.paddles{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);margin:6px 0 10px}
+.paddle{text-align:center;perspective:700px}
+.paddle .face{background:#fff;color:var(--red);font-family:var(--title);font-size:clamp(54px,13vw,150px);line-height:1.1;border:var(--line);border-radius:18px;
+  box-shadow:var(--shadow);margin-top:6px;transform:rotateX(95deg) scale(.6);opacity:0;transform-origin:50% 0}
+.paddle.on .face{animation:flip .8s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes flip{from{transform:rotateX(95deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.paddle .portrait{transition:transform .3s}
+.paddle.on .portrait{animation:jig .6s}
+@keyframes jig{30%{transform:scale(1.12) rotate(-6deg)}60%{transform:scale(1.05) rotate(5deg)}}
+.paddle .face.hi{color:var(--green);text-shadow:0 0 0 var(--ink)}
+.totalbig{font-family:var(--title);text-align:center;font-size:clamp(26px,5vw,54px);color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);min-height:1.2em}
+.banner{display:block;text-align:center;font-family:var(--title);font-size:clamp(22px,5vw,56px);color:var(--yellow);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);
+  animation:bounce 1s infinite}
+@keyframes bounce{50%{transform:translateY(-10px) rotate(-2deg)}}
+
+/* tables */
+table.res{width:100%;border-collapse:separate;border-spacing:0 6px;font-weight:600}
+table.res th{font-family:var(--title);font-weight:400;font-size:clamp(12px,1.6vw,17px);padding:2px 4px}
+table.res td{text-align:center;padding:6px 4px;background:#fff;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);font-size:clamp(14px,2vw,22px)}
+table.res td:first-child{text-align:left;border-left:3px solid var(--ink);border-radius:14px 0 0 14px;font-family:var(--title);padding-left:10px}
+table.res td:last-child{border-right:3px solid var(--ink);border-radius:0 14px 14px 0}
+table.res tr.rrow{opacity:0;animation:slidein .5s forwards}
+.g{display:inline-block;min-width:34px;border:3px solid var(--ink);border-radius:10px;padding:0 8px;font-family:var(--title)}
+.g.x{background:var(--green)}.g.n{background:var(--yellow)}.g.m{background:#eee}
+.pts{font-family:var(--title);color:var(--pink);font-size:1.3em}
+@keyframes slidein{from{transform:translateX(-80px);opacity:0}to{transform:none;opacity:1}}
 
 /* leaderboard */
-.board{border:3px solid var(--gold);border-radius:16px;overflow:hidden;box-shadow:0 0 30px #f5d27a44,0 10px 40px #000a;background:#0a0214}
-.board .bh{background:linear-gradient(180deg,var(--pink),#a0124f);color:#fff;font-family:var(--serif);font-size:clamp(16px,2.4vw,28px);padding:10px 16px;text-align:center;letter-spacing:.08em;text-transform:uppercase}
-.lrow{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:9px 14px;border-bottom:1px solid #f5d27a33;
-  background:linear-gradient(90deg,#2a0a45,#12041f);font-weight:800;font-size:clamp(14px,1.8vw,22px)}
-.lrow:nth-child(odd){background:linear-gradient(90deg,#3a1260,#1b0630)}
-.lrow .rk{font-family:var(--serif);font-size:1.3em;color:var(--gold);text-align:center}
-.lrow:nth-child(2) .rk,.lrow.first .rk{color:#fff;text-shadow:0 0 12px var(--gold)}
-.lrow .sc{background:linear-gradient(180deg,#fff4c9,var(--gold2));color:#2b1200;border-radius:8px;padding:2px 12px;font-family:var(--serif);font-weight:900;min-width:56px;text-align:center}
+.board{border:var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow),0 14px 30px #0006;background:var(--cream)}
+.bh{background:linear-gradient(180deg,var(--pink),#d1257a);color:#fff;font-family:var(--title);font-size:clamp(18px,2.6vw,30px);padding:10px 16px;text-align:center;border-bottom:var(--line);text-shadow:0 3px 0 var(--ink);letter-spacing:.05em}
+.lrow{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:8px 12px;border-bottom:3px solid var(--ink);font-family:var(--title);font-size:clamp(16px,2.2vw,26px);
+  animation:slidein .5s both;background:#fff}
+.lrow:nth-child(odd){background:var(--cream2)}
+.lrow:last-child{border-bottom:0}
+.lrow .rk{width:38px;height:38px;border-radius:50%;background:var(--cyan);border:3px solid var(--ink);display:grid;place-items:center;font-size:.85em}
+.lrow:nth-child(2) .rk{background:var(--yellow);animation:wob 1.6s infinite}
 .lrow .nm{display:flex;align-items:center;gap:10px;min-width:0}
-.lrow .nm span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lrow small{display:block;font-weight:600;opacity:.7;font-size:.62em;letter-spacing:.1em}
-.chips{display:flex;gap:4px;margin-top:2px}
-.chip{background:#fff;color:#c1121f;font-family:var(--serif);font-weight:900;border-radius:5px;padding:0 7px;font-size:.78em}
+.lrow .nm .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow small{display:block;font-family:var(--body);font-weight:600;font-size:.55em;opacity:.7}
+.lrow .sc{background:var(--yellow);border:3px solid var(--ink);border-radius:12px;padding:0 14px;min-width:64px;text-align:center;box-shadow:0 3px 0 var(--ink)}
+.lrow .mv{font-size:.6em;margin-left:6px}
+.lrow .mv.up{color:#0a9a4f}.lrow .mv.dn{color:var(--red)}
+.lrow.gone{opacity:.55;filter:grayscale(.7)}
+.miniscore{display:inline-flex;gap:3px;margin-left:10px;vertical-align:middle}
+.miniscore b{background:#fff;color:var(--red);border:2px solid var(--ink);border-radius:6px;padding:0 6px;font-size:.7em}
 
-table.res{width:100%;border-collapse:collapse;font-weight:600}
-table.res th{color:var(--gold);font-family:var(--serif);text-align:center;padding:6px;font-size:clamp(12px,1.5vw,16px)}
-table.res td{text-align:center;padding:7px 4px;border-top:1px solid #f5d27a22;font-size:clamp(13px,1.8vw,20px)}
-table.res td:first-child{text-align:left;font-weight:800}
-.g{border-radius:8px;padding:2px 9px;display:inline-block;min-width:30px}
-.g.x{background:var(--green);color:#052}
-.g.n{background:var(--amber);color:#3a2000}
-.g.m{background:#ffffff18}
-.pts{color:var(--gold);font-family:var(--serif);font-weight:900}
-
-.pass{text-align:center;padding:30px 10px}
-.pass .who{font-family:var(--serif);font-weight:900;font-size:clamp(34px,8vw,90px);margin:14px 0 24px;text-shadow:0 0 30px currentColor}
-.couplebig{font-family:var(--serif);font-weight:900;font-size:clamp(30px,7vw,84px);line-height:1.1;text-align:center;
-  background:linear-gradient(180deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;margin:10px 0}
-.dancebig{text-align:center;font-family:var(--serif);font-style:italic;color:var(--pink);font-size:clamp(20px,4vw,44px);margin-bottom:20px}
-.ball{font-size:clamp(50px,10vw,110px);text-align:center;animation:spin 6s linear infinite;filter:drop-shadow(0 0 20px #fff8)}
-@keyframes spin{50%{transform:scale(1.08) rotate(6deg)}}
-.legend{font-size:12px;opacity:.75;text-align:center;margin-top:8px}
-.podium{display:flex;gap:12px;align-items:flex-end;justify-content:center;margin:20px 0}
-.pod{flex:1;max-width:240px;text-align:center;border:3px solid var(--gold);border-radius:14px 14px 0 0;padding:14px 6px;font-family:var(--serif);font-weight:900;
-  background:linear-gradient(180deg,#5b2a85,#1b0630)}
-.pod .n{font-size:clamp(16px,2.6vw,30px)} .pod .p{font-size:clamp(24px,4vw,48px);color:var(--gold)}
-.pod.p1{height:240px}.pod.p2{height:190px}.pod.p3{height:150px}
-.rules li{margin:6px 0 6px 20px}
+/* misc */
+.pass{text-align:center;padding:20px 0}
+.pass .who{font-family:var(--title);font-size:clamp(44px,11vw,120px);line-height:1.1;margin:10px 0 22px;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);animation:bounce 1.4s infinite}
+.pass .bigav{font-size:clamp(70px,16vw,170px);display:block;animation:wob 1.4s infinite}
+.hero{text-align:center}
+.hero .ball{font-size:clamp(70px,14vw,150px);display:inline-block;animation:swing 2.5s ease-in-out infinite alternate;transform-origin:50% 0;filter:drop-shadow(0 0 25px #fff)}
+.bigbtns{display:grid;gap:14px;max-width:560px;margin:14px auto}
+.steps{display:flex;gap:6px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+.step{font-family:var(--title);background:#fff;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;font-size:14px;opacity:.55}
+.step.on{background:var(--yellow);opacity:1;box-shadow:0 3px 0 var(--ink)}
+.step.done{background:var(--green);opacity:1}
+.podium{display:flex;gap:10px;align-items:flex-end;justify-content:center;margin:18px 0 8px}
+.pod{flex:1;max-width:230px;text-align:center;border:var(--line);border-radius:18px 18px 0 0;padding:10px 6px;font-family:var(--title);box-shadow:var(--shadow);transform-origin:50% 100%;animation:grow .8s both cubic-bezier(.2,1.4,.4,1)}
+.pod .n{font-size:clamp(16px,2.6vw,30px);overflow:hidden;text-overflow:ellipsis}.pod .p{font-size:clamp(26px,4.4vw,52px)}
+.pod.p1{background:var(--yellow);height:250px;animation-delay:.9s}.pod.p2{background:#d9e2ec;height:195px;animation-delay:.5s}.pod.p3{background:#f0a35c;height:155px;animation-delay:.2s}
+@keyframes grow{from{transform:scaleY(0)}to{transform:none}}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cc{border:var(--line);border-radius:18px;background:#fff;padding:12px;box-shadow:var(--shadow);cursor:pointer;text-align:center;font-family:var(--title);font-size:20px;transition:transform .12s;position:relative}
+.cc:hover{transform:rotate(-1.5deg) scale(1.02)}
+.cc.sel{background:var(--red);color:#fff;transform:rotate(2deg);text-shadow:0 2px 0 var(--ink)}
+.cc.sel:after{content:"👋 BYE!";position:absolute;top:-14px;right:-8px;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:0 10px;font-size:15px;transform:rotate(8deg);text-shadow:none}
+.cc small{display:block;font-family:var(--body);font-size:13px;opacity:.8}
+.tag{display:inline-block;border:3px solid var(--ink);border-radius:999px;font-family:var(--title);font-size:12px;padding:0 10px;background:var(--cyan);color:var(--ink)}
+.tag.out{background:#ccc}.tag.sick{background:var(--orange)}
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.tabs button.act{background:var(--pink);color:#fff}
+.entry{display:grid;grid-template-columns:auto 1fr minmax(100px,200px) auto;gap:8px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:6px 10px;margin-bottom:8px}
+.entry.sick{background:#e9e9e9;opacity:.7}
+.entry .n{font-family:var(--title);font-size:18px}
+.entry .mv{display:flex;flex-direction:column;gap:2px}
+.entry .mv button{padding:0 8px;font-size:11px;border-width:2px;border-radius:8px;box-shadow:0 2px 0 var(--ink)}
+@media(max-width:620px){.entry{grid-template-columns:auto 1fr auto}.entry input{grid-column:1/-1;grid-row:2}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:var(--yellow);border:var(--line);border-radius:18px;padding:10px 22px;font-family:var(--title);font-size:20px;box-shadow:var(--shadow);animation:pop .4s both}
+ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}}
 </style>
 </head>
 <body>
-<canvas id="sparkles"></canvas>
+<canvas id="stars"></canvas>
+<canvas id="fx"></canvas>
 <div id="app">
   <header>
-    <div class="logo">STRICTLY<small>SCORE GUESS</small></div>
-    <div class="hdr-right" id="hdr"></div>
+    <div class="logo" data-act="home">STRICTLY<small>SCORE GUESS</small></div>
+    <div class="hdr" id="hdr"></div>
   </header>
-  <main><div class="wrap" id="view"></div></main>
+  <main id="main"><div class="wrap" id="view"></div></main>
 </div>
+<input type="file" id="photofile" accept="image/*" hidden>
+<input type="file" id="importfile" accept="application/json" hidden>
 
 <script>
 (()=>{
 'use strict';
-const COLORS=['#ff3d8b','#35d0ff','#2fd27a','#ffb020','#b46bff','#ff6b3d','#f5d27a','#6bffe0','#ff8cba','#a0ff4f'];
-const KEY='strictly-v1', SKEY='strictly-season-v1';
+/* =============== constants & state =============== */
+const KEY='strictly-v2';
+const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
+const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 const defaultJudges=()=>[
-  {name:'Shirley Ballas',role:'Head Judge',photo:''},
-  {name:'Motsi Mabuse',role:'Judge',photo:''},
-  {name:'Anton Du Beke',role:'Judge',photo:''},
-  {name:'Craig Revel Horwood',role:'Judge',photo:''}];
-const fresh=()=>({
-  phase:'setup',
-  players:[0,1,2].map(i=>({id:uid(),name:'Player '+(i+1),color:COLORS[i]})),
-  judges:defaultJudges(),
-  couplesText:'Celebrity One & Pro One | Waltz\nCelebrity Two & Pro Two | Cha Cha Cha\nCelebrity Three & Pro Three | Jive',
-  couples:[],idx:0,order:[],oi:0,guesses:{},totals:{},seasonDone:false});
-let S;
-try{S=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){S=null}
-if(!S||!S.players)S=fresh();
-// judge photos stored separately-in-state; ensure shape
-S.judges=(S.judges||defaultJudges());
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const getSeason=()=>{try{return JSON.parse(localStorage.getItem(SKEY)||'{}')}catch(e){return {}}};
-let tmp=[null,null,null,null];   // current keypad selections
-let ready=false;                 // pass-the-device gate
-let showSeason=false, showRules=false;
+  {name:'Shirley Ballas',photo:''},{name:'Motsi Mabuse',photo:''},
+  {name:'Anton Du Beke',photo:''},{name:'Craig Revel Horwood',photo:''}];
+const mkPlayer=(i,name)=>({id:uid(),name:name||'Player '+(i+1),color:COLORS[i%COLORS.length],av:EMOJI[i%EMOJI.length],here:true});
+const defaultState=()=>({v:2,players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],weeksDone:0,week:null,
+  tmp:[null,null,null,null],sound:true,seasonTab:'players'});
+let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),o)}catch(e){}return defaultState()})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save – storage full?')}};
+let overlay=null;         // 'home' | 'manage' | 'season' | 'rules' | null (=show current game phase)
+let ready=false;          // pass-the-controls gate (not saved on purpose)
+let revealTok=0;
 
-/* ---------- avatars ---------- */
-function avatar(j,i){
+/* =============== sound =============== */
+const sfx={ctx:null,
+  init(){if(!S.sound)return;try{this.ctx=this.ctx||new (window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume()}catch(e){}},
+  tone(f,t=0,d=.15,type='triangle',v=.15){if(!S.sound||!this.ctx)return;const c=this.ctx,o=c.createOscillator(),g=c.createGain(),n=c.currentTime+t;
+    o.type=type;o.frequency.setValueAtTime(f,n);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+d+.02)},
+  pop(){this.tone(520,0,.08,'square',.08);this.tone(780,.05,.1,'square',.08)},
+  key(){this.tone(660,0,.07,'sine',.12)},
+  drum(sec=2){let t=0,gap=.11;while(t<sec){this.tone(110+Math.random()*20,t,.07,'sawtooth',.08);t+=gap;gap=Math.max(.035,gap*.94)}},
+  flip(n=6){this.tone(300+n*60,0,.12,'square',.1);this.tone(450+n*60,.08,.2,'square',.1)},
+  tada(){[523,659,784,1047].forEach((f,i)=>this.tone(f,i*.11,.5,'triangle',.18))},
+  boo(){this.tone(220,0,.3,'sawtooth',.1);this.tone(185,.25,.5,'sawtooth',.1)},
+};
+document.addEventListener('pointerdown',()=>sfx.init(),{once:false});
+
+/* =============== fx: stars + confetti =============== */
+const stc=$('#stars'),sx=stc.getContext('2d'),fc=$('#fx'),fx=fc.getContext('2d');
+let W_=0,H_=0,stars=[],bits=[];
+function resize(){W_=stc.width=fc.width=innerWidth;H_=stc.height=fc.height=innerHeight;
+  stars=Array.from({length:Math.round(W_*H_/14000)},()=>({x:Math.random()*W_,y:Math.random()*H_,r:Math.random()*2.2+.6,p:Math.random()*6.28,s:Math.random()*.04+.01}))}
+addEventListener('resize',resize);resize();
+function burst(x,y,n=60){for(let i=0;i<n;i++){const a=Math.random()*6.28,v=Math.random()*10+4;
+  bits.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-6,r:Math.random()*6.28,vr:(Math.random()-.5)*.4,s:Math.random()*8+6,c:COLORS[(Math.random()*COLORS.length)|0],life:110+Math.random()*50})}}
+function rain(n=140){for(let i=0;i<n;i++)bits.push({x:Math.random()*W_,y:-20-Math.random()*H_*.5,vx:(Math.random()-.5)*3,vy:Math.random()*3+2,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:Math.random()*9+6,c:COLORS[(Math.random()*COLORS.length)|0],life:300})}
+(function loop(){
+  sx.clearRect(0,0,W_,H_);
+  for(const s of stars){s.p+=s.s;sx.globalAlpha=(Math.sin(s.p)+1)/2*.8+.1;sx.fillStyle='#fff6c9';
+    sx.beginPath();const r=s.r;sx.moveTo(s.x,s.y-r*2);sx.lineTo(s.x+r*.5,s.y-r*.5);sx.lineTo(s.x+r*2,s.y);sx.lineTo(s.x+r*.5,s.y+r*.5);sx.lineTo(s.x,s.y+r*2);sx.lineTo(s.x-r*.5,s.y+r*.5);sx.lineTo(s.x-r*2,s.y);sx.lineTo(s.x-r*.5,s.y-r*.5);sx.fill()}
+  fx.clearRect(0,0,W_,H_);fx.globalAlpha=1;
+  bits=bits.filter(b=>b.life>0&&b.y<H_+30);
+  for(const b of bits){b.vy+=.22;b.x+=b.vx;b.y+=b.vy;b.vx*=.99;b.r+=b.vr;b.life--;
+    fx.save();fx.translate(b.x,b.y);fx.rotate(b.r);fx.fillStyle=b.c;fx.strokeStyle='#1c0a33';fx.lineWidth=2;fx.fillRect(-b.s/2,-b.s/4,b.s,b.s/2);fx.strokeRect(-b.s/2,-b.s/4,b.s,b.s/2);fx.restore()}
+  requestAnimationFrame(loop)})();
+function burstAt(el,n){const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,n)}
+
+/* =============== cartoon judge avatars =============== */
+function avatar(j,i,mood='idle'){
   if(j.photo)return `<img src="${j.photo}" alt="${esc(j.name)}">`;
-  const skin=['#f2c9a5','#8a5a3c','#e8b88f','#f0c4a0'][i%4];
-  const hair=['#f0d58a','#2a1a14','#9a9a9a','#222'][i%4];
-  const suit=['#c1121f','#7b2cbf','#14213d','#111'][i%4];
-  const hairShape=[
-    `<path d="M20 50 Q20 12 60 12 Q100 12 100 50 L106 100 Q92 80 92 52 Q60 44 28 52 Q28 80 14 100Z" fill="${hair}"/>`,
-    `<circle cx="60" cy="30" r="34" fill="${hair}"/><circle cx="28" cy="48" r="14" fill="${hair}"/><circle cx="92" cy="48" r="14" fill="${hair}"/>`,
-    `<path d="M26 46 Q24 14 60 14 Q96 14 94 46 Q80 30 60 30 Q40 30 26 46Z" fill="${hair}"/>`,
-    `<path d="M30 42 Q34 20 60 20 Q86 20 90 42 Q60 34 30 42Z" fill="${hair}"/>`][i%4];
+  const ink='#1c0a33';
+  const skin=['#ffd2b0','#a8683f','#ffd8b8','#ffcfa8'][i%4];
+  const hair=['#ffd54a','#2b1a14','#c9c9d1','#3a3a3a'][i%4];
+  const suit=['#e0245e','#7b2cbf','#1d4ed8','#222'][i%4];
+  const back=[
+    `<path d="M16 120 Q4 50 24 30 Q60 -6 96 30 Q116 50 104 120Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
+    `<circle cx="60" cy="34" r="36" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="26" cy="54" r="17" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="94" cy="54" r="17" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
+    ``,``][i%4];
+  const front=[
+    `<path d="M30 46 Q60 6 92 46 Q74 30 52 36 Q40 38 30 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+    `<path d="M32 44 Q60 12 90 44 Q60 30 32 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+    `<path d="M30 48 Q28 14 60 14 Q92 14 90 48 Q80 28 60 28 Q40 28 30 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+    `<path d="M36 36 Q60 22 84 36 Q60 30 36 36Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i%4];
   const extra=[
     ``,
-    `<circle cx="34" cy="68" r="4" fill="#ffd700"/><circle cx="86" cy="68" r="4" fill="#ffd700"/>`,
-    `<path d="M50 112 L60 106 L70 112 L60 118Z" fill="#c1121f"/>`,
-    `<rect x="36" y="52" width="20" height="12" rx="4" fill="none" stroke="#000" stroke-width="3"/><rect x="64" y="52" width="20" height="12" rx="4" fill="none" stroke="#000" stroke-width="3"/><path d="M56 57h8" stroke="#000" stroke-width="3"/>`][i%4];
-  const mouth=['<path d="M46 80 Q60 92 74 80" stroke="#b00020" stroke-width="4" fill="none" stroke-linecap="round"/>',
-    '<path d="M46 80 Q60 92 74 80" stroke="#b00020" stroke-width="4" fill="none" stroke-linecap="round"/>',
-    '<path d="M46 80 Q60 90 74 80" stroke="#7a2a2a" stroke-width="4" fill="none" stroke-linecap="round"/>',
-    '<path d="M48 82 Q60 86 72 80" stroke="#7a2a2a" stroke-width="4" fill="none" stroke-linecap="round"/>'][i%4];
-  return `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="none"/>
-    <path d="M10 125 Q14 96 60 96 Q106 96 110 125Z" fill="${suit}"/>
-    <rect x="50" y="84" width="20" height="16" fill="${skin}"/>
-    <ellipse cx="60" cy="58" rx="30" ry="34" fill="${skin}"/>
-    ${hairShape}
-    <circle cx="48" cy="58" r="3.4" fill="#222"/><circle cx="72" cy="58" r="3.4" fill="#222"/>
-    ${i===3?'':'<path d="M42 49 Q48 45 54 49M66 49 Q72 45 78 49" stroke="#3a2a22" stroke-width="2.5" fill="none"/>'}
+    `<circle cx="29" cy="72" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/><circle cx="91" cy="72" r="5" fill="#ffd93d" stroke="${ink}" stroke-width="2.5"/>`,
+    `<path d="M50 104 L60 110 L70 104 L70 118 L60 112 L50 118Z" fill="#ff4d4d" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>`,
+    `<g fill="rgba(255,255,255,.35)" stroke="${ink}" stroke-width="4"><rect x="30" y="46" width="24" height="18" rx="7"/><rect x="66" y="46" width="24" height="18" rx="7"/></g><path d="M54 54h12" stroke="${ink}" stroke-width="4"/>`][i%4];
+  const brow={happy:'M34 40 Q43 32 52 38 M68 38 Q77 32 86 40',idle:'M34 41 Q43 36 52 40 M68 40 Q77 36 86 41',
+    meh:'M34 42 L52 40 M68 40 L86 42',sad:'M34 36 L52 42 M68 42 L86 36'}[mood];
+  const mouth={
+    happy:`<path d="M42 72 Q60 100 78 72Z" fill="#7a1030" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M48 74 H72 V79 H48Z" fill="#fff"/>`,
+    idle:`<path d="M46 76 Q60 88 74 76" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`,
+    meh:`<path d="M47 80 H73" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`,
+    sad:`<path d="M46 86 Q60 70 74 86" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`}[mood];
+  const pupil=mood==='sad'?3.2:4.6;
+  const eyes=i===3?`<circle cx="42" cy="57" r="${pupil}" fill="${ink}"/><circle cx="78" cy="57" r="${pupil}" fill="${ink}"/>`:
+   `<ellipse cx="46" cy="57" rx="9" ry="11" fill="#fff" stroke="${ink}" stroke-width="3.5"/><ellipse cx="74" cy="57" rx="9" ry="11" fill="#fff" stroke="${ink}" stroke-width="3.5"/>
+    <circle cx="47" cy="58" r="${pupil}" fill="${ink}"/><circle cx="73" cy="58" r="${pupil}" fill="${ink}"/><circle cx="48.6" cy="55.5" r="1.7" fill="#fff"/><circle cx="74.6" cy="55.5" r="1.7" fill="#fff"/>`;
+  return `<svg viewBox="0 0 120 120">
+    ${back}
+    <path d="M8 130 Q12 100 60 100 Q108 100 112 130Z" fill="${suit}" stroke="${ink}" stroke-width="4"/>
+    <rect x="50" y="86" width="20" height="18" fill="${skin}" stroke="${ink}" stroke-width="4"/>
+    <ellipse cx="60" cy="58" rx="33" ry="36" fill="${skin}" stroke="${ink}" stroke-width="4"/>
+    ${front}
+    <circle cx="36" cy="72" r="6" fill="#ff7aa8" opacity=".55"/><circle cx="84" cy="72" r="6" fill="#ff7aa8" opacity=".55"/>
+    ${eyes}
+    <path d="${brow}" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>
     ${mouth}${extra}</svg>`;
 }
-function portrait(i){return `<div class="portrait">${avatar(S.judges[i],i)}</div>`}
+const portrait=(i,mood)=>`<div class="portrait" data-ji="${i}">${avatar(S.judges[i],i,mood)}</div>`;
+const moodFor=n=>n>=8?'happy':n>=6?'idle':n===5?'meh':'sad';
 
-/* ---------- helpers ---------- */
-const couples=()=>S.couples;
-const cur=()=>S.couples[S.idx];
-const pById=id=>S.players.find(p=>p.id===id);
-const sum=a=>a.reduce((x,y)=>x+y,0);
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function scorePlayer(g,r){
-  let pts=0;
-  g.forEach((v,i)=>{const d=Math.abs(v-r[i]);pts+= d===0?3:d===1?1:0});
-  const td=Math.abs(sum(g)-sum(r));
-  const bonus= td===0?5: td<=2?2:0;
-  return {judgePts:pts,bonus,total:pts+bonus};
-}
-function leaderboard(list,title,opts={}){
-  const rows=list.map((r,i)=>`<div class="lrow ${i===0?'first':''}"><div class="rk">${i+1}</div>
-    <div class="nm">${r.color?`<span class="dot" style="background:${r.color}"></span>`:''}<span class="t">${esc(r.name)}${r.sub?`<small>${r.sub}</small>`:''}${r.chips||''}</span></div>
-    <div class="sc">${r.score}</div></div>`).join('')||'<div class="lrow"><div></div><div>Nothing yet…</div><div></div></div>';
-  return `<div class="board"><div class="bh">${title}</div>${rows}</div>`;
-}
-const weeklyRows=()=>S.players.map(p=>({name:p.name,color:p.color,score:S.totals[p.id]||0})).sort((a,b)=>b.score-a.score);
-const coupleRows=()=>S.couples.filter(c=>c.real).map(c=>({name:c.name,sub:c.dance||'',score:sum(c.real),
-  chips:`<div class="chips">${c.real.map(n=>`<span class="chip">${n}</span>`).join('')}</div>`})).sort((a,b)=>b.score-a.score);
+/* =============== helpers =============== */
+const W=()=>S.week;
+const couple=id=>S.couples.find(c=>c.id===id);
+const player=id=>S.players.find(p=>p.id===id);
+const activeCouples=()=>S.couples.filter(c=>c.out==null);
+const entry=()=>W().entries[W().idx];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function scorePlayer(g,r){let j=0;g.forEach((v,i)=>{const d=Math.abs(v-r[i]);j+=d===0?3:d===1?1:0});
+  const td=Math.abs(sum(g)-sum(r)),bonus=td===0?5:td<=2?2:0;return{judgePts:j,bonus,total:j+bonus}}
+function ranks(totals,ids){const s=ids.slice().sort((a,b)=>(totals[b]||0)-(totals[a]||0));const m={};s.forEach((id,i)=>m[id]=i);return m}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function nextIdx(from){const w=W();for(let i=from;i<w.entries.length;i++)if(w.entries[i].status==='dance')return i;return -1}
+const letters=(s,delay=.9)=>[...s].map((c,i)=>`<span style="animation-delay:${delay+i*.05}s">${c===' '?'&nbsp;':esc(c)}</span>`).join('');
 
-/* ---------- views ---------- */
+function board(rows,title,opt={}){
+  const body=rows.map((r,i)=>`<div class="lrow ${r.gone?'gone':''}" style="animation-delay:${i*.09}s">
+    <div class="rk">${i+1}</div>
+    <div class="nm">${r.av?`<span class="av" style="background:${r.color||'#fff'}">${r.av}</span>`:''}<span class="t">${esc(r.name)}${r.mv?`<span class="mv ${r.mv>0?'up':'dn'}">${r.mv>0?'▲':'▼'}${Math.abs(r.mv)}</span>`:''}${r.sub?`<small>${r.sub}</small>`:''}${r.mini||''}</span></div>
+    <div class="sc"><span data-count data-from="${r.from??r.score}" data-to="${r.score}" data-delay="${300+i*90}">${r.from??r.score}</span></div></div>`).join('')
+    ||'<div class="lrow"><div></div><div>Nothing yet…</div><div></div></div>';
+  return `<div class="board"><div class="bh">${title}</div>${body}</div>`;
+}
+function runCounts(){document.querySelectorAll('[data-count]').forEach(el=>{
+  const from=+el.dataset.from,to=+el.dataset.to;if(from===to)return;const delay=+el.dataset.delay||0;
+  setTimeout(()=>{const t0=performance.now(),d=900;(function f(t){const k=Math.min(1,(t-t0)/d);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})(t0)},delay)})}
+function countTo(el,to,ms=900,from=0){const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/ms);el.textContent=Math.round(from+(to-from)*k);if(k<1)requestAnimationFrame(f)})(t0)}
+
+function weekPlayerRows(withMove){
+  const w=W(),tot=w.totals,prev=ranks(w.prevTotals||{},w.pids),now=ranks(tot,w.pids);
+  return w.pids.map(id=>{const p=player(id)||{name:'?',color:'#ccc',av:'?'};
+    return{name:p.name,color:p.color,av:p.av,score:tot[id]||0,from:withMove?(w.prevTotals[id]||0):(tot[id]||0),mv:withMove?prev[id]-now[id]:0,id}}).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
+}
+function weekCoupleRows(){
+  const w=W();return w.entries.filter(e=>w.results[e.cid]).map(e=>{const r=w.results[e.cid].real,c=couple(e.cid);
+    return{name:c.name,sub:e.dance||'',score:sum(r),mini:`<div class="miniscore">${r.map(n=>`<b>${n}</b>`).join('')}</div>`}}).sort((a,b)=>b.score-a.score);
+}
+
+/* =============== views =============== */
 function hdr(){
-  const inGame=S.phase!=='setup';
-  $('#hdr').innerHTML=(inGame?`<span style="opacity:.8;font-size:13px;font-weight:600">Couple ${Math.min(S.idx+1,S.couples.length)}/${S.couples.length}</span>`:'')+
-    `<button class="ghost sm" data-act="rules">Rules</button>`+
-    (inGame?`<button class="ghost sm" data-act="quit">Quit</button>`:'')+
-    `<button class="ghost sm" data-act="fs">⛶ Full screen</button>`;
+  const w=W();
+  $('#hdr').innerHTML=(w?`<span class="pill">Week ${w.n}</span>`:'')+
+   `<button class="sm cyan" data-act="nav" data-to="home">🏠</button>
+    <button class="sm cyan" data-act="nav" data-to="season">🏆 Tables</button>
+    <button class="sm cyan" data-act="nav" data-to="rules">❓</button>
+    <button class="sm cyan" data-act="snd">${S.sound?'🔊':'🔇'}</button>
+    <button class="sm cyan" data-act="fs">⛶</button>`;
 }
 
-function vSetup(){
-  const season=getSeason();
-  return `<div class="wrap">
-  <h2>Tonight's Show</h2><div class="sub">Set up your players, couples and judges</div>
-  <div class="grid2">
-    <div class="card"><h3>Players</h3><div id="plist">
-      ${S.players.map(p=>`<div class="row" data-pid="${p.id}"><span class="dot" style="background:${p.color}"></span>
-        <input type="text" value="${esc(p.name)}" maxlength="20" data-pname>
-        <button class="ghost sm" data-act="delp" data-id="${p.id}">✕</button></div>`).join('')}
-    </div><button class="sm" data-act="addp" ${S.players.length>=10?'disabled':''}>+ Add player</button></div>
-    <div class="card"><h3>Couples (one per line)</h3>
-      <textarea id="couples" placeholder="Celebrity & Pro | Dance">${esc(S.couplesText)}</textarea>
-      <div class="legend" style="text-align:left">Format: <b>Names | Dance</b> (dance is optional). They'll be played in this order.</div>
+function vHome(){
+  const w=W(),inProg=!!w;
+  const phaseName={setup:'setting up',dance:'ready to dance',guess:'guessing',real:'entering scores',reveal:'scores revealed',board:'leaderboards',wrap:'week results',elim:'who left?'};
+  const n=S.couples.filter(c=>c.out==null).length;
+  return `<div class="hero"><div class="ball">🪩</div>
+    <h2 class="t">${letters('Keep Dancing!',0)}</h2><div class="sub">The family score-guessing game</div></div>
+    <div class="bigbtns">
+      ${inProg?`<button class="big pink pulse" data-act="resume">▶ Continue Week ${w.n} <small style="font-size:.6em">(${phaseName[w.phase]||''})</small></button>
+        <button class="white" data-act="quitweek">Abandon this week</button>`
+        :`<button class="big pink pulse" data-act="newweek" ${n?'':'disabled'}>✨ Start Week ${S.weeksDone+1}</button>
+        ${n?'':'<div class="center" style="color:#fff;font-family:var(--title)">Add your couples first 👇</div>'}`}
+      <button class="big cyan" data-act="nav" data-to="manage">👯 Couples, Players &amp; Judges</button>
+      <button class="big green" data-act="nav" data-to="season">🏆 Season Tables</button>
     </div>
-  </div>
-  <div class="card mt"><h3>The Judges</h3>
-    <div class="judges">${S.judges.map((j,i)=>`<div class="judge">${portrait(i)}
-      <input type="text" value="${esc(j.name)}" data-jname="${i}" style="text-align:center;margin-top:4px">
-      <label><button class="ghost sm" style="margin-top:6px" data-act="photo" data-i="${i}">📷 Upload photo</button></label>
-      ${j.photo?`<div><button class="ghost sm" style="margin-top:4px" data-act="clearphoto" data-i="${i}">Remove</button></div>`:''}
-    </div>`).join('')}</div>
-    <input type="file" id="file" accept="image/*" hidden>
-  </div>
-  <div class="actions">
-    <button class="big pink" data-act="start">Start the show ✨</button>
-    <button class="ghost" data-act="season">🏆 Season table${Object.keys(season).length?` (${Object.keys(season).length})`:''}</button>
-  </div></div>`;
-}
-
-function vSeason(){
-  const s=getSeason();
-  const rows=Object.values(s).sort((a,b)=>b.pts-a.pts).map(p=>({name:p.name,color:p.color,score:p.pts,sub:`${p.weeks} week${p.weeks===1?'':'s'}`}));
-  return `<div class="wrap" style="max-width:700px"><h2>Season Leaderboard</h2><div class="sub">Points carried over every week</div>
-    ${leaderboard(rows,'Season Standings')}
-    <div class="actions"><button data-act="back">← Back</button><button class="ghost" data-act="resetseason">Reset season</button></div></div>`;
+    <div class="center" style="color:#fff;font-weight:600;text-shadow:0 2px 0 var(--ink)">${n} couple${n===1?'':'s'} still in · ${S.weeksDone} week${S.weeksDone===1?'':'s'} played · saved in this browser</div>`;
 }
 
 function vRules(){
-  return `<div class="wrap" style="max-width:760px"><div class="card"><h2>How to play</h2>
+  return `<div class="card"><h2 class="t" style="font-size:40px">How to play</h2>
   <ol class="rules">
-   <li>A couple dances. Everyone watches!</li>
-   <li>Players are called in a <b>random order</b>. In secret, each guesses the score (1–10) from <b>all four judges</b>.</li>
-   <li>When everyone has guessed, enter the <b>real judges' scores</b>.</li>
-   <li>Points per judge: <b>exact = 3</b>, <b>one away = 1</b>.</li>
-   <li>Bonus for the <b>total</b>: exact = <b>+5</b>, within 2 = <b>+2</b>.</li>
-   <li>Most points after the last couple wins the week. Scores add up in the season table.</li></ol>
-  <div class="actions"><button data-act="closerules">Got it</button></div></div></div>`;
+   <li>Set up the week: who's playing, and which couples are dancing (or poorly 🤕).</li>
+   <li>A couple dances. Everyone watches (and judges the judges).</li>
+   <li>Players are called in <b>random order</b> to secretly guess <b>all four judges'</b> scores (1–10).</li>
+   <li>Enter the <b>real</b> judges' scores and watch the paddles flip!</li>
+   <li>Points per judge: <b>exact = 3</b>, <b>one away = 1</b>. Total bonus: exact <b>+5</b>, within 2 <b>+2</b>.</li>
+   <li>After the last couple: crown the week's winner, then pick which couples go home. They stay in the history but won't dance next week.</li>
+   <li>Points add up in the <b>season table</b> week after week.</li></ol>
+  <div class="actions"><button class="big pink" data-act="nav" data-to="">Got it!</button></div></div>`;
 }
+
+function vManage(){
+  const photo=i=>S.judges[i].photo?`<button class="sm white" data-act="clearphoto" data-i="${i}">Remove photo</button>`:'';
+  return `<h2 class="t">The Cast</h2><div class="sub">Everything here is remembered week to week</div>
+  <div class="grid2">
+  <div class="card"><h3>💃 Couples</h3>
+    ${S.couples.map(c=>`<div class="row"><input type="text" data-bind="couple:${c.id}:name" value="${esc(c.name)}">
+      ${c.out!=null?`<span class="tag out">OUT wk ${c.out}</span><button class="sm green" data-act="restore" data-id="${c.id}">Bring back</button>`:''}
+      <button class="sm red" data-act="delcouple" data-id="${c.id}">✕</button></div>`).join('')||'<div class="hint">No couples yet. Add them below!</div>'}
+    <textarea id="newcouples" placeholder="Add couples — one per line, e.g.&#10;Jane Smith &amp; Pro Name&#10;Bob Jones &amp; Pro Name"></textarea>
+    <div class="actions" style="margin:8px 0 0"><button class="green" data-act="addcouples">+ Add couples</button></div></div>
+  <div class="card"><h3>🎉 Players</h3>
+    ${S.players.map((p,i)=>`<div class="row"><button class="av" style="background:${p.color};cursor:pointer;font-size:22px" data-act="cycleav" data-id="${p.id}" title="Change avatar">${p.av}</button>
+      <input type="text" data-bind="player:${p.id}:name" value="${esc(p.name)}" maxlength="18">
+      <button class="sm red" data-act="delplayer" data-id="${p.id}">✕</button></div>`).join('')}
+    <div class="actions" style="margin:8px 0 0"><button class="green" data-act="addplayer">+ Add player</button></div>
+    <div class="hint">Tick who's playing each week when you start it. Tap an avatar to change it.</div></div>
+  </div>
+  <div class="card"><h3>⭐ The Judges</h3><div class="judges">${S.judges.map((j,i)=>`<div class="judge">${portrait(i)}
+    <input type="text" data-bind="judge:${i}:name" value="${esc(j.name)}" style="text-align:center">
+    <div style="margin-top:6px"><button class="sm cyan" data-act="photo" data-i="${i}">📷 Own photo</button> ${photo(i)}</div></div>`).join('')}</div></div>
+  <div class="card"><h3>💾 Your data</h3><div class="hint" style="margin:0 0 8px">Saved in this browser only. Export a backup to move devices or keep it safe.</div>
+    <div class="actions" style="margin:0"><button class="cyan" data-act="export">Export backup</button><button class="cyan" data-act="import">Import backup</button><button class="red" data-act="wipe">Erase everything</button></div></div>
+  <div class="actions"><button class="big pink" data-act="nav" data-to="">← Done</button></div>`;
+}
+
+function vSeason(){
+  const tab=S.seasonTab;
+  const tabs=`<div class="tabs">${['players','couples','weeks'].map(t=>`<button class="${tab===t?'act':'white'}" data-act="stab" data-t="${t}">${{players:'🎉 Players',couples:'💃 Couples',weeks:'📅 Weeks'}[t]}</button>`).join('')}</div>`;
+  let body='';
+  if(tab==='players'){
+    const rows=Object.values(S.season).sort((a,b)=>b.pts-a.pts).map(p=>({name:p.name,color:p.color,av:p.av,score:p.pts,sub:`${p.weeks} week${p.weeks===1?'':'s'} · ${p.wins||0} win${p.wins===1?'':'s'}`}));
+    body=board(rows,'Season Standings');
+  }else if(tab==='couples'){
+    const rows=S.couples.map(c=>({name:c.name,score:sum(c.scores.map(s=>sum(s.real))),gone:c.out!=null,
+      sub:c.out!=null?`Left in week ${c.out}`:(c.scores.length?`${c.scores.length} dance${c.scores.length===1?'':'s'} · best ${Math.max(...c.scores.map(s=>sum(s.real)))}`:'Not danced yet')})).sort((a,b)=>b.score-a.score);
+    body=board(rows,"Judges' Season Scoreboard");
+  }else{
+    body=`<div class="board"><div class="bh">Week by week</div>${S.history.slice().reverse().map(h=>`<div class="lrow" style="grid-template-columns:1fr;font-size:18px">
+      <div><b>Week ${h.n}</b> · 🏆 ${esc(h.winners.join(' & ')||'–')}<small>${h.out.length?'👋 Left: '+esc(h.out.join(', ')):'Nobody left'}${h.sick.length?' · 🤕 Absent: '+esc(h.sick.join(', ')):''}</small></div></div>`).join('')||'<div class="lrow"><div></div><div>No weeks finished yet…</div><div></div></div>'}</div>`;
+  }
+  return `<h2 class="t">Season Tables</h2><div class="sub">Points across every week</div>${tabs}${body}
+    <div class="actions"><button class="big pink" data-act="nav" data-to="">← Back</button></div>`;
+}
+
+function stepbar(i){return `<div class="steps">${['1 · Players','2 · Couples','3 · Go!'].map((s,k)=>`<span class="step ${k<i?'done':k===i?'on':''}">${s}</span>`).join('')}</div>`}
+
+function vSetup(){
+  const w=W();
+  const ok=S.players.some(p=>p.here)&&w.entries.some(e=>e.status==='dance');
+  return `<h2 class="t">Week ${w.n}</h2><div class="sub">Who's playing and who's dancing tonight?</div>
+  <div class="card"><h3>🎉 Who's playing tonight? <span class="hint">(tap to switch on/off)</span></h3>
+    <div class="chips">${S.players.map(p=>`<div class="chip ${p.here?'':'off'}" data-act="togglehere" data-id="${p.id}"><span class="av" style="background:${p.color}">${p.av}</span>${esc(p.name)}</div>`).join('')}
+    <button class="sm green" data-act="addplayerhere">+ New player</button></div></div>
+  <div class="card"><h3>💃 Running order <span class="hint">(🤕 = sick or not here this week)</span></h3>
+    ${w.entries.map((e,i)=>{const c=couple(e.cid);return `<div class="entry ${e.status==='sick'?'sick':''}">
+      <div class="mv"><button data-act="mv" data-i="${i}" data-d="-1">▲</button><button data-act="mv" data-i="${i}" data-d="1">▼</button></div>
+      <div class="n">${i+1}. ${esc(c.name)}</div>
+      <input type="text" data-bind="dance:${i}" value="${esc(e.dance)}" placeholder="Dance (e.g. Waltz)">
+      <button class="sm ${e.status==='sick'?'orange':'green'}" style="${e.status==='sick'?'background:var(--orange)':''}" data-act="togglesick" data-i="${i}">${e.status==='sick'?'🤕 Not dancing':'✅ Dancing'}</button></div>`}).join('')||'<div class="hint">No couples left! Add some under Couples, Players &amp; Judges.</div>'}
+    <div class="actions" style="margin:6px 0 0"><button class="cyan" data-act="shuffleorder">🔀 Shuffle order</button><button class="white" data-act="nav" data-to="manage">Edit couples</button></div></div>
+  <div class="actions"><button class="big pink" data-act="startweek" ${ok?'':'disabled'}>🎬 Lights, camera, dance!</button><button class="white" data-act="quitweek">Cancel</button></div>`;
+}
+
+function progress(){const w=W();const list=w.entries.filter(e=>e.status!=='sick');const k=list.indexOf(entry());return `Couple ${k+1} of ${list.length}`}
 
 function vDance(){
-  const c=cur();
-  return `<div class="wrap"><div class="ball">🪩</div><div class="sub">Up next</div>
-    <div class="couplebig">${esc(c.name)}</div>
-    ${c.dance?`<div class="dancebig">${esc(c.dance)}</div>`:''}
-    <div class="actions"><button class="big pink" data-act="danced">They've danced! 💃 Start guessing</button></div>
-    <div class="grid2 mt">${leaderboard(weeklyRows(),'Player Leaderboard')}${leaderboard(coupleRows(),"Judges' Scoreboard")}</div></div>`;
+  const e=entry(),c=couple(e.cid);
+  return `<div class="stage"><div class="beam b1"></div><div class="beam b2"></div>
+    <div class="ballwrap"><div class="string"></div><div class="mball">🪩</div></div>
+    <div class="stagecontent"><div class="upnext">${progress()} · UP NEXT!</div>
+      <div class="couplebig">${letters(c.name,1.9)}</div>
+      ${e.dance?`<div class="dancetag">💃 ${esc(e.dance)}</div>`:''}</div>
+    <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
+  <div class="actions"><button class="big pink" data-act="danced">They've danced! 👏 Start guessing</button><button class="white" data-act="cantdance">🤕 Can't dance tonight</button></div>
+  <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
 
-function keypad(label,btnText){
+function keypad(btn){
+  const done=S.tmp.every(x=>x);
   return `<div class="card">${S.judges.map((j,i)=>`<div class="keyrow">
-    <div class="judge"><div class="portrait">${avatar(j,i)}</div><div class="jname">${esc(j.name)}</div></div>
-    <div class="keys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="key" data-j="${i}" data-n="${n}" class="${tmp[i]===n?'sel':''}">${n}</button>`).join('')}</div>
-  </div>`).join('')}
-  <div class="total">Total: ${tmp.every(x=>x)?sum(tmp):'–'} / 40</div></div>
-  <div class="actions"><button class="big" data-act="confirm" ${tmp.every(x=>x)?'':'disabled'}>${btnText}</button></div>`;
+    <div class="judge"><div class="portrait">${avatar(j,i,S.tmp[i]?moodFor(S.tmp[i]):'idle')}</div><div class="jname">${esc(j.name)}</div></div>
+    <div class="keys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="key" data-j="${i}" data-n="${n}" class="${S.tmp[i]===n?'sel':''}">${n}</button>`).join('')}</div></div>`).join('')}
+    <div class="totalbox">Total: ${done?sum(S.tmp):'–'} <span style="opacity:.5">/ 40</span></div></div>
+  <div class="actions"><button class="big pink ${done?'pulse':''}" data-act="confirm" ${done?'':'disabled'}>${btn}</button></div>`;
 }
 
 function vGuess(){
-  const p=pById(S.order[S.oi]);
-  if(!ready)return `<div class="wrap"><div class="pass"><div class="sub">Guess ${S.oi+1} of ${S.order.length} · ${esc(cur().name)}</div>
-    <div>Pass the controls to…</div><div class="who" style="color:${p.color}">${esc(p.name)}</div>
-    <button class="big pink" data-act="ready">I'm ready</button></div></div>`;
-  return `<div class="wrap"><h2 style="color:${p.color}">${esc(p.name)}'s guesses</h2>
-    <div class="sub">How will each judge score ${esc(cur().name)}?</div>${keypad('', S.oi+1<S.order.length?'Lock in & pass on':'Lock in')}</div>`;
+  const w=W(),p=player(w.order[w.oi]);
+  if(!ready)return `<div class="pass"><div class="sub">${esc(couple(entry().cid).name)} · guess ${w.oi+1} of ${w.order.length}</div>
+    <span class="bigav">${p.av}</span><div style="font-family:var(--title);color:#fff;font-size:24px;text-shadow:0 3px 0 var(--ink)">Pass the controls to…</div>
+    <div class="who" style="color:${p.color}">${esc(p.name)}</div><button class="big pink pulse" data-act="ready">I'm ready! 🙈 no peeking</button></div>`;
+  return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}`;
 }
-
-function vReal(){
-  return `<div class="wrap"><h2>Judges' Scores</h2><div class="sub">Enter the real scores for ${esc(cur().name)}</div>${keypad('','Reveal scores!')}</div>`;
-}
+function vReal(){return `<h2 class="t">The Real Scores</h2><div class="sub">Enter what the judges actually gave ${esc(couple(entry().cid).name)}</div>${keypad('Reveal the scores! 🥁')}`}
 
 function vReveal(){
-  const c=cur(), r=c.real;
-  const results=S.order.map(id=>({p:pById(id),g:S.guesses[id],s:scorePlayer(S.guesses[id],r)})).sort((a,b)=>b.s.total-a.s.total);
-  const cls=(g,rv)=>{const d=Math.abs(g-rv);return d===0?'x':d===1?'n':'m'};
-  return `<div class="wrap"><h2>${esc(c.name)}</h2>
-    <div class="paddles">${r.map((n,i)=>`<div class="paddle">${portrait(i)}<div class="face" style="animation-delay:${.4+i*1.1}s">${n}</div></div>`).join('')}</div>
-    <div class="total" style="animation:none">Total: ${sum(r)} / 40</div>
-    <div class="card mt"><table class="res"><tr><th>Player</th>${S.judges.map(j=>`<th>${esc(j.name.split(' ')[0])}</th>`).join('')}<th>Total</th><th>Pts</th></tr>
-    ${results.map(x=>`<tr><td style="color:${x.p.color}">${esc(x.p.name)}</td>
-      ${x.g.map((g,i)=>`<td><span class="g ${cls(g,r[i])}">${g}</span></td>`).join('')}
-      <td>${sum(x.g)}${x.s.bonus?` <small>(+${x.s.bonus})</small>`:''}</td><td class="pts">+${x.s.total}</td></tr>`).join('')}
-    </table><div class="legend">🟩 exact (3) · 🟧 one away (1) · total bonus: exact +5, within 2 +2</div></div>
-    <div class="actions"><button class="big pink" data-act="board">Leaderboards 🏆</button></div></div>`;
+  const w=W(),e=entry(),c=couple(e.cid),res=w.results[e.cid],r=res.real;
+  const rows=w.order.map(id=>({p:player(id),g:w.guesses[id],s:scorePlayer(w.guesses[id],r)})).sort((a,b)=>b.s.total-a.s.total);
+  const cls=(g,v)=>{const d=Math.abs(g-v);return d===0?'x':d===1?'n':'m'};
+  return `<h2 class="t" style="font-size:clamp(24px,4vw,44px)">${esc(c.name)}</h2>
+  <div class="paddles">${r.map((n,i)=>`<div class="paddle" data-n="${n}">${portrait(i,'idle')}<div class="face ${n>=9?'hi':''}">${n}</div></div>`).join('')}</div>
+  <div class="totalbig" id="tot"> </div><div id="banner"></div>
+  <div id="after" style="opacity:0;pointer-events:none;transition:opacity .5s">
+    <div class="card" style="margin-top:12px"><table class="res"><tr><th></th>${S.judges.map(j=>`<th>${esc(j.name.split(' ')[0])}</th>`).join('')}<th>Total</th><th>Pts</th></tr>
+    ${rows.map((x,i)=>`<tr class="rrow" style="animation-delay:${i*.18}s"><td><span class="av" style="background:${x.p.color};width:1.5em;height:1.5em;font-size:.9em">${x.p.av}</span> ${esc(x.p.name)}</td>
+      ${x.g.map((g,k)=>`<td><span class="g ${cls(g,r[k])}">${g}</span></td>`).join('')}
+      <td>${sum(x.g)}${x.s.bonus?` <small style="color:var(--pink)">+${x.s.bonus}</small>`:''}</td><td class="pts">+${x.s.total}</td></tr>`).join('')}</table>
+    <div class="hint center">🟩 exact = 3 · 🟨 one away = 1 · total bonus: exact +5, within 2 +2</div></div>
+    <div class="actions"><button class="big pink" data-act="board">Leaderboards! 🏆</button></div></div>
+  <div class="actions" id="skip"><button class="sm white" data-act="skipreveal">Skip ⏭</button></div>`;
+}
+function playReveal(){
+  const tok=++revealTok,w=W(),r=w.results[entry().cid].real,total=sum(r);
+  const paddles=[...document.querySelectorAll('.paddle')];
+  const T=(ms,fn)=>setTimeout(()=>{if(tok===revealTok)fn()},ms);
+  const showOne=(p,i)=>{p.classList.add('on');const n=+p.dataset.n;p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(n));if(n>=9)burstAt(p,50)};
+  const finish=()=>{
+    const t=$('#tot');if(!t)return;t.innerHTML=`Total: <span id="tn">0</span> / 40`;countTo($('#tn'),total,700);
+    const b=$('#banner');
+    if(total>=36){b.innerHTML='<span class="banner">⭐ STANDING OVATION! ⭐</span>';rain(160);sfx.tada()}
+    else if(total>=30){b.innerHTML='<span class="banner">👏 Fabulous!</span>';rain(60);sfx.tada()}
+    else if(total<=16){b.innerHTML='<span class="banner" style="color:#fff">😬 Oh dear…</span>';sfx.boo()}
+    const a=$('#after');a.style.opacity=1;a.style.pointerEvents='auto';$('#skip')&&($('#skip').style.display='none');
+  };
+  sfx.drum(2.4);
+  paddles.forEach((p,i)=>T(2300+i*1400,()=>{showOne(p,i);sfx.flip(+p.dataset.n)}));
+  T(2300+3*1400+1100,finish);
+  window.__skip=()=>{revealTok++;paddles.forEach((p,i)=>{p.classList.add('on');p.querySelector('.portrait').innerHTML=avatar(S.judges[i],i,moodFor(+p.dataset.n))});finish()};
 }
 
 function vBoard(){
-  const last=S.idx>=S.couples.length-1;
-  return `<div class="wrap"><h2>Leaderboards</h2><div class="sub">After ${S.idx+1} of ${S.couples.length} couples</div>
-    <div class="grid2">${leaderboard(weeklyRows(),'Player Leaderboard')}${leaderboard(coupleRows(),"Judges' Scoreboard")}</div>
-    <div class="actions"><button class="big pink" data-act="next">${last?'Final results 🎉':'Next couple →'}</button></div></div>`;
+  const w=W(),done=w.entries.filter(e=>w.results[e.cid]).length,last=nextIdx(w.idx+1)<0;
+  return `<h2 class="t">Leaderboards</h2><div class="sub">After ${done} couple${done===1?'':'s'}</div>
+  <div class="grid2">${board(weekPlayerRows(true),'🎉 Player Leaderboard')}${board(weekCoupleRows(),"⭐ Judges' Scoreboard")}</div>
+  <div class="actions"><button class="big pink pulse" data-act="next">${last?"That's a wrap! 🎬":'Next couple →'}</button></div>`;
 }
 
-function vFinal(){
-  const w=weeklyRows();
-  const pod=[1,0,2].map(i=>w[i]?`<div class="pod p${i+1}"><div style="font-size:2em">${['🥇','🥈','🥉'][i]}</div><div class="n" style="color:${w[i].color}">${esc(w[i].name)}</div><div class="p">${w[i].score}</div></div>`:'').join('');
-  return `<div class="wrap"><div class="ball">🪩</div><h2>${w[0]?esc(w[0].name)+' wins the week!':'Finished!'}</h2>
-    <div class="podium">${pod}</div>
-    <div class="grid2">${leaderboard(w,'Final Player Leaderboard')}${leaderboard(coupleRows(),"Judges' Final Scoreboard")}</div>
-    <div class="legend mt">✅ Points added to the season table</div>
-    <div class="actions"><button class="big pink" data-act="again">New week 🔁</button><button class="ghost" data-act="season">🏆 Season table</button></div></div>`;
+function vWrap(){
+  const rows=weekPlayerRows(false),top=rows[0];
+  const pod=[1,0,2].map(i=>rows[i]?`<div class="pod p${i+1}"><div style="font-size:2em">${['🥇','🥈','🥉'][i]}</div><div class="n">${rows[i].av} ${esc(rows[i].name)}</div><div class="p">${rows[i].score}</div></div>`:'').join('');
+  return `<div class="center"><h2 class="t">${top&&top.score>0?`${esc(top.name)} wins Week ${W().n}!`:`Week ${W().n} complete!`}</h2><div class="sub">👏 Clap clap clap clap clap! 👏</div></div>
+  <div class="podium">${pod}</div>
+  <div class="grid2">${board(rows,'Week Results')}${board(weekCoupleRows(),"Judges' Scoreboard")}</div>
+  <div class="actions"><button class="big pink pulse" data-act="toelim">Who went home? 👋</button></div>`;
+}
+
+function vElim(){
+  const w=W();
+  const list=activeCouples();
+  return `<h2 class="t">Who Left Tonight?</h2><div class="sub">Tap every couple that goes home — none, one or several</div>
+  <div class="cgrid">${list.map(c=>{const res=w.results[c.id],e=w.entries.find(x=>x.cid===c.id);
+    return `<div class="cc ${w.leaving.includes(c.id)?'sel':''}" data-act="leave" data-id="${c.id}">${esc(c.name)}<small>${res?`Scored ${sum(res.real)}/40`:(e&&e.status==='sick'?'🤕 Absent this week':'Did not dance')}</small></div>`}).join('')||'<div class="hint">No couples left!</div>'}</div>
+  <div class="actions"><button class="big pink" data-act="finishweek">${w.leaving.length?`Say goodbye to ${w.leaving.length} 👋`:'Nobody left ✅'} – finish week</button></div>`;
 }
 
 function render(){
   hdr();
   let h;
-  if(showRules)h=vRules();
-  else if(showSeason)h=vSeason();
-  else h={setup:vSetup,dance:vDance,guess:vGuess,real:vReal,reveal:vReveal,board:vBoard,final:vFinal}[S.phase]();
-  $('#view').innerHTML=h; $('main').scrollTop=0;
+  if(overlay==='rules')h=vRules();
+  else if(overlay==='manage')h=vManage();
+  else if(overlay==='season')h=vSeason();
+  else if(overlay==='home'||!W())h=vHome();
+  else h={setup:vSetup,dance:vDance,guess:vGuess,real:vReal,reveal:vReveal,board:vBoard,wrap:vWrap,elim:vElim}[W().phase]();
+  const v=$('#view');v.style.animation='none';v.offsetWidth;v.style.animation='';
+  v.innerHTML=h;$('#main').scrollTop=0;
+  runCounts();
+  if(!overlay&&W()){const p=W().phase;
+    if(p==='reveal')playReveal();
+    if(p==='wrap'){rain(180);sfx.tada()}
+  }
 }
 
-/* ---------- setup sync ---------- */
-function syncSetup(){
-  if(S.phase!=='setup')return;
-  document.querySelectorAll('[data-pid]').forEach(row=>{
-    const p=pById(row.dataset.pid); if(p)p.name=row.querySelector('[data-pname]').value.trim()||p.name;});
-  document.querySelectorAll('[data-jname]').forEach(el=>{S.judges[+el.dataset.jname].name=el.value.trim()||S.judges[+el.dataset.jname].name});
-  const t=$('#couples'); if(t)S.couplesText=t.value;
-  save();
+/* =============== actions =============== */
+function newWeek(){
+  const n=S.weeksDone+1;
+  const entries=activeCouples().map(c=>({cid:c.id,dance:'',status:'dance'}));
+  S.week={n,phase:'setup',entries,pids:[],idx:0,order:[],oi:0,guesses:{},totals:{},prevTotals:{},results:{},leaving:[]};
+  S.tmp=[null,null,null,null];save();
 }
-
-function finishSeason(){
-  if(S.seasonDone)return;
-  const s=getSeason();
-  S.players.forEach(p=>{
-    const k=p.name.trim().toLowerCase();
-    s[k]=s[k]||{name:p.name,color:p.color,pts:0,weeks:0};
-    s[k].pts+=S.totals[p.id]||0; s[k].weeks+=1; s[k].color=p.color;
-  });
-  try{localStorage.setItem(SKEY,JSON.stringify(s))}catch(e){}
-  S.seasonDone=true;
-}
-
-function startCouple(){
-  S.order=shuffle(S.players.map(p=>p.id)); S.oi=0; S.guesses={}; tmp=[null,null,null,null]; ready=false;
-}
-
-/* ---------- actions ---------- */
 function resizePhoto(file,i){
   const fr=new FileReader();
   fr.onload=()=>{const img=new Image();img.onload=()=>{
     const c=document.createElement('canvas');c.width=c.height=240;const x=c.getContext('2d');
     const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/3,m,m,0,0,240,240);
-    S.judges[i].photo=c.toDataURL('image/jpeg',.85);save();render();};img.src=fr.result;};
+    S.judges[i].photo=c.toDataURL('image/jpeg',.85);save();render()};img.src=fr.result};
   fr.readAsDataURL(file);
 }
 let photoFor=0;
+function startCouple(){const w=W();w.order=shuffle(w.pids);w.oi=0;w.guesses={};w.prevTotals=Object.assign({},w.totals);S.tmp=[null,null,null,null];ready=false}
+function advance(){const w=W(),n=nextIdx(w.idx+1);if(n<0){w.phase='wrap'}else{w.idx=n;w.phase='dance'}save();render()}
+function finishWeek(){
+  const w=W();
+  w.entries.forEach(e=>{const r=w.results[e.cid];if(r)couple(e.cid).scores.push({week:w.n,dance:e.dance,real:r.real})});
+  const rows=weekPlayerRows(false),best=rows.length?rows[0].score:0;
+  const winners=best>0?rows.filter(r=>r.score===best).map(r=>r.name):[];
+  w.pids.forEach(id=>{const p=player(id);if(!p)return;const s=S.season[id]=S.season[id]||{pts:0,weeks:0,wins:0};
+    s.name=p.name;s.color=p.color;s.av=p.av;s.pts+=w.totals[id]||0;s.weeks++;if(best>0&&(w.totals[id]||0)===best)s.wins++});
+  w.leaving.forEach(id=>{couple(id).out=w.n});
+  S.history.push({n:w.n,winners,out:w.leaving.map(id=>couple(id).name),sick:w.entries.filter(e=>e.status==='sick').map(e=>couple(e.cid).name)});
+  S.weeksDone=Math.max(S.weeksDone,w.n);S.week=null;overlay=null;save();render();
+  toast(`Week ${w.n} saved! ${w.leaving.length?'👋 '+w.leaving.length+' left':''}`);
+}
 
 document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act]'); if(!b)return;
-  const a=b.dataset.act;
-  if(a==='fs'){const d=document.documentElement;document.fullscreenElement?document.exitFullscreen():(d.requestFullscreen||d.webkitRequestFullscreen).call(d);return}
-  if(a==='rules'){showRules=true;return render()}
-  if(a==='closerules'){showRules=false;return render()}
-  if(a==='season'){showSeason=true;return render()}
-  if(a==='back'){showSeason=false;return render()}
-  if(a==='resetseason'){if(confirm('Reset the whole season table?')){localStorage.removeItem(SKEY);render()}return}
-  if(a==='quit'){if(confirm('Quit this game and go back to setup? Current week scores will be lost.')){
-      const keep={players:S.players,judges:S.judges,couplesText:S.couplesText};S=Object.assign(fresh(),keep);save();render()}return}
-  syncSetup();
-  if(a==='addp'){S.players.push({id:uid(),name:'Player '+(S.players.length+1),color:COLORS[S.players.length%COLORS.length]});save();return render()}
-  if(a==='delp'){if(S.players.length>1){S.players=S.players.filter(p=>p.id!==b.dataset.id);save();render()}return}
-  if(a==='photo'){photoFor=+b.dataset.i;$('#file').click();return}
-  if(a==='clearphoto'){S.judges[+b.dataset.i].photo='';save();return render()}
-  if(a==='start'){
-    const cs=S.couplesText.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const [n,d]=l.split('|');return{name:n.trim(),dance:(d||'').trim(),real:null}});
-    if(!cs.length||!S.players.length){alert('Add at least one player and one couple.');return}
-    S.couples=cs;S.idx=0;S.totals={};S.players.forEach(p=>S.totals[p.id]=0);S.seasonDone=false;
-    S.phase='dance';save();return render()}
-  if(a==='danced'){startCouple();S.phase='guess';save();return render()}
-  if(a==='ready'){ready=true;return render()}
-  if(a==='key'){tmp[+b.dataset.j]=+b.dataset.n;return render()}
-  if(a==='confirm'){
-    if(S.phase==='guess'){
-      S.guesses[S.order[S.oi]]=tmp.slice();tmp=[null,null,null,null];ready=false;S.oi++;
-      if(S.oi>=S.order.length)S.phase='real';
-    }else if(S.phase==='real'){
-      const r=tmp.slice();cur().real=r;
-      S.order.forEach(id=>{S.totals[id]=(S.totals[id]||0)+scorePlayer(S.guesses[id],r).total});
-      tmp=[null,null,null,null];S.phase='reveal';
-    }
-    save();return render()}
-  if(a==='board'){S.phase='board';save();return render()}
-  if(a==='next'){
-    if(S.idx>=S.couples.length-1){finishSeason();S.phase='final'}
-    else{S.idx++;S.phase='dance'}
-    save();return render()}
-  if(a==='again'){const keep={players:S.players,judges:S.judges,couplesText:S.couplesText};S=Object.assign(fresh(),keep);save();return render()}
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act,id=b.dataset.id,w=W();
+  sfx.init();
+  if(['key','togglehere','leave','mv'].indexOf(a)<0)sfx.pop();
+  switch(a){
+  case 'fs':{const d=document.documentElement;document.fullscreenElement?document.exitFullscreen():(d.requestFullscreen||d.webkitRequestFullscreen).call(d);return}
+  case 'snd':S.sound=!S.sound;save();if(S.sound)sfx.init();return render();
+  case 'home':overlay='home';return render();
+  case 'nav':overlay=b.dataset.to||null;return render();
+  case 'resume':overlay=null;return render();
+  case 'newweek':newWeek();overlay=null;return render();
+  case 'quitweek':if(confirm('Abandon this week? Nothing from it will be saved.')){S.week=null;overlay=null;save();render()}return;
+  case 'stab':S.seasonTab=b.dataset.t;save();return render();
+  /* manage */
+  case 'addcouples':{const t=$('#newcouples').value.split('\n').map(x=>x.trim()).filter(Boolean);
+    t.forEach(n=>S.couples.push({id:uid(),name:n,out:null,scores:[]}));save();return render()}
+  case 'delcouple':if(confirm('Remove this couple completely (including their scores)?')){S.couples=S.couples.filter(c=>c.id!==id);if(w)w.entries=w.entries.filter(x=>x.cid!==id);save();render()}return;
+  case 'restore':couple(id).out=null;save();return render();
+  case 'addplayer':S.players.push(mkPlayer(S.players.length));save();return render();
+  case 'addplayerhere':S.players.push(mkPlayer(S.players.length));save();return render();
+  case 'delplayer':if(S.players.length>1&&confirm('Remove this player? (Their season points stay in the table.)')){S.players=S.players.filter(p=>p.id!==id);save();render()}return;
+  case 'cycleav':{const p=player(id);p.av=EMOJI[(EMOJI.indexOf(p.av)+1)%EMOJI.length];save();return render()}
+  case 'photo':photoFor=+b.dataset.i;$('#photofile').click();return;
+  case 'clearphoto':S.judges[+b.dataset.i].photo='';save();return render();
+  case 'export':{const blob=new Blob([JSON.stringify(S)],{type:'application/json'}),a2=document.createElement('a');a2.href=URL.createObjectURL(blob);a2.download='strictly-backup.json';a2.click();return}
+  case 'import':$('#importfile').click();return;
+  case 'wipe':if(confirm('Erase ALL couples, players, weeks and scores from this browser?')&&confirm('Really sure? This cannot be undone.')){localStorage.removeItem(KEY);S=defaultState();overlay=null;render()}return;
+  /* setup */
+  case 'togglehere':{const p=player(id);p.here=!p.here;save();return render()}
+  case 'togglesick':{const en=w.entries[+b.dataset.i];en.status=en.status==='sick'?'dance':'sick';save();return render()}
+  case 'mv':{const i=+b.dataset.i,d=+b.dataset.d,j=i+d;if(j<0||j>=w.entries.length)return;[w.entries[i],w.entries[j]]=[w.entries[j],w.entries[i]];save();return render()}
+  case 'shuffleorder':w.entries=shuffle(w.entries);save();return render();
+  case 'startweek':{w.pids=S.players.filter(p=>p.here).map(p=>p.id);w.totals={};w.pids.forEach(p=>w.totals[p]=0);
+    w.idx=nextIdx(0);w.phase='dance';save();return render()}
+  /* game */
+  case 'danced':startCouple();w.phase='guess';save();return render();
+  case 'cantdance':if(confirm('Mark this couple as absent this week and skip them?')){entry().status='sick';advance()}return;
+  case 'ready':ready=true;return render();
+  case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;save();return render();
+  case 'confirm':
+    if(w.phase==='guess'){w.guesses[w.order[w.oi]]=S.tmp.slice();S.tmp=[null,null,null,null];ready=false;w.oi++;if(w.oi>=w.order.length)w.phase='real'}
+    else if(w.phase==='real'){const r=S.tmp.slice();w.results[entry().cid]={real:r};
+      w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});S.tmp=[null,null,null,null];w.phase='reveal'}
+    save();return render();
+  case 'skipreveal':window.__skip&&window.__skip();return;
+  case 'board':w.phase='board';save();return render();
+  case 'next':advance();return;
+  case 'toelim':w.phase='elim';save();return render();
+  case 'leave':{const i=w.leaving.indexOf(id);i<0?w.leaving.push(id):w.leaving.splice(i,1);save();return render()}
+  case 'finishweek':finishWeek();return;
+  }
+});
+/* text inputs write straight into state (no re-render so focus is kept) */
+document.addEventListener('input',e=>{
+  const t=e.target,d=t.dataset.bind;if(!d)return;const [k,id,f]=d.split(':');
+  if(k==='couple')couple(id)[f]=t.value;
+  else if(k==='player')player(id)[f]=t.value;
+  else if(k==='judge')S.judges[+id][f]=t.value;
+  else if(k==='dance')W().entries[+id].dance=t.value;
+  save();
 });
 document.addEventListener('change',e=>{
-  if(e.target.id==='file'&&e.target.files[0]){syncSetup();resizePhoto(e.target.files[0],photoFor);e.target.value=''}
+  if(e.target.id==='photofile'&&e.target.files[0]){resizePhoto(e.target.files[0],photoFor);e.target.value=''}
+  if(e.target.id==='importfile'&&e.target.files[0]){const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(o.v!==2)throw 0;S=Object.assign(defaultState(),o);save();overlay=null;render();toast('Backup restored!')}catch(x){alert('That file is not a valid backup.')}};fr.readAsText(e.target.files[0]);e.target.value=''}
 });
-document.addEventListener('input',e=>{ if(S.phase==='setup'&&(e.target.matches('[data-pname],[data-jname],#couples'))) syncSetup() });
-
-/* ---------- sparkles ---------- */
-const cv=$('#sparkles'),cx=cv.getContext('2d');let W,H,stars=[];
-function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;stars=Array.from({length:Math.round(W*H/16000)},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+.4,p:Math.random()*6.28,s:Math.random()*.03+.01}))}
-addEventListener('resize',size);size();
-(function tick(){cx.clearRect(0,0,W,H);for(const s of stars){s.p+=s.s;const a=(Math.sin(s.p)+1)/2;cx.globalAlpha=a*.8;cx.fillStyle='#fff3c4';
-  cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.28);cx.fill();s.y+=.08;if(s.y>H)s.y=0}requestAnimationFrame(tick)})();
 
 render();
 })();
