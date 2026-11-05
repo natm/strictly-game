@@ -678,10 +678,9 @@ test('judges react: same score = Snap!, Shirley/Anton shout SEVEN', async () => 
   await page.click('[data-act=jkey][data-n="6"]'); await page.click('[data-act=jkey][data-n="6"]');   // Craig 6, Motsi 6
   // Craig may say his own line first; the Snap! bubble replaces it shortly after Motsi's matching 6
   await page.waitForFunction(() => [...document.querySelectorAll('.paddle[data-i="0"] .jbub')].some(b => /Snap|minds|agree|Same/.test(b.textContent)), null, { timeout: 2500 });
-  await page.click('[data-act=jkey][data-n="7"]');                 // Shirley 7 (shouts SEVEN most of the time)
-  await page.waitForTimeout(700);
-  const t = await page.$$eval('.paddle[data-i="2"] .jbub', e => e.map(x => x.textContent).join(' '));
-  assert.ok(t === '' || /SE-?VEN|Se-ven|!/.test(t));
+  await page.evaluate(() => { Math.random = () => 0.5; });       // take the SEVEN branch deterministically
+  await page.click('[data-act=jkey][data-n="7"]');                 // Shirley gives a 7
+  await page.waitForFunction(() => [...document.querySelectorAll('.paddle[data-i="2"] .jbub')].some(b => /SE-?VEN|Se-ven/i.test(b.textContent)), null, { timeout: 2000 });
   assert.deepEqual(page.errors, []);
 });
 
@@ -838,4 +837,26 @@ test('presenters sometimes joke about the Strictly curse', async () => {
   const curse = lines.filter(t => /curse/i.test(t));
   assert.ok(curse.length > 10, 'curse jokes turn up');
   assert.ok(curse.length < lines.length / 8, 'but only now and then');
+});
+
+test('Abi Clarke plugs Lights Out, Johannes reads the T&Cs (rarely), vote reminders', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  const qs = await page.evaluate(() => { const o = []; for (let i = 0; i < 3000; i++) o.push(...window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a'])); return o; });
+  const abi = qs.filter(q => q.p === 4), tc = qs.filter(q => q.p === 2 && /terms/i.test(q.t)), vote = qs.filter(q => /vote/i.test(q.t) && q.p < 3);
+  assert.ok(abi.length > 50 && abi.every(q => /Lights Out/.test(q.t)), 'Abi always talks about Lights Out');
+  assert.ok(tc.length > 5 && tc.length < 150, `T&Cs should be rare (${tc.length})`);
+  assert.ok(vote.length > 50, 'vote reminders');
+});
+
+test('Dave Arch and Abi Clarke appear at least once every week', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A', 'Bob & B']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
+  await page.evaluate(() => { Math.random = (() => { let x = 0.42; return () => (x = (x * 9301 + 49297) % 233280 / 233280); })(); });  // no lucky cameos needed
+  for (let c = 0; c < 2; c++) await playCouple(page, () => [7, 7, 7, 7], [7, 8, 7, 8]);
+  const s = await state(page);
+  const all = Object.values(s.week.results).flatMap(r => r.quips || []);
+  assert.ok(all.some(q => q.p === 3), 'Dave appeared this week');
+  assert.ok(all.some(q => q.p === 4), 'Abi appeared this week');
 });

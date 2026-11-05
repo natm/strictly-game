@@ -515,7 +515,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.2.0',RELEASE='Ballroom';
+const VERSION='3.3.0',RELEASE='Lights Out';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -532,7 +532,8 @@ const defaultJudges=()=>[   // always shown in this order: Craig, Motsi, Shirley
   {name:'Shirley Ballas',photo:'',style:0},{name:'Anton Du Beke',photo:'',style:2}];
 const mkPlayer=(i,name)=>({id:uid(),name:name||'Player '+(i+1),color:COLORS[i%COLORS.length],av:EMOJI[i%EMOJI.length],here:true});
 const defaultPresenters=()=>[{name:'Emma Willis',photo:''},{name:'Josh Widdicombe',photo:''},{name:'Johannes Radebe',photo:''}];
-const BANDLEADER={name:'Dave Arch',photo:''};   // pops up rarely after the judges
+const BANDLEADER={name:'Dave Arch',photo:''};
+const LIGHTSOUT={name:'Abi Clarke',photo:''};   // pops up to plug Strictly: Lights Out (after Sunday's results)   // pops up rarely after the judges
 const defaultState=()=>({v:2,presenters:defaultPresenters(),players:[mkPlayer(0),mkPlayer(1),mkPlayer(2)],judges:defaultJudges(),couples:[],season:{},history:[],rounds:[],weeksDone:0,week:null,
   tmp:[null,null,null,null],sound:false,jOrder:2,seasonTab:'players'});
 let S=(()=>{try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2)return Object.assign(defaultState(),{jOrder:0},o)}catch(e){}return defaultState()})();
@@ -651,22 +652,25 @@ function avatar(j,i,mood='idle'){
     ${mouth}${extra}</svg>`;
 }
 function presenterAvatar(i,mood){
-  const pr=i===3?BANDLEADER:S.presenters[i];if(pr.photo)return `<img src="${pr.photo}" alt="${esc(pr.name)}">`;
+  const pr=i===4?LIGHTSOUT:i===3?BANDLEADER:S.presenters[i];if(pr.photo)return `<img src="${pr.photo}" alt="${esc(pr.name)}">`;
   const ink='#1c0a33';
   // looks based on the BBC's 2026 presenter photo: Emma short dark crop, Josh curly hair + glasses + suit, Johannes short black hair + green
-  const skin=['#f6d2b6','#ffd8bd','#7a4a2c','#f6cfae'][i],hair=['#3a2418','#9a6a3a','#141010','#c9c9d1'][i],top=['#2c3e66','#1f2a44','#1f7a4d','#111827'][i];
+  const skin=['#f6d2b6','#ffd8bd','#7a4a2c','#f6cfae','#f6d2b6'][i],hair=['#3a2418','#9a6a3a','#141010','#c9c9d1','#7a4a2c'][i],top=['#2c3e66','#1f2a44','#1f7a4d','#111827','#7c3aed'][i];
   const back=[`<path d="M30 30 Q34 4 60 6 Q88 4 92 30 Q80 18 60 18 Q40 18 30 30Z" fill="${hair}" stroke="${ink}" stroke-width="4"/><circle cx="60" cy="10" r="13" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
-    `<g fill="${hair}" stroke="${ink}" stroke-width="4"><circle cx="34" cy="30" r="12"/><circle cx="50" cy="20" r="13"/><circle cx="68" cy="19" r="13"/><circle cx="85" cy="29" r="12"/></g>`,'',''][i];
+    `<g fill="${hair}" stroke="${ink}" stroke-width="4"><circle cx="34" cy="30" r="12"/><circle cx="50" cy="20" r="13"/><circle cx="68" cy="19" r="13"/><circle cx="85" cy="29" r="12"/></g>`,'','',
+    `<path d="M16 116 Q4 56 24 30 Q60 -6 96 30 Q116 56 104 116Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`][i];
   const front=[
     `<path d="M27 52 Q24 24 46 20 Q60 16 76 22 Q96 26 93 52 Q86 34 72 32 Q58 40 44 34 Q32 38 27 52Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M27 52 Q25 62 30 70" fill="none" stroke="${hair}" stroke-width="5" stroke-linecap="round"/>`,
     `<path d="M28 46 Q26 26 40 24 Q46 16 56 20 Q64 14 72 20 Q84 18 88 28 Q96 32 92 46 Q84 34 72 34 Q60 30 48 34 Q36 34 28 46Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
     `<path d="M30 44 Q34 18 60 18 Q86 18 90 44 Q76 30 60 30 Q44 30 30 44Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
-    `<path d="M28 48 Q30 20 60 20 Q90 20 92 48 Q80 34 60 34 Q40 34 28 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
+    `<path d="M28 48 Q30 20 60 20 Q90 20 92 48 Q80 34 60 34 Q40 34 28 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`,
+    `<path d="M27 48 Q30 16 60 18 Q92 18 93 48 Q78 30 52 34 Q36 36 27 48Z" fill="${hair}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`][i];
   const extra=[
     `<circle cx="28" cy="72" r="4" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><circle cx="92" cy="72" r="4" fill="#ffd93d" stroke="${ink}" stroke-width="2"/><path d="M46 102 Q60 116 74 102" fill="none" stroke="#ffd93d" stroke-width="2.5"/><circle cx="60" cy="112" r="3.5" fill="#ffd93d" stroke="${ink}" stroke-width="1.5"/>`,
     `<g fill="rgba(255,255,255,.3)" stroke="${ink}" stroke-width="4"><circle cx="46" cy="57" r="12"/><circle cx="74" cy="57" r="12"/></g><path d="M58 57h4" stroke="${ink}" stroke-width="4"/><path d="M50 100 L60 108 L70 100 L66 120 L60 124 L54 120Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M57 106 L63 106 L65 126 L60 130 L55 126Z" fill="#3b5b8a" stroke="${ink}" stroke-width="2.5"/>`,
     `<path d="M30 104 Q60 126 90 104 L96 120 Q60 140 24 120Z" fill="#2a9d63" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>`,
-    `<path d="M50 104 L60 110 L70 104 L70 116 L60 110 L50 116Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M96 118 L116 82" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M96 118 L116 82" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><text x="100" y="40" font-size="20">🎵</text>`][i];
+    `<path d="M50 104 L60 110 L70 104 L70 116 L60 110 L50 116Z" fill="#fff" stroke="${ink}" stroke-width="3"/><path d="M96 118 L116 82" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M96 118 L116 82" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><text x="100" y="40" font-size="20">🎵</text>`,
+    `<rect x="92" y="78" width="10" height="26" rx="4" fill="#333" stroke="${ink}" stroke-width="3"/><circle cx="97" cy="74" r="8" fill="#bbb" stroke="${ink}" stroke-width="3"/><text x="6" y="26" font-size="18">🌙</text>`][i];
   const brow=mood==='sad'?'M34 36 L52 42 M68 42 L86 36':i===1?'M34 42 L52 40 M68 40 L86 42':'M34 40 Q43 33 52 38 M68 38 Q77 33 86 40';
   const mood2=mood||'idle';
   const mouth=i===1?`<g class="mouth"><path d="M42 74 Q60 98 78 74Z" fill="#7a1030" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M47 76 H73 V80 H47Z" fill="#fff"/></g>`
@@ -836,6 +840,14 @@ const AUDIENCEQ={
 function audienceLine(p){const past=SD.past||[];if(!past.length)return'';const x=past[Math.floor(Math.random()*past.length)];
   const placeText=/winner/i.test(x.place||'')?'Champion':/runner/i.test(x.place||'')?'Runner-up':'A star';
   return pickR(AUDIENCEQ[p]).replace(/\{past\}/g,x.celebrity).replace(/\{ppro\}/g,x.pro||'their pro').replace(/\{year\}/g,x.year).replace(/\{placeText\}/g,placeText)}
+/* Abi Clarke reminds everyone about Strictly: Lights Out after Sunday's results show */
+const LIGHTSOUTQ=["Don't forget, Strictly: Lights Out is straight after the results show on Sunday! Bring snacks.","Psst! It's Abi. Stay up for Lights Out after Sunday's results. That's where the real gossip is!",
+  "Sunday night, results show, then Lights Out with me. It's in the diary. In pen.","Lights Out, Sunday, after the results. I'll have the sequins. You bring the tea."];
+/* Johannes, very rarely, reads out the voting terms and conditions in full (gently made up, not the real ones) */
+const TANDCQ=["Right, the voting terms! Lines open after the last dance. Votes after lines close won't count, but may still be charged. You must be in the UK. You can vote online, on the app or by phone. Ask the bill payer first. Votes are counted by magic and an independent person in a cardigan. For the full terms, see the BBC website… Back to you, Josh and Emma!"];
+/* anyone: a friendly reminder about the public vote */
+const VOTEQ=["Remember, the public vote opens after the last dance tonight. Your vote really counts!","Don't forget: when the lines open later, you can vote to keep your favourites dancing!",
+  "Judges' scores are only half of it. The public vote decides the rest when the lines open!","Want to see them back next week? Get voting when the lines open later!"];
 const BANDQ=["The band loved that one — we were dancing behind the music stands!",
   "Lovely. Though I do miss Claudia popping over to tell me my fringe needed a trim.","That one's for Claudia. We miss you! 💛 The band's playing your song in the break.",
   "Claudia would've been hiding behind the band by now. Bless her, we miss her.","I still look over to the clinic, expecting Claudia. Old habits!","That tempo was not easy. Respect from the whole band.","I've played that song a thousand times. Never seen it danced like that!","The horn section would like a word… a good word!","Brilliant. We'll be humming that all the way home."];
@@ -943,7 +955,15 @@ function makeQuips(real,guesses,order){
   if(out.length===1&&out[0].p===2&&Math.random()<.7){   // Johannes on his own: the scores, then his catchphrase
     const sc=`${vars.topJudge} gave ${hi}, ${vars.lowJudge} ${lo}… ${total} out of 40!`;
     out[0].t=(Math.random()<.5?sc+' ':'')+out[0].t+' Back to you, Josh and Emma!'}
+  if(Math.random()<.07&&out.length<3)out.push({p:out.find(x=>x.p<3)?out.find(x=>x.p<3).p:ids[0],t:pickOne(VOTEQ)});   // vote reminder, any presenter
+  if(Math.random()<.015)out.push({p:2,t:pickOne(TANDCQ)});                                        // Johannes and the full T&Cs, rarely
+  if(Math.random()<.05)out.push({p:4,t:pickOne(LIGHTSOUTQ)});                                    // Abi Clarke, now and then
   if(Math.random()<.08)out.push({p:3,t:pickOne(BANDQ)});   // Dave Arch, rarely
+  // every week Dave and Abi appear at least once: if they haven't by the last couple, they do now
+  const wk=S.week;if(wk){const lastCouple=remaining().length<=1;
+    if(lastCouple&&!wk.daveSeen&&!out.some(q=>q.p===3))out.push({p:3,t:pickOne(BANDQ)});
+    if(lastCouple&&!wk.abiSeen&&!out.some(q=>q.p===4))out.push({p:4,t:pickOne(LIGHTSOUTQ)});
+    if(out.some(q=>q.p===3))wk.daveSeen=true;if(out.some(q=>q.p===4))wk.abiSeen=true}
   return out;
 }
 const portrait=(i,mood)=>`<div class="portrait" data-ji="${i}">${avatar(S.judges[i],i,mood)}</div>`;
@@ -1410,7 +1430,7 @@ function liveFinish(instant){
   const box=$('#quips');box.innerHTML='';const qs=res.quips||[];let k=0;
   const sk=$('#skip');if(sk&&!instant)sk.style.display='';
   const addPres=(q,i)=>{const el=document.createElement('div');el.className='pres '+(i%2?'r':'l');
-    const pr=q.p===3?BANDLEADER:S.presenters[q.p];el.innerHTML=`<div class="pavatar talk"><div class="portrait">${presenterAvatar(q.p)}</div><div class="pn">${esc(pr.name)}${q.p===3?'<br><small>Band leader</small>':''}</div></div><div class="bubble"><b>${esc(pr.name.split(' ')[0])} says:</b><span class="txt"></span></div>`;
+    const pr=q.p===4?LIGHTSOUT:q.p===3?BANDLEADER:S.presenters[q.p];el.innerHTML=`<div class="pavatar talk"><div class="portrait">${presenterAvatar(q.p)}</div><div class="pn">${esc(pr.name)}${q.p===3?'<br><small>Band leader</small>':q.p===4?'<br><small>Strictly: Lights Out</small>':''}</div></div><div class="bubble"><b>${esc(pr.name.split(' ')[0])} says:</b><span class="txt"></span></div>`;
     box.appendChild(el);if(!instant&&!touchUI())el.scrollIntoView({behavior:'smooth',block:'nearest'});return el};
   const next=()=>{if(tok!==revealTok)return;if(k>=qs.length){showAfter();return}
     const q=qs[k],el=addPres(q,k);k++;const txt=el.querySelector('.txt'),av=el.querySelector('.pavatar');

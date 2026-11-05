@@ -3,6 +3,12 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.3.0 "Lights Out" (2026-11-05)
+- Abi Clarke pops up to remind everyone to watch Strictly: Lights Out after Sunday's results show 🌙.
+- Dave Arch and Abi Clarke each appear at least once every week, guaranteed by the last couple, as well as their random pop-ups.
+- Very rarely, Johannes reads out the public vote terms and conditions in full (a gently made-up version), then hands back to Josh and Emma.
+- Any presenter may remind you the public vote opens when the lines open later.
+
 ## v3.2.0 "Ballroom" (2026-11-05)
 - Every professional dancer has their home country's flag next to their name 🇮🇹🇺🇦🇦🇺🏴󠁧󠁢󠁷󠁬󠁳󠁿: on the stage, the pick screen, week setup and the scoreboards. Countries come from the BBC profiles and Wikipedia.
 - Presenters now and then joke about the "Strictly curse", always playful and never about anyone real: "That's not the curse, that's chemistry!"
