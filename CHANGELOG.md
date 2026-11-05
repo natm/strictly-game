@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.8.1 "Twirl" (2026-11-05)
+- Fun Stats includes the week in progress, so stats appear as soon as the first couple's scores are in. It also ignores any odd saved data instead of showing nothing.
+
 ## v2.8.0 "Tap" (2026-11-05)
 - Entering the judges' scores is as quick as guessing. One tap on a number lifts that judge's paddle, updates everyone's tallies, and moves on to the next judge. No separate ✓.
 - Live corrections: tap any paddle that's up, pick the right number, and the tallies recalculate straight away.

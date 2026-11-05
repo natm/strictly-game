@@ -495,7 +495,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.8.0',RELEASE='Tap';
+const VERSION='2.8.1',RELEASE='Twirl';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -1000,9 +1000,17 @@ function vSeason(){
 }
 
 /* ---------- season stats (only count rounds a player actually guessed) ---------- */
+/* every round with guesses: finished weeks (S.rounds) plus couples already revealed in the week in progress */
+function allRounds(){
+  const out=(S.rounds||[]).filter(r=>r&&r.g&&r.r);
+  const w=S.week;if(w&&w.results)Object.entries(w.results).forEach(([cid,res])=>{const c=couple(cid);if(!res||!res.guesses||!res.real)return;
+    if(!out.some(r=>r.w===w.n&&c&&r.c===c.name))out.push({w:w.n,c:c?c.name:'',d:'',r:res.real,g:res.guesses,live:true})});
+  return out;
+}
 function computeStats(){
   const st={};
-  S.rounds.forEach(r=>Object.entries(r.g).forEach(([pid,g])=>{
+  allRounds().forEach(r=>Object.entries(r.g).forEach(([pid,g])=>{
+    if(!Array.isArray(g)||g.length!==4||g.some(v=>typeof v!=='number'))return;   // ignore anything malformed
     const q=st[pid]=st[pid]||{pid,n:0,abs:0,sg:0,exact:0,near:0,oracle:0,pts:0,best:0,pj:[0,0,0,0],wk:new Set()};
     q.n++;g.forEach((v,i)=>{const d=v-r.r[i];q.abs+=Math.abs(d);q.sg+=d;q.pj[i]+=Math.abs(d);if(d===0)q.exact++;else if(Math.abs(d)===1)q.near++});
     const sc=scorePlayer(g,r.r).total;q.pts+=sc;q.best=Math.max(q.best,sc);if(sum(g)===sum(r.r))q.oracle++;q.wk.add(r.w)}));
@@ -1023,14 +1031,16 @@ function seasonAwards(st){
   x=pick(q,y=>y.bias,1);if(x.bias<-.05)A.push({e:'😈',t:'Craig Mode',x,d:`guesses run ${Math.abs(x.bias).toFixed(2)} too harsh`});
   S.judges.forEach((j,i)=>{x=pick(q,y=>y.jerr[i]);A.push({e:'🧠',t:`${j.name.split(' ')[0]}'s Mind-Reader`,x,d:`only ${x.jerr[i].toFixed(2)} off on average`})});
   x=pick(all,y=>y.best,-1);A.push({e:'🚀',t:'Biggest Night',x,d:`${x.best} pts on a single couple`});
-  const tw=new Set(S.rounds.map(r=>r.w)).size;
+  const tw=new Set(allRounds().map(r=>r.w)).size;
   if(tw>1){const full=all.filter(y=>y.weeks===tw);if(full.length)A.push({e:'🎟',t:'Never Misses',x:full[0],d:`here for all ${tw} weeks`})}
   return A;
 }
 function vStats(){
   const st=computeStats(),list=Object.values(st);
-  if(!list.length)return `<div class="card center"><h3>📊 Stats appear after your first full week</h3><div class="hint">Every guess is remembered. Players who miss a week are only judged on the couples they actually guessed.</div></div>`;
-  const awards=seasonAwards(st),tw=new Set(S.rounds.map(r=>r.w)).size,won={};
+  if(!list.length)return `<div class="card center"><h3>📊 Stats appear as soon as the first couple's scores are in</h3><div class="hint">Every guess is remembered. Players who miss a week are only judged on the couples they actually guessed.</div>
+    <div class="hint" style="margin-top:8px;opacity:.5">(debug: ${(S.rounds||[]).length} saved rounds · ${S.history.length} weeks finished · ${S.week?Object.keys(S.week.results||{}).length+' revealed this week':'no week in progress'} · v${VERSION})</div></div>`;
+  const awards=seasonAwards(st),tw=new Set(allRounds().map(r=>r.w)).size,won={};
+  const liveNote=S.week&&Object.keys(S.week.results||{}).length?`<div class="hint center" style="color:#fff;margin-bottom:8px">Includes week ${S.week.n} so far (in progress)</div>`:'';
   awards.forEach(a=>(won[a.x.pid]=won[a.x.pid]||[]).push(a.e+' '+a.t));
   const cards=awards.map((a,i)=>{const p=pinfo(a.x.pid);return `<div class="awardcard" style="animation-delay:${i*.07}s"><div class="e">${a.e}</div>
     <div><div class="tt">${esc(a.t)}</div><div class="who"><span class="av" style="background:${p.color};width:1.4em;height:1.4em;font-size:.8em">${p.av}</span> ${esc(p.name)}</div><small>${esc(a.d)}</small></div></div>`}).join('');
@@ -1043,7 +1053,7 @@ function vStats(){
     <li>⭐ <b>${x.ppr.toFixed(1)}</b> pts per couple · best night ${x.best}</li>
     <li>🧭 ${mood}</li>
     <li>❤️ Reads ${esc(S.judges[bi].name.split(' ')[0])} best · 😖 struggles with ${esc(S.judges[wi].name.split(' ')[0])}</li></ul></div>`}).join('');
-  return `<div class="sh">🏅 Hall of Fame</div><div class="statgrid">${cards}</div>
+  return `${liveNote}<div class="sh">🏅 Hall of Fame</div><div class="statgrid">${cards}</div>
     <div class="sh">🎉 Player Cards</div><div class="statgrid">${pc}</div>
     <div class="hint center" style="color:#fff">Stats only count couples a player actually guessed, so missing a week never hurts you.</div>`;
 }

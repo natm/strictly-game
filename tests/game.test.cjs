@@ -577,3 +577,17 @@ test('judges: one tap per judge, then live corrections recalculate the tallies',
   assert.deepEqual(Object.values(s.week.totals), [17, 17, 17]);       // 12 + exact total bonus 5
   assert.deepEqual(page.errors, []);
 });
+
+test('fun stats show up mid-week and survive odd saved data', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A', 'Bob & B']);
+  await page.evaluate(() => { const S = JSON.parse(localStorage.getItem('strictly-v2')); S.rounds = [{ w: 1, c: 'X', r: [5, 5, 5, 5], g: { ghost: null } }, null]; localStorage.setItem('strictly-v2', JSON.stringify(S)); });
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
+  await enterReal(page, [7, 7, 8, 8]);
+  await page.click('[data-act=nav][data-to=season]'); await page.click('[data-act=stab][data-t=stats]');
+  assert.ok(await page.locator('.awardcard').count() > 0, 'awards from the first revealed couple');
+  assert.match(await page.textContent('#view'), /in progress/);
+  assert.deepEqual(page.errors, []);
+});
