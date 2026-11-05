@@ -1,6 +1,6 @@
 # Releasing & deploying
 
-- **Version:** `const VERSION='x.y.z',RELEASE='<Name>'` in `index.html`. It shows in the header (hidden on phones) and the footer. Every release gets a new dance or Strictly word as its name; check `CHANGELOG.md` for names already used.
+- **Version:** `const VERSION='x.y.z',RELEASE='<Name>'` in `index.html`. It shows in the header (hidden on phones) and the footer. Every release gets a new name, usually a dance or Strictly word (the odd fun phrase is fine too); check `CHANGELOG.md` for names already used. The release workflow also refreshes the title and notes of an existing release, so renaming one is just a deploy.
 - **Changelog:** add `## vX.Y.Z "Name" (YYYY-MM-DD)` at the top of `CHANGELOG.md`, with short player-facing bullets.
 - **Deploy:** GitHub Pages serves the `gh-pages` branch.
   ```bash

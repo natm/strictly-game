@@ -24,5 +24,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$VER" >/dev/null 2>&1; then echo "$VER already released"; exit 0; fi
+          if gh release view "$VER" >/dev/null 2>&1; then
+            echo "$VER already released; refreshing its title and notes from CHANGELOG.md"
+            gh release edit "$VER" --title "$TITLE" --notes-file body.md; exit 0
+          fi
           gh release create "$VER" --target "$GITHUB_SHA" --title "$TITLE" --notes-file body.md

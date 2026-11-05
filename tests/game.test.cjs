@@ -376,7 +376,7 @@ test('footer credits BBC and Wikipedia and shows the version', async () => {
   const page = await open();
   const txt = await page.textContent('.credits');
   assert.match(txt, /BBC/); assert.match(txt, /Wikipedia/); assert.match(txt, /v\d+\.\d+\.\d+/);
-  assert.match(await page.textContent('.ver'), /v\d+\.\d+\.\d+ “[\w-]+”/);
+  assert.match(await page.textContent('.ver'), /v\d+\.\d+\.\d+ “[^”]+”/);
 });
 
 test('short laptop window: the stage and its buttons fit without scrolling', async () => {
