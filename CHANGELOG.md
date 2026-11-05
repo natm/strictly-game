@@ -3,6 +3,18 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.0.0 "Paso" (2026-11-05)
+- **Dances pre-filled:** the dances (and songs 🎵) announced for the coming week are pre-filled for each couple, from Wikipedia via the scheduled data update.
+- **Weeks close themselves:** once the real result is in the data, a finished week closes on its own. "Who went home?" also pre-selects the real result.
+- **Judges react to each other:**
+  - The same score as the judge before gets smiles and a "Snap! 🤝".
+  - A much lower score makes the more generous judges react ("Really?! 😱", "Harsh!").
+- **SEVEN!** Shirley and Anton sometimes shout "SE-VEN!" for a 7, in honour of Len Goodman.
+- **New presenters:** Emma, Josh and Johannes joke about it being their first series presenting.
+- **Whole numbers:** averages are shown as whole numbers.
+- **Phones:** fixed a white flash when more than one presenter comments.
+- **README:** "Play now" link at the top.
+
 ## v2.9.1 "Pivot" (2026-11-05)
 - The couples' season scoreboard uses every real score this series plus the weeks you play. Couples are ranked by average judges' score, with dances, best dance and recent totals. Eliminated couples are greyed out at the bottom.
 

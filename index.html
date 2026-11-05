@@ -20,6 +20,10 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
+html{background:#1c0a33}
+main{overflow-x:hidden}
+.quips{overflow:hidden;padding:4px}
+.music{margin-top:8px;font-family:var(--title);color:#fff;font-size:clamp(13px,1.8vw,19px);text-shadow:0 2px 0 var(--ink);opacity:0;animation:drop .7s 2.6s forwards}
 body{font-family:var(--body);font-weight:500;color:var(--ink);overflow:hidden;
   background:radial-gradient(ellipse at 50% 0%,#7a2fd0 0%,transparent 60%),radial-gradient(ellipse at 0% 100%,#ff4fa088 0%,transparent 50%),
   radial-gradient(ellipse at 100% 100%,#35d0ff66 0%,transparent 50%),linear-gradient(180deg,#3b1470,#1c0a33)}
@@ -497,7 +501,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.9.1',RELEASE='Pivot';
+const VERSION='3.0.0',RELEASE='Paso';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -764,6 +768,8 @@ const QUIPS={
      low:["Hey, hey — shake it off, {couple}! Next week we come back stronger!","Dance is about heart, and you gave us plenty. The points will follow!","Tough one, but I believe in you. Back to practice!"],
      split:["The judges disagree! {topJudge} loved it, {lowJudge} wants more. Drama!"],best:["And {best}! You should be a judge — incredible guessing!"],worst:["{worst}, don't worry — the rhythm will come!"]}
 };
+/* map Wikipedia's dance names onto the picker's list (e.g. "Cha-cha-cha", "Couple's choice") */
+function normDanceName(d){const k=normDance(d);const hit=DANCES.find(x=>normDance(x)===k);return hit||d||''}
 const DANCES=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha-cha-cha','Rumba','Samba','Salsa','Jive','Paso doble','Charleston','Argentine tango',"Couple's choice",'Showdance'].sort((a,b)=>a.localeCompare(b,'en',{sensitivity:'base'}));   // A–Z in the picker
 const STATQ_EXTRA={
   crash:["Oh no, {first}. From {last} last week to {total} tonight. We'll get you back up there, I promise.","From {last} to {total}. That's not a drop, that's a skydive without the parachute.","{last} last week, {total} tonight? That's not you! Back to the studio, we go again!"],
@@ -813,6 +819,12 @@ const JOSH_FACT=["Someone's just handed me a card. It says: {fact}","I read this
   "Fortune cookie at lunch said: {fact} Mine just said 'You will host a dance show'.","Heard it from a pigeon outside the studio: {fact}","Read it on a toilet door. A very well-informed toilet door: {fact}",
   "Group chat's going wild about this: {fact}","The research team have given me this, and I quote: {fact} Riveting."];
 /* Johannes remembering his years as a Strictly pro */
+/* first series presenting: jokes about still getting used to it */
+const NEWHOST={
+  0:["First series presenting and I'm already crying at every dance. Is that normal?","Somebody told me presenting would be easy. They lied. I love it!","I'm still learning where to stand. I've been told off by a camera twice tonight."],
+  1:["I'm still finding my way round the studio. I walked into the band room and they made me play the triangle.","My first series presenting. I've already been sequinned against my will.","Nobody warned me there'd be this much glitter. I'll be finding it in March."],
+  2:["Being on this side of the paddles is so strange! I keep wanting to dance!","First series presenting and my feet keep doing the cha-cha under the desk.","I used to get the scores, now I read them out. I'm still getting used to it!"]
+};
 const JOHANNES_PRO=["When I was a pro on this floor, a {dance} like that would have had me in tears. Happy ones!","Trust me, I danced on this floor for years. That is harder than it looks!",
   "That takes me back to my pro days: sequins everywhere, sweat everywhere, joy everywhere!","As a former pro, I can tell you that lift was NOT easy. Respect!",
   "I spent years in that training room. I know exactly how many hours went into that!","When I was dancing, I'd have done anything for a {hi} from {topJudge}!",
@@ -846,6 +858,7 @@ function makeQuips(real,guesses,order){
   const pickOne=a=>a[Math.floor(Math.random()*a.length)];
   // each presenter's own voice: Josh wild (and often about the judges), Emma kind when it's a tough night
   const voice=(p,tier)=>{
+    if(Math.random()<.1)return pickOne(NEWHOST[p]);
     if(p===2&&Math.random()<.3)return pickOne(JOHANNES_PRO);
     if(p===1){const jl=JOSH_JUDGES.filter(x=>x.ok(vars));return Math.random()<.45&&jl.length?pickOne(jl).t:pickOne([...JOSH[tier],...QUIPS[1][tier]])}
     if(p===0&&total<=16)return pickOne(EMMA_KIND.tissues);
@@ -985,7 +998,7 @@ function vSeason(){
   if(tab==='players'){
     const st=computeStats();
     const rows=Object.entries(S.season).sort((a,b)=>b[1].pts-a[1].pts).map(([id,p])=>({name:p.name,color:p.color,av:p.av,score:p.pts,
-      sub:`${p.weeks} week${p.weeks===1?'':'s'} · ${p.wins||0} win${p.wins===1?'':'s'}${st[id]?` · avg ${st[id].ppr.toFixed(1)} per couple`:''}`}));
+      sub:`${p.weeks} week${p.weeks===1?'':'s'} · ${p.wins||0} win${p.wins===1?'':'s'}${st[id]?` · avg ${Math.round(st[id].ppr)} per couple`:''}`}));
     body=board(rows,'Season Standings')+'<div class="hint center" style="color:#fff">Missed a week? No problem — see 📊 Fun Stats for fair per-couple averages.</div>';
   }else if(tab==='stats'){
     body=vStats();
@@ -996,7 +1009,7 @@ function vSeason(){
     const outWeek=key=>{const c=S.couples.find(c=>celebOf(c.name)===key);if(c&&c.out!=null)return c.out;const e=(SD.eliminated||[]).find(e=>normName(e[1])===key);return e?e[0]:null};
     const rows=Object.values(groups).map(g=>{const c=S.couples.find(c=>celebOf(c.name)===g.key),name=c?c.name:g.name,tots=g.d.sort((a,b)=>a.w-b.w).map(x=>sum(x.r));
       const avg=sum(tots)/tots.length,best=g.d.reduce((a,b)=>sum(b.r)>sum(a.r)?b:a),out=outWeek(g.key);
-      return{name,art:c?art(c,'sm'):'',score:Math.round(avg*10)/10,gone:out!=null,
+      return{name,art:c?art(c,'sm'):'',score:Math.round(avg),gone:out!=null,
         sub:`${out!=null?`👋 Left week ${out} · `:''}${tots.length} dance${tots.length===1?'':'s'} · best ${sum(best.r)}${best.d?` (${esc(best.d)})`:''}`,
         mini:`<div class="miniscore">${tots.slice(-6).map(t=>`<b>${t}</b>`).join('')}</div>`}});
     rows.sort((a,b)=>(a.gone-b.gone)||b.score-a.score);
@@ -1034,7 +1047,7 @@ function seasonAwards(st){
   const pick=(arr,f,dir=1)=>arr.slice().sort((a,b)=>dir*(f(a)-f(b)))[0];
   const A=[];let x;
   x=pick(q,y=>y.err);A.push({e:'🎯',t:'Sharpshooter',x,d:`just ${x.err.toFixed(2)} off per guess`});
-  x=pick(q,y=>y.ppr,-1);A.push({e:'⭐',t:'Hot Shot',x,d:`${x.ppr.toFixed(1)} pts per couple`});
+  x=pick(q,y=>y.ppr,-1);A.push({e:'⭐',t:'Hot Shot',x,d:`${Math.round(x.ppr)} pts per couple`});
   x=pick(q,y=>y.exact,-1);if(x.exact)A.push({e:'💥',t:'Bullseye Machine',x,d:`${x.exact} exact hits (${x.exactPct}%)`});
   x=pick(q,y=>y.oracle,-1);if(x.oracle)A.push({e:'🔮',t:'The Oracle',x,d:`${x.oracle} spot-on total${x.oracle>1?'s':''}`});
   x=pick(q,y=>y.bias,-1);if(x.bias>.05)A.push({e:'🎅',t:'Santa Claus',x,d:`guesses run ${x.bias.toFixed(2)} too generous`});
@@ -1060,7 +1073,7 @@ function vStats(){
     <div>${(won[x.pid]||[]).map(b=>`<span class="badge">${esc(b)}</span>`).join('')}</div>
     <ul><li>🎟 Here for <b>${x.weeks}</b> of ${tw} week${tw===1?'':'s'} · ${x.n} couple${x.n===1?'':'s'} guessed</li>
     <li>🎯 Avg <b>${x.err.toFixed(2)}</b> off per guess · 💥 <b>${x.exactPct}%</b> exact</li>
-    <li>⭐ <b>${x.ppr.toFixed(1)}</b> pts per couple · best night ${x.best}</li>
+    <li>⭐ <b>${Math.round(x.ppr)}</b> pts per couple · best night ${x.best}</li>
     <li>🧭 ${mood}</li>
     <li>❤️ Reads ${esc(S.judges[bi].name.split(' ')[0])} best · 😖 struggles with ${esc(S.judges[wi].name.split(' ')[0])}</li></ul></div>`}).join('');
   return `${liveNote}<div class="sh">🏅 Hall of Fame</div><div class="statgrid">${cards}</div>
@@ -1103,7 +1116,8 @@ function vDance(){
     ${historyHtml(c,'side')}
     <div class="stagecontent">${art(c,'lg')}<br><div class="upnext">${progress()} · UP NEXT!</div>
       ${stageName(c.name,1.9)}
-      <div class="dancetag" id="dtag" style="${e.dance?'':'display:none'}">💃 <span>${esc(e.dance)}</span></div></div>
+      <div class="dancetag" id="dtag" style="${e.dance?'':'display:none'}">💃 <span>${esc(e.dance)}</span></div>
+      ${e.music?`<div class="music">🎵 ${esc(e.music)}</div>`:''}</div>
     <div class="stagectl"><select data-bind="dance:${W().idx}" aria-label="Dance (optional)"><option value="">💃 Dance (optional)</option>${DANCES.map(d=>`<option ${e.dance===d?'selected':''}>${d}</option>`).join('')}${e.dance&&!DANCES.includes(e.dance)?`<option selected>${esc(e.dance)}</option>`:''}</select>
       <button class="big pink" data-act="danced">They've danced! 👏</button><button class="white" data-act="cantdance">🤕 Can't dance</button></div>
     <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
@@ -1260,17 +1274,30 @@ function judgeBubble(i,n){
   let text;
   if(diff<=-3)text=pickR([`Last week I gave you a ${prev}!`,`What happened? That was a ${prev} last week!`,`Down from a ${prev}… oh dear.`]);
   else if(diff>=3)text=pickR([`Up from a ${prev}! Bravo!`,`A ${prev} last week, a ${n} tonight!`,`That's what I wanted to see!`]);
+  else if(n===7&&(st===0||st===2)&&Math.random()<.7)text=pickR(['SE-VEN!','SEVEN! 🙌','Se-ven!']);
   else{if(Math.random()>.4&&n<10)return;text=pickR(set[n>=8?'hi':n>=5?'mid':'lo'])}
   const b=document.createElement('div');b.className='jbub';b.textContent=text;pd.appendChild(b);setTimeout(()=>b.remove(),2900);
 }
 const pickR=a=>a[Math.floor(Math.random()*a.length)];
+function bubbleOn(i,text,delay=0){setTimeout(()=>{const pd=document.querySelector(`.paddle[data-i="${i}"]`);if(!pd)return;pd.querySelectorAll('.jbub').forEach(x=>x.remove());
+  const b=document.createElement('div');b.className='jbub';b.textContent=text;pd.appendChild(b);setTimeout(()=>b.remove(),2900)},delay)}
+function judgesReact(k,n){
+  const prev=k>0?S.tmp[k-1]:null;
+  if(prev===n){   // same as the judge before: both smile
+    [k-1,k].forEach(i=>{const pd=document.querySelector(`.paddle[data-i="${i}"] .portrait`);if(pd)pd.innerHTML=avatar(S.judges[i],i,'happy')});
+    bubbleOn(k-1,pickR(['Snap! 🤝','Great minds!','We agree, darling!','Same here! 😊']),300);
+    if(Math.random()<.5)bubbleOn(k,pickR(['Snap!','Totally agree!','😊']),900);return}
+  const higher=[0,1,2,3].filter(i=>i<k&&S.tmp[i]!=null&&S.tmp[i]-n>=2);   // earlier judges who were much more generous
+  higher.slice(0,2).forEach((i,j)=>{const pd=document.querySelector(`.paddle[data-i="${i}"] .portrait`);if(pd)pd.innerHTML=avatar(S.judges[i],i,'sad');
+    bubbleOn(i,pickR(['Really?! 😱','Harsh!','Oh, come on!',`Only a ${n}?!`,'Boo! 👎']),400+j*500)});
+}
 function liveConfirm(n){
   const w=W(),t=liveTarget();if(n==null)n=jVal();if(realDone()||t>3||!(n>=1&&n<=10))return;
   const fixing=S.tmp[t]!=null;S.tmp[t]=n;save();jFix=null;
   const pd=document.querySelector(`.paddle[data-i="${t}"]`),face=pd.querySelector('.face');
   face.textContent=n;face.classList.toggle('hi',n>=9);pd.classList.remove('static','on');void pd.offsetWidth;pd.classList.add('on');
   pd.querySelector('.portrait').innerHTML=avatar(S.judges[t],t,moodFor(n));if(n>=9)burstAt(pd,50);sfx.flip(n);
-  if(fixing)liveRecalcPlayers();else setTimeout(()=>{if(S.tmp[t]===n&&!realDone())liveRecalcPlayers();liveReact(n);judgeBubble(t,n)},450);
+  if(fixing)liveRecalcPlayers();else setTimeout(()=>{if(S.tmp[t]===n&&!realDone())liveRecalcPlayers();liveReact(n);judgeBubble(t,n);judgesReact(t,n)},450);
   const q=$('#jscore');if(q){q.value='';if(matchMedia('(pointer:fine)').matches)q.focus({preventScroll:true})}
   liveLabel();
 }
@@ -1303,7 +1330,7 @@ function liveFinish(instant){
   const sk=$('#skip');if(sk&&!instant)sk.style.display='';
   const addPres=(q,i)=>{const el=document.createElement('div');el.className='pres '+(i%2?'r':'l');
     const pr=q.p===3?BANDLEADER:S.presenters[q.p];el.innerHTML=`<div class="pavatar talk"><div class="portrait">${presenterAvatar(q.p)}</div><div class="pn">${esc(pr.name)}${q.p===3?'<br><small>Band leader</small>':''}</div></div><div class="bubble"><b>${esc(pr.name.split(' ')[0])} says:</b><span class="txt"></span></div>`;
-    box.appendChild(el);if(!instant)el.scrollIntoView({behavior:'smooth',block:'nearest'});return el};
+    box.appendChild(el);if(!instant&&!touchUI())el.scrollIntoView({behavior:'smooth',block:'nearest'});return el};
   const next=()=>{if(tok!==revealTok)return;if(k>=qs.length){showAfter();return}
     const q=qs[k],el=addPres(q,k);k++;const txt=el.querySelector('.txt'),av=el.querySelector('.pavatar');
     if(instant){txt.textContent=q.t;av.classList.remove('talk');next();return}
@@ -1382,6 +1409,8 @@ const celebOf=n=>normName((n||'').split('&')[0]);
 function presetFor(c){return c&&SD.couples.find(p=>normName(p.name)===normName(c.name)||celebOf(p.name)===celebOf(c.name))}
 /* keep saved couples in step with the series data (e.g. "John Nellis" -> "John Nellis & Katya Jones") */
 function applySeries(){let ch=false;
+  // couples eliminated in the real series are marked as gone
+  (SD.eliminated||[]).forEach(([wk,cel])=>{const c=S.couples.find(c=>celebOf(c.name)===normName(cel));if(c&&c.out==null&&!(S.week&&S.week.n<=wk&&S.week.entries.some(e=>e.cid===c.id&&!S.week.committed))){c.out=wk;ch=true}});
   if(!S.couples.length&&SD.couples.length){SD.couples.forEach(p=>S.couples.push({id:uid(),name:p.name,out:null,scores:[]}));if(!S.history.length&&!S.week)S.nextWeek=SD.afterWeek+1;ch=true}S.couples.forEach(c=>{const p=presetFor(c);if(p&&!c.name.includes('&')&&normName(p.name)!==normName(c.name)){c.name=p.name;ch=true}});if(ch)save()}
 const firstName=n=>(n||'').trim().split(/\s+/)[0];
 function factsFor(c){const p=presetFor(c);if(!p||!p.facts)return[];return[...(p.facts.celebrity||[]),...(p.facts.pro||[])]}
@@ -1441,7 +1470,8 @@ function load2026(){
 const nextWeekNo=()=>S.nextWeek||S.weeksDone+1;
 function newWeek(){
   const n=nextWeekNo();S.nextWeek=null;
-  const entries=activeCouples().map(c=>({cid:c.id,dance:'',status:'dance'}));
+  const ann=c=>(SD.upcoming||[]).find(u=>u[0]===n&&normName(u[1])===celebOf(c.name));
+  const entries=activeCouples().map(c=>{const a=ann(c);return{cid:c.id,dance:a?normDanceName(a[3]):'',music:a?a[4]:'',status:'dance'}});
   S.week={n,theme:'',phase:'setup',entries,pids:[],idx:0,order:[],oi:0,guesses:{},totals:{},prevTotals:{},results:{},leaving:[]};
   S.tmp=[null,null,null,null];save();
 }
@@ -1551,7 +1581,8 @@ document.addEventListener('click',e=>{
   case 'skipreveal':window.__skip&&window.__skip();return;
   case 'board':w.phase='board';save();return render();
   case 'next':advance();return;
-  case 'toelim':w.phase='elim';save();return render();
+  case 'toelim':{w.phase='elim';const real=(SD.eliminated||[]).filter(e=>e[0]===w.n).map(e=>S.couples.find(c=>celebOf(c.name)===normName(e[1]))).filter(Boolean);
+    if(real.length&&!w.leaving.length)w.leaving=real.map(c=>c.id);save();return render()}
   case 'leave':{const i=w.leaving.indexOf(id);i<0?w.leaving.push(id):w.leaving.splice(i,1);save();return render()}
   case 'finishweek':finishWeek();return;
   }
@@ -1597,6 +1628,9 @@ window.kdTrack=(name,props={})=>{try{if(window.plausible)window.plausible(name,{
       d.onclick=()=>location.reload();document.body.appendChild(d)}}).catch(()=>{})})();
 applySeries();
 if(S.week&&(S.week.phase==='wrap'||S.week.phase==='elim'))commitWeek(S.week);
+/* a finished week waiting on "who went home?" closes itself once the real result is in the data */
+if(S.week&&S.week.committed){const gone=(SD.eliminated||[]).filter(e=>e[0]===S.week.n).map(e=>S.couples.find(c=>celebOf(c.name)===normName(e[1]))).filter(Boolean);
+  if(gone.length){const n=S.week.n;S.week.leaving=gone.map(c=>c.id);setTimeout(()=>{finishWeek();toast(`Week ${n} closed: ${gone.map(c=>firstName(c.name)).join(' & ')} went home`)},50)}}
 $('#dances').innerHTML=DANCES.map(d=>`<option value="${d}">`).join('');
 render();
 })();

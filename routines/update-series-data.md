@@ -1,6 +1,6 @@
 # Routine: update the 2026 series data from Wikipedia
 
-**Goal:** keep `data/series2026.js` in step with Wikipedia's "Strictly Come Dancing series 24" page: every scored dance, the week themes, and who has been eliminated. Then test, release and deploy, so the game's stats, presenter comments and "Series so far" charts use the latest real scores.
+**Goal:** keep `data/series2026.js` in step with Wikipedia's "Strictly Come Dancing series 24" page: every scored dance, the week themes, who has been eliminated, and the dances and songs announced for the coming week (these get pre-filled in the game). Then test, release and deploy, so the game's stats, presenter comments and "Series so far" charts use the latest real scores.
 
 ## Steps
 1. Get the latest code: `git fetch origin strictly-score-guess && git checkout strictly-score-guess && git pull origin strictly-score-guess`.

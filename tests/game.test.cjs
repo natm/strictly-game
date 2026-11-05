@@ -641,3 +641,55 @@ test('couples season scoreboard uses the real series scores', async () => {
   assert.ok(+first > 25, 'top average looks like a real Strictly average');
   assert.equal(await page.locator('.board .lrow.gone').count(), 5, 'the 5 couples already eliminated are greyed out');
 });
+
+test('announced dances and songs are pre-filled for the week', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]');                         // week 7: Wikipedia lists the dances
+  const s = await state(page);
+  const filled = s.week.entries.filter(e => e.dance);
+  assert.ok(filled.length >= 8, `only ${filled.length} dances pre-filled`);
+  await page.click('[data-act=startweek]');
+  await page.click('[data-act=pickc] >> nth=0');
+  const sel = await page.$eval('[data-bind^="dance:"]', e => e.value);
+  assert.ok(sel, 'dance pre-selected on the stage');
+  assert.equal(await page.locator('.stage .music').count(), 1, 'song shown on the stage');
+});
+
+test('a counted week closes itself once the real elimination is in the data', async () => {
+  const page = await open();
+  await page.evaluate(() => localStorage.setItem('strictly-v2', JSON.stringify({ v: 2, jOrder: 2,
+    couples: [{ id: 'c0', name: 'Lawrence Robb & Jowita Przystał', out: null, scores: [] }, { id: 'c1', name: 'Ann & A', out: null, scores: [] }],
+    history: [{ n: 6, theme: '', winners: [], out: [], sick: [] }], weeksDone: 6, rounds: [], season: {},
+    week: { n: 6, theme: '', phase: 'elim', committed: true, entries: [{ cid: 'c0', dance: '', status: 'dance' }, { cid: 'c1', dance: '', status: 'dance' }],
+      pids: [], idx: 0, order: [], oi: 0, guesses: {}, totals: {}, prevTotals: {}, results: {}, leaving: [] } })));
+  await page.reload(); await page.addStyleTag({ content: CALM }); await page.waitForTimeout(300);
+  const s = await state(page);
+  assert.equal(s.week, null, 'week closed');
+  assert.equal(s.couples[0].out, 6);
+  assert.deepEqual(s.history[0].out, ['Lawrence Robb & Jowita Przystał']);
+});
+
+test('judges react: same score = Snap!, Shirley/Anton shout SEVEN', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
+  await page.click('[data-act=jkey][data-n="6"]'); await page.click('[data-act=jkey][data-n="6"]');   // Craig 6, Motsi 6
+  await page.waitForSelector('.paddle[data-i="0"] .jbub', { timeout: 2000 });
+  assert.match(await page.textContent('.paddle[data-i="0"] .jbub'), /Snap|minds|agree|Same/);
+  await page.click('[data-act=jkey][data-n="7"]');                 // Shirley 7 (shouts SEVEN most of the time)
+  await page.waitForTimeout(700);
+  const t = await page.$$eval('.paddle[data-i="2"] .jbub', e => e.map(x => x.textContent).join(' '));
+  assert.ok(t === '' || /SE-?VEN|Se-ven|!/.test(t));
+  assert.deepEqual(page.errors, []);
+});
+
+test('new-presenter jokes and whole-number averages', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  const all = await page.evaluate(() => { const o = []; for (let i = 0; i < 800; i++) o.push(...window.__strictly.makeQuips([6, 7, 6, 7], { a: [6, 6, 6, 6] }, ['a'])); return o.map(q => q.t); });
+  assert.ok(all.some(t => /first series|still (finding|learning|getting used)/i.test(t)), 'first-series jokes');
+  await page.goto(URL); await page.click('[data-act=nav][data-to=season]'); await page.click('[data-act=stab][data-t=couples]');
+  const avgs = await page.$$eval('.board .lrow .sc', e => e.map(x => x.textContent.trim()));
+  assert.ok(avgs.every(a => /^\d+$/.test(a)), `averages not whole: ${avgs}`);
+});

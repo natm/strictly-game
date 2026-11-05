@@ -46,10 +46,12 @@ def main():
     new['weekThemes'] = {str(w['week']): w.get('theme', '') for w in h['weeks']}
     new['dances'] = dances
     new['eliminated'] = [[e['week'], e['celebrity'], e['pro']] for e in h['eliminations']]
+    # dances announced for the coming week (Wikipedia lists them after the results show), so the game can pre-fill them
+    new['upcoming'] = [[u['week'], u['celebrity'], u['pro'], u.get('dance', ''), u.get('music', '')] for u in h.get('upcoming', [])]
     old_keys = {(d[0], d[1]) for d in data['dances']}
     added = [d for d in dances if (d[0], d[1]) not in old_keys]
     out_now = {e[1] for e in new['eliminated']} - {e[1] for e in data.get('eliminated', [])}
-    print(f"afterWeek {data['afterWeek']} -> {new['afterWeek']}; {len(added)} new scored dances; newly eliminated: {', '.join(sorted(out_now)) or 'none'}")
+    print(f"afterWeek {data['afterWeek']} -> {new['afterWeek']}; {len(added)} new scored dances; newly eliminated: {', '.join(sorted(out_now)) or 'none'}; {len(new['upcoming'])} announced dances for next week")
     for d in added: print(f"  W{d[0]} {d[1]} & {d[2]}: {d[3]} {d[4]} = {sum(d[4])}")
     if json.dumps(new, sort_keys=True) == json.dumps(data, sort_keys=True):
         print('NO CHANGE'); return
