@@ -805,3 +805,11 @@ test('language menu: switch to Welsh (Cymraeg) and back; choice is remembered', 
   assert.match(await page.textContent('#view'), /Pass the controls/);
   assert.deepEqual(page.errors, []);
 });
+
+test('Dave Arch sometimes misses Claudia', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  const dave = await page.evaluate(() => { const o = []; for (let i = 0; i < 1500; i++) o.push(...window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a']).filter(q => q.p === 3).map(q => q.t)); return o; });
+  assert.ok(dave.length > 40, 'Dave pops up now and then');
+  assert.ok(dave.some(t => /Claudia/.test(t)), 'and sometimes misses Claudia');
+});

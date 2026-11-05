@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.1.1 "Fringe" (2026-11-05)
+- Dave Arch sometimes mentions how much he misses Claudia.
+
 ## v3.1.0 "Fishguard compliance" (2026-11-05)
 - The game can be played in Welsh (Cymraeg): pick 🏴󠁧󠁢󠁷󠁬󠁳󠁿 from the new flag menu in the top corner, and it's remembered. The game screens are translated; couples' facts and presenter and judge comments stay in English.
 - Adding another language means adding an `i18n/<code>.js` file (see the docs).
