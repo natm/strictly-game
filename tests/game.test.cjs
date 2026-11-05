@@ -750,3 +750,21 @@ test('nudges "Player N" to enter their real name on the pass screen', async () =
   await page.click('[data-act=keepname]');
   assert.equal(await page.locator('.namenudge').count(), 0);
 });
+
+test('players never share an emoji, and changing one does not re-render the page', async () => {
+  const page = await open();
+  await page.evaluate(() => { const S = JSON.parse(localStorage.getItem('strictly-v2')); S.players.forEach(p => p.av = '🦄'); localStorage.setItem('strictly-v2', JSON.stringify(S)); });
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  let avs = (await state(page)).players.map(p => p.av);
+  assert.equal(new Set(avs).size, avs.length, 'duplicates fixed on load');
+  await page.click('[data-act=nav][data-to=manage]');
+  for (let i = 0; i < 14; i++) await page.click('[data-act=addplayer]');   // more players than usual
+  avs = (await state(page)).players.map(p => p.av);
+  assert.equal(new Set(avs).size, avs.length, 'new players get unused emojis');
+  await page.evaluate(() => { document.getElementById('view').dataset.mark = 'same'; });
+  for (let i = 0; i < 5; i++) await page.click('[data-act=cycleav] >> nth=0');
+  assert.equal(await page.evaluate(() => document.getElementById('view').dataset.mark), 'same', 'no re-render');
+  avs = (await state(page)).players.map(p => p.av);
+  assert.equal(new Set(avs).size, avs.length, 'cycling skips emojis in use');
+  assert.equal(await page.textContent('[data-act=cycleav] >> nth=0'), avs[0]);
+});

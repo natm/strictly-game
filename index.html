@@ -474,6 +474,7 @@ table.res tr.rrow{opacity:0;animation:slidein .5s forwards}
 .tag{display:inline-block;border:3px solid var(--ink);border-radius:999px;font-family:var(--title);font-size:12px;padding:0 10px;background:var(--cyan);color:var(--ink)}
 .tag.out{background:#ccc}.tag.sick{background:var(--orange)}
 .chip .tick{font-size:.8em;margin-left:2px}
+.av.bump{animation:bumpk .4s}
 .prow{display:flex;gap:8px;align-items:center;margin-bottom:8px}.prow input{flex:1;min-width:0}.prow .chip{flex:none;font-size:15px;padding:4px 12px}
 .prow.away input{opacity:.55}
 .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
@@ -509,12 +510,12 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.0.4',RELEASE='Hello';
+const VERSION='3.0.5',RELEASE='Sway';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
-const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
+const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢','🐶','🐱','🐻','🐷','🐮','🐔','🦉','🐝','🐞','🦀','🐳','🐬','🦭','🦒','🦓','🐘','🦔','🦥','🦦','🦜','🐠','🦕','🐿️','🦘'];   // 40, so nobody shares
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -548,6 +549,12 @@ if(!S.soundSet)S.sound=false;
   if(S.week){Object.values(S.week.results||{}).forEach(r=>{r.real=P(r.real);PG(r.guesses)});PG(S.week.guesses)}
   S.tmp=P(S.tmp);save();
 })();
+/* every player has their own emoji */
+function freeEmoji(after,exceptId){const used=new Set(S.players.filter(p=>p.id!==exceptId).map(p=>p.av));const start=Math.max(0,EMOJI.indexOf(after));
+  for(let k=1;k<=EMOJI.length;k++){const e=EMOJI[(start+k)%EMOJI.length];if(!used.has(e))return e}return after||EMOJI[0]}
+function newPlayer(){const p=mkPlayer(S.players.length);p.av=freeEmoji(EMOJI[EMOJI.length-1]);return p}
+// one-off tidy: give anyone sharing an emoji a different one
+(function dedupeEmoji(){const seen=new Set();let ch=false;S.players.forEach(p=>{if(seen.has(p.av)){p.av=freeEmoji(p.av,p.id);ch=true}seen.add(p.av)});if(ch)save()})();
 let overlay=null;         // 'home' | 'manage' | 'season' | 'rules' | null (=show current game phase)
 let ready=false;          // pass-the-controls gate (not saved on purpose)
 let revealTok=0;
@@ -1562,10 +1569,10 @@ document.addEventListener('click',e=>{
     t.forEach(n=>S.couples.push({id:uid(),name:n,out:null,scores:[]}));save();return render()}
   case 'delcouple':if(confirm('Remove this couple completely (including their scores)?')){S.couples=S.couples.filter(c=>c.id!==id);if(w)w.entries=w.entries.filter(x=>x.cid!==id);save();render()}return;
   case 'restore':couple(id).out=null;save();return render();
-  case 'addplayer':S.players.push(mkPlayer(S.players.length));save();return render();
-  case 'addplayerhere':{const np=mkPlayer(S.players.length);S.players.push(np);save();render();const inp=document.querySelector(`[data-bind="player:${np.id}:name"]`);if(inp){inp.focus();inp.select()}return}
+  case 'addplayer':S.players.push(newPlayer());save();return render();
+  case 'addplayerhere':{const np=newPlayer();S.players.push(np);save();render();const inp=document.querySelector(`[data-bind="player:${np.id}:name"]`);if(inp){inp.focus();inp.select()}return}
   case 'delplayer':if(S.players.length>1&&confirm('Remove this player? (Their season points stay in the table.)')){S.players=S.players.filter(p=>p.id!==id);save();render()}return;
-  case 'cycleav':{const p=player(id);p.av=EMOJI[(EMOJI.indexOf(p.av)+1)%EMOJI.length];save();return render()}
+  case 'cycleav':{const p=player(id);p.av=freeEmoji(p.av,p.id);save();b.textContent=p.av;b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');return}
   case 'photo':photoFor=+b.dataset.i;photoKind='judge';$('#photofile').click();return;
   case 'ppphoto':photoFor=+b.dataset.i;photoKind='pres';$('#photofile').click();return;
   case 'clearppphoto':S.presenters[+b.dataset.i].photo='';save();return render();
