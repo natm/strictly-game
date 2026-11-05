@@ -3,6 +3,11 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.7.0 "Salsa" (2026-11-05)
+- Josh gets his facts from all over: the back of a newspaper, X, Instagram, the bus, the man down the pub, his wife, his kids, a dream… He says "Riveting" much less.
+- Emma offers a hug for a low score 🤗, and tissues for a very low one 🤧.
+- New breathless and sweaty lines: Johannes points out the couple are too out of breath to speak, and Josh and Emma comment on them glistening.
+
 ## v2.6.0 "Lindy" (2026-11-05)
 - Phones and tablets: guessing works like the judges' screen. All four judges sit in a row with one set of 1–10 buttons, and tapping a number lifts that paddle and moves to the next judge. Tap a judge to change their score. No device keyboard, so nothing covers the screen.
 

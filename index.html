@@ -492,7 +492,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.6.0',RELEASE='Lindy';
+const VERSION='2.7.0',RELEASE='Salsa';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -780,7 +780,7 @@ const STATQ={
   harsh:["{judge} was the toughest tonight with a {lo}!","{judge} gave a {lo}. Shocked. Truly shocked. Said nobody.","{judge} wants more — and I think you can give it!"],
   tonightTop:["That puts {first} and {pro} top of the leaderboard tonight!","Top of the leaderboard tonight. The others are pretending to be happy for them.","Top of the leaderboard! Yes!"],
   tonightBottom:["Bottom of the leaderboard tonight, but the public vote counts too!","Bottom of the leaderboard. Get the phones out, Nan.","Bottom for now — but it's not over till the vote!"],
-  fact:["Fun fact: {fact}","I've been handed this card to read: {fact} Riveting.","Did you know? {fact}"]
+  fact:["Fun fact: {fact}","{fact}","Did you know? {fact}"]
 };
 const BANDQ=["The band loved that one — we were dancing behind the music stands!","That tempo was not easy. Respect from the whole band.","I've played that song a thousand times. Never seen it danced like that!","The horn section would like a word… a good word!","Brilliant. We'll be humming that all the way home."];
 const JOSH={
@@ -800,7 +800,22 @@ const JOSH_JUDGES=[
   {ok:()=>true,t:"The judges went {list}. I've seen less random numbers on a bingo night."},
   {ok:()=>true,t:"{topJudge} with the {hi}. Generous. Suspiciously generous. I'll be checking bank statements."}
 ];
+/* where Josh "gets" his facts from */
+const JOSH_FACT=["Someone's just handed me a card. It says: {fact}","I read this on the back of a newspaper on the bus: {fact}","Man down the pub told me: {fact} He also said he could do the splits, so… pinch of salt.",
+  "My wife told me this, so it's definitely true: {fact}","My kids were talking about this at breakfast: {fact} I wasn't invited to the conversation.","Saw this on X, so treat with caution: {fact}",
+  "Instagram says: {fact} Instagram also says I need a new mattress.","Overheard on the bus: {fact}","Did I dream this? {fact} Either way, I'm going with it.","My nan texted me this in all caps: {fact}",
+  "Found this written on a crisp packet: {fact}","The producer's shouting in my ear: {fact} Now they're telling me to stop talking.","My taxi driver insisted on telling me: {fact}",
+  "Fortune cookie at lunch said: {fact} Mine just said 'You will host a dance show'.","Heard it from a pigeon outside the studio: {fact}","Read it on a toilet door. A very well-informed toilet door: {fact}",
+  "Group chat's going wild about this: {fact}","The research team have given me this, and I quote: {fact} Riveting."];
+/* after the dance: everyone's out of breath (or glistening) */
+const BREATHLESSQ={
+  0:["Look at you, absolutely glowing, which is the polite word for sweaty! 😅","Catch your breath, {first}. Take all the time you need!","You're both still panting! That's how much you gave it."],
+  1:["{first}, you are glistening. Is that sweat or sequins? Don't answer.","{first} can't speak. First time anyone's been speechless on live telly.","I'm not hugging {pro} till they've had a towel. I love them, but no."],
+  2:["{first} can't even talk, they're so out of breath. That's how hard you worked! 😮‍💨","Breathe, breathe, breathe! I'm out of breath just watching!","I'd say more, but I can't breathe, and I wasn't even dancing!"]
+};
 const EMMA_KIND={
+  hug:["Come here, {first}, I'm giving you the biggest hug. 🤗","Hug! Right now. Come here, {first}. 🤗 You were brilliant to us.","{first}, {pro}, group hug, now! 🤗 We love you."],
+  tissues:["Tissues! Someone get {first} a tissue. 🤧 Actually, take the whole box.","Oh, {first}, here, have a tissue. 🤧 And a hug. And a biscuit.","Here's the tissues 🤧 and here's me for a cuddle. Chin up, {first}."],
   low:["Oh, {first}, come here — that was so brave and we're all so proud of you.","Don't listen to the numbers, {first}. You lit up that floor.","I know that's not what you wanted, but the effort was incredible.","Big hug from all of us. Next week's yours, I can feel it.","You and {pro} have worked so hard, and it showed in your smiles."],
   ok:["That's a lovely score to build on, and you looked like you loved every second.","You can see how much work went in. Be really proud of that.","Every week you two get stronger. I love watching you."],
   harsh:["{lowJudge}'s {lo} was a bit tough. I thought you were wonderful.","Don't let that {lo} get you down, {first}. The audience adored you."]
@@ -822,6 +837,8 @@ function makeQuips(real,guesses,order){
   // each presenter's own voice: Josh wild (and often about the judges), Emma kind when it's a tough night
   const voice=(p,tier)=>{
     if(p===1){const jl=JOSH_JUDGES.filter(x=>x.ok(vars));return Math.random()<.45&&jl.length?pickOne(jl).t:pickOne([...JOSH[tier],...QUIPS[1][tier]])}
+    if(p===0&&total<=16)return pickOne(EMMA_KIND.tissues);
+    if(p===0&&tier==='low'&&Math.random()<.6)return pickOne(EMMA_KIND.hug);
     if(p===0&&(tier==='low'||tier==='ok')){const pool=[...EMMA_KIND[tier],...(hi-lo>=2?EMMA_KIND.harsh:[])];if(Math.random()<.75)return pickOne(pool)}
     return pickOne(QUIPS[p][tier])};
   const ids=shuffle([0,1,2]),n=Math.random()<.65?2:1,out=[];
@@ -834,7 +851,8 @@ function makeQuips(real,guesses,order){
   if(n===2){
     const q=QUIPS[ids[1]],canGuess=order.length>1&&hiS>loS,fact=randomFact(cpl),r=Math.random();
     if(stats.length>1&&r<.45)out.push({p:ids[1],t:statLine(ids[1],stats[1])});
-    else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(STATQ.fact[ids[1]])})}
+    else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(ids[1]===1?pickOne(JOSH_FACT):STATQ.fact[ids[1]])})}
+    else if(r<.78)out.push({p:ids[1],t:fill(pickOne(BREATHLESSQ[ids[1]]))})
     else out.push({p:ids[1],t:fill(canGuess&&ids[1]!==1&&Math.random()<.6?pickOne(q[Math.random()<.6?'best':'worst']):canGuess&&ids[1]===1&&Math.random()<.3?pickOne(q[Math.random()<.5?'best':'worst']):voice(ids[1],tier))});
   }
   if(Math.random()<.08)out.push({p:3,t:pickOne(BANDQ)});   // Dave Arch, rarely

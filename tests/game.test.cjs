@@ -525,3 +525,19 @@ test('dance picker is sorted A-Z', async () => {
   assert.deepEqual(opts, [...opts].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })));
   assert.equal(opts[0], 'American Smooth');
 });
+
+test('presenter extras: Josh fact sources, Emma hugs and tissues, breathless lines', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0');
+  await page.click('[data-act=danced]');
+  const lines = await page.evaluate(() => { const out = [];
+    for (let i = 0; i < 600; i++) out.push(...window.__strictly.makeQuips([3, 4, 4, 3], { a: [5, 5, 5, 5] }, ['a']));
+    for (let i = 0; i < 600; i++) out.push(...window.__strictly.makeQuips([5, 6, 5, 6], { a: [5, 5, 5, 5] }, ['a']));
+    return out; });
+  const josh = lines.filter(q => q.p === 1).map(q => q.t), emma = lines.filter(q => q.p === 0).map(q => q.t), all = lines.map(q => q.t);
+  assert.ok(josh.some(t => /pub|bus|newspaper|Instagram|wife|kids|dream/.test(t)), 'Josh cites his sources');
+  assert.ok(josh.filter(t => /Riveting/.test(t)).length < josh.length / 20, 'Josh rarely says Riveting');
+  assert.ok(emma.some(t => /tissue/.test(t)), 'tissues for a very low score');
+  assert.ok(emma.some(t => /hug/i.test(t)), 'hugs');
+  assert.ok(all.some(t => /breath|glisten|sweaty/.test(t)), 'breathless / sweaty lines');
+});
