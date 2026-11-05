@@ -474,3 +474,21 @@ test('presenter voices: Josh has plenty to say (incl. the judges), Emma is kind 
   assert.ok([...josh].some(t => /Craig|Motsi|Shirley|Anton/.test(t)), 'Josh comments on the judges');
   assert.ok(emma.some(t => /proud|brave|hug|wonderful|adored/.test(t)), 'Emma is sympathetic');
 });
+
+test('big drop from last week leads the comments; series history on the stage', async () => {
+  const page = await open();
+  await page.click('[data-act=load2026]');
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
+  await page.click('[data-act=pickc] >> nth=0');                      // Lacey & Vito
+  assert.equal(await page.locator('.hist.side .hb').count(), 6, 'six weeks of real scores');
+  assert.match(await page.textContent('.hist.side'), /36/);            // their week 6 Charleston
+  const first = await page.evaluate(() => { const S = JSON.parse(localStorage.getItem('strictly-v2'));
+    return window.__strictly.scoreStats(S.couples.find(c => c.name.startsWith('Lacey')), [1, 1, 1, 1], '')[0].k; });
+  assert.equal(first, 'crash');
+  await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '8888'); await page.press('#quick', 'Enter'); }
+  await page.fill('#jscore', '2'); await page.press('#jscore', 'Enter');   // Craig gave 9 last week
+  await page.waitForSelector('.paddle[data-i="0"] .jbub', { timeout: 2000 });
+  assert.match(await page.textContent('.jbub'), /9/);
+  assert.deepEqual(page.errors, []);
+});

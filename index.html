@@ -227,6 +227,19 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
   .jctl{padding:6px 12px}.jctl .hint{display:none}.jrow{margin:4px 0}.jrow input{font-size:24px;padding:4px}
   .jkeys button{padding:3px 0;font-size:16px}
 }
+/* series history on the stage */
+.hist{background:#fffbea;border:3px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:8px 10px;font-weight:600}
+.hist .hh{font-family:var(--title);font-size:15px;margin-bottom:4px}
+.hist.side{position:absolute;right:16px;top:48px;z-index:4;width:min(230px,22%)}
+.hist.strip{display:none;max-width:520px;margin:12px auto 0}
+.hbars{display:flex;gap:4px;align-items:flex-end;height:96px}
+.hb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.hb span{width:100%;background:var(--cyan);border:2px solid var(--ink);border-radius:6px 6px 2px 2px;animation:grow .7s both}
+.hb.best span{background:var(--yellow)}
+.hb b{font-family:var(--title);font-size:13px}.hb i{font-style:normal;font-size:11px;opacity:.7}
+.hist .hl{margin-top:6px;font-size:12px;line-height:1.35}.hist .hl b{font-family:var(--title)}
+@media(max-width:900px){.hist.side{display:none}.hist.strip{display:block}}
+@media(min-width:900px) and (max-height:620px){.hist.side .hl{display:none}.hbars{height:70px}}
 /* judge speech bubbles */
 .paddle{position:relative}
 .jbub{position:absolute;left:50%;top:4%;z-index:5;white-space:nowrap;font-family:var(--title);font-size:clamp(13px,1.6vw,20px);background:#fff;color:var(--ink);
@@ -439,7 +452,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.2.0',RELEASE='Foxtrot';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
+const VERSION='2.3.0',RELEASE='Quickstep';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -702,6 +715,10 @@ const QUIPS={
      split:["The judges disagree! {topJudge} loved it, {lowJudge} wants more. Drama!"],best:["And {best}! You should be a judge — incredible guessing!"],worst:["{worst}, don't worry — the rhythm will come!"]}
 };
 const DANCES=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha-cha-cha','Rumba','Samba','Salsa','Jive','Paso doble','Charleston','Argentine tango',"Couple's choice",'Showdance'];
+const STATQ_EXTRA={
+  crash:["Oh no, {first}. From {last} last week to {total} tonight. We'll get you back up there, I promise.","From {last} to {total}. That's not a drop, that's a skydive without the parachute.","{last} last week, {total} tonight? That's not you! Back to the studio, we go again!"],
+  rocket:["From {last} last week to {total}! That's the biggest jump I've seen. So proud!","{last} to {total}. Who are you and what have you done with last week's couple?","Up {diff} points from last week! That is a transformation!"]
+};
 const STATQ={
   perfect:["Forty! FORTY! {first} and {pro}, that's a perfect score!","Forty out of forty. Well, that's the rest of the series ruined for everyone else.","Perfection! I have no notes. Nobody has any notes!"],
   seriesFirstTen:["The first 10 of the whole series — from {judge}! What a moment for {first} and {pro}!","The first 10 of the series. {judge} had to blow the dust off that paddle.","The first 10 of 2026! History made right here!"],
@@ -764,10 +781,10 @@ function makeQuips(real,guesses,order){
     return pickOne(QUIPS[p][tier])};
   const ids=shuffle([0,1,2]),n=Math.random()<.65?2:1,out=[];
   const stats=scoreStats(cpl,real,entry().dance);
-  const statLine=(p,st)=>{Object.assign(vars,st);return fill(STATQ[st.k][p])};
+  const statLine=(p,st)=>{Object.assign(vars,st);return fill((STATQ[st.k]||STATQ_EXTRA[st.k])[p])};
   const split=hi-lo>=3&&Math.random()<.35;
   // presenter 1: the most exciting stat if there is one (usually), otherwise a reaction to the score
-  if(stats.length&&Math.random()<.85)out.push({p:ids[0],t:statLine(ids[0],stats[0])});
+  if(stats.length&&(['crash','rocket','perfect'].includes(stats[0].k)||Math.random()<.85))out.push({p:ids[0],t:statLine(ids[0],stats[0])});
   else out.push({p:ids[0],t:fill(split&&ids[0]!==1?pickOne(QUIPS[ids[0]].split):voice(ids[0],tier))});
   if(n===2){
     const q=QUIPS[ids[1]],canGuess=order.length>1&&hiS>loS,fact=randomFact(cpl),r=Math.random();
@@ -1005,12 +1022,14 @@ function vDance(){
   return `<div class="stage"><div class="beam b1"></div><div class="beam b2"></div>
     <div class="ballwrap"><div class="string"></div><div class="mball">🪩</div></div>
     ${W().theme?`<div class="themetag">🎬 ${esc(W().theme)}</div>`:''}
+    ${historyHtml(c,'side')}
     <div class="stagecontent">${art(c,'lg')}<br><div class="upnext">${progress()} · UP NEXT!</div>
       ${stageName(c.name,1.9)}
       <div class="dancetag" id="dtag" style="${e.dance?'':'display:none'}">💃 <span>${esc(e.dance)}</span></div></div>
     <div class="stagectl"><select data-bind="dance:${W().idx}" aria-label="Dance (optional)"><option value="">💃 Dance (optional)</option>${DANCES.map(d=>`<option ${e.dance===d?'selected':''}>${d}</option>`).join('')}${e.dance&&!DANCES.includes(e.dance)?`<option selected>${esc(e.dance)}</option>`:''}</select>
       <button class="big pink" data-act="danced">They've danced! 👏</button><button class="white" data-act="cantdance">🤕 Can't dance</button></div>
     <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
+  ${historyHtml(c,'strip')}
   <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
 
@@ -1127,10 +1146,15 @@ const JUDGEQ={3:{hi:['Fab-u-lous!','A-MAZ-ING!'],mid:['Musicality, darling.','No
   0:{hi:['Spectacular!','Beautiful footwork!'],mid:['Let me show you…','Watch your frame!'],lo:['Keep working on it.','Let me show you how it\'s done…']},
   2:{hi:['That was a joy!','Ooh, the rise and fall!'],mid:['Lovely, lovely!','Tidy up those feet.'],lo:['Bless you, keep going!','It needs more polish.']}};
 function judgeBubble(i,n){
-  const j=S.judges[i],st=j.style!=null?j.style:i,set=JUDGEQ[st];if(!set||(Math.random()>.4&&n<10))return;
-  const pool=set[n>=8?'hi':n>=5?'mid':'lo'],pd=document.querySelector(`.paddle[data-i="${i}"]`);if(!pd)return;
-  const b=document.createElement('div');b.className='jbub';b.textContent=pool[Math.floor(Math.random()*pool.length)];pd.appendChild(b);setTimeout(()=>b.remove(),2900);
+  const j=S.judges[i],st=j.style!=null?j.style:i,set=JUDGEQ[st],pd=document.querySelector(`.paddle[data-i="${i}"]`);if(!set||!pd)return;
+  const h=coupleHistory(couple(entry().cid)),prev=h.length?h[h.length-1].r[i]:null,diff=prev!=null?n-prev:0;
+  let text;
+  if(diff<=-3)text=pickR([`Last week I gave you a ${prev}!`,`What happened? That was a ${prev} last week!`,`Down from a ${prev}… oh dear.`]);
+  else if(diff>=3)text=pickR([`Up from a ${prev}! Bravo!`,`A ${prev} last week, a ${n} tonight!`,`That's what I wanted to see!`]);
+  else{if(Math.random()>.4&&n<10)return;text=pickR(set[n>=8?'hi':n>=5?'mid':'lo'])}
+  const b=document.createElement('div');b.className='jbub';b.textContent=text;pd.appendChild(b);setTimeout(()=>b.remove(),2900);
 }
+const pickR=a=>a[Math.floor(Math.random()*a.length)];
 function liveConfirm(){
   const w=W(),k=liveStep(),n=jVal();if(realDone()||k>3||!(n>=1&&n<=10))return;
   S.tmp[k]=n;save();
@@ -1256,6 +1280,13 @@ function seriesDances(){
     if(!has(key,S.week.n))out.push({w:S.week.n,key,name:c.name,d:e?e.dance:'',r:res.real,tonight:true})});
   return out;
 }
+function coupleHistory(c){const key=celebOf(c.name),n=S.week?S.week.n:99;
+  return seriesDances().filter(x=>x.key===key&&x.w<n&&!x.tonight).sort((a,b)=>a.w-b.w).map(x=>({w:x.w,d:x.d,t:sum(x.r),r:x.r}))}
+function historyHtml(c,cls){const h=coupleHistory(c);if(!h.length)return'';const best=Math.max(...h.map(x=>x.t)),low=Math.min(...h.map(x=>x.t));
+  const ht=t=>best===low?70:Math.round(25+75*(t-low)/(best-low));
+  return `<div class="hist ${cls}"><div class="hh">📈 Series so far</div><div class="hbars">${h.map(x=>`<div class="hb ${x.t===best?'best':''}" title="Week ${x.w}${x.d?' · '+esc(x.d):''}: ${x.r.join(', ')}">
+    <b>${x.t}</b><span style="height:${ht(x.t)}%"></span><i>W${x.w}</i></div>`).join('')}</div>
+    <div class="hl">${h.slice(-3).reverse().map(x=>`<div>W${x.w} ${x.d?esc(x.d):''} <b>${x.t}</b></div>`).join('')}</div></div>`}
 /* interesting facts about this score, most exciting first */
 function scoreStats(c,real,dance){
   const all=seriesDances(),key=celebOf(c.name),mine=all.filter(x=>x.key===key),total=sum(real),out=[];
@@ -1273,7 +1304,11 @@ function scoreStats(c,real,dance){
     else{const best=same.reduce((a,b)=>tot(b)>tot(a)?b:a);if(total>tot(best))out.push({k:'bestDance',prevBest:tot(best),prevName:firstName(best.name)})}}
   if(real.includes(9)&&!real.includes(10)&&mine.length&&!mine.some(x=>x.r.some(v=>v>=9)))out.push({k:'firstNine'});
   const last=mine.filter(x=>x.w<n).sort((a,b)=>b.w-a.w)[0];
-  if(last){const d=total-tot(last);if(d>=5)out.push({k:'improved',diff:d,last:tot(last)});else if(d<=-5)out.push({k:'dropped',diff:-d,last:tot(last)})}
+  if(last){const d=total-tot(last);
+    if(d<=-8)out.unshift({k:'crash',diff:-d,last:tot(last)});        // huge drop: say this first
+    else if(d>=10)out.unshift({k:'rocket',diff:d,last:tot(last)});   // huge jump
+    else if(d>=5)out.push({k:'improved',diff:d,last:tot(last)});else if(d<=-5)out.push({k:'dropped',diff:-d,last:tot(last)})}
+  if(out[0]&&out[0].k!=='perfect'&&out.some(x=>x.k==='perfect')){const i=out.findIndex(x=>x.k==='perfect');out.unshift(out.splice(i,1)[0])}
   if(mine.length>=2&&total<Math.min(...mine.map(tot)))out.push({k:'worst'});
   if(real.every(v=>v===real[0]))out.push({k:'sameAll',n:real[0]});
   const lo=Math.min(...real),hi=Math.max(...real);
