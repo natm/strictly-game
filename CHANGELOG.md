@@ -3,6 +3,11 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.2.0 "Foxtrot" (2026-11-05)
+- Picking the dance on the stage is now a simple list, with no typing.
+- Josh has lots more to say: wilder lines, and digs at the judges' scores ("Craig gave a 6. Probably scores sunsets a 6.").
+- Emma is sympathetic on tougher nights.
+
 ## v2.1.2 "Rumba" (2026-11-05)
 - On phones and tablets, the judges' scores use just the number buttons and ✓, so no keyboard pops up and covers the screen.
 

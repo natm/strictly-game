@@ -292,7 +292,8 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .stagecontent{padding-top:80px}
 .stage{flex-direction:column}
 .stagectl{position:relative;z-index:4;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;padding:0 14px 16px;width:100%}
-.stagectl input{max-width:240px;flex:1 1 180px}
+.stagectl input,.stagectl select{max-width:240px;flex:1 1 180px}
+select{border:3px solid var(--ink);border-radius:12px;padding:9px 12px;font:600 16px var(--body);background:#fff;color:var(--ink);cursor:pointer}
 .stagectl button.big{font-size:clamp(17px,2.2vw,26px);padding:12px 26px}
 @media(min-width:700px){
   .stage{height:calc(100dvh - 120px);min-height:400px;max-height:780px}
@@ -438,7 +439,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.1.2',RELEASE='Rumba';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
+const VERSION='2.2.0',RELEASE='Foxtrot';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -700,6 +701,7 @@ const QUIPS={
      low:["Hey, hey — shake it off, {couple}! Next week we come back stronger!","Dance is about heart, and you gave us plenty. The points will follow!","Tough one, but I believe in you. Back to practice!"],
      split:["The judges disagree! {topJudge} loved it, {lowJudge} wants more. Drama!"],best:["And {best}! You should be a judge — incredible guessing!"],worst:["{worst}, don't worry — the rhythm will come!"]}
 };
+const DANCES=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha-cha-cha','Rumba','Samba','Salsa','Jive','Paso doble','Charleston','Argentine tango',"Couple's choice",'Showdance'];
 const STATQ={
   perfect:["Forty! FORTY! {first} and {pro}, that's a perfect score!","Forty out of forty. Well, that's the rest of the series ruined for everyone else.","Perfection! I have no notes. Nobody has any notes!"],
   seriesFirstTen:["The first 10 of the whole series — from {judge}! What a moment for {first} and {pro}!","The first 10 of the series. {judge} had to blow the dust off that paddle.","The first 10 of 2026! History made right here!"],
@@ -719,6 +721,28 @@ const STATQ={
   fact:["Fun fact: {fact}","I've been handed this card to read: {fact} Riveting.","Did you know? {fact}"]
 };
 const BANDQ=["The band loved that one — we were dancing behind the music stands!","That tempo was not easy. Respect from the whole band.","I've played that song a thousand times. Never seen it danced like that!","The horn section would like a word… a good word!","Brilliant. We'll be humming that all the way home."];
+const JOSH={
+  top:["{total}. I'm calling the police, because that was criminally good.","I've just checked and that score is legal. Barely.","{total}! I need a lie down and possibly a new career.","My nan just stood up. She hasn't stood up since 2019.","That was so good the sofa applauded. The sofa!","If that's not a 40 next week I'm writing to my MP. In crayon.","I've gone all tingly. Is that dancing or is it the green room prawns?"],
+  great:["{total}. Respectable. Like a nice cardigan with a bit of sparkle.","I'd have given it a 9, but nobody asked me, which is fair.","Good enough that I'll stop making jokes for… nope, gone.","They're going to be insufferable in the corridor now.","A score you can frame. Small frame. But a frame.","Lovely stuff. I've been told to say that, but I'd have said it anyway. Probably."],
+  ok:["{total}. Middle of the road. Like a traffic cone.","That's the score equivalent of a beige sofa.","Not bad! I've seen better. I've also seen much, much worse. Last week.","Somewhere a Wi-Fi router just nodded politely.","It's the kind of score that has a sensible haircut.","Perfectly fine. Like a Tuesday."],
+  low:["{total}. On the plus side, the sequins were trying their best.","I've seen more coordination in a supermarket trolley.","That was less a dance, more a hostage negotiation.","Brave. Bold. Baffling.","The band played on. Heroes, every one of them.","I can't judge. I once pulled a hamstring putting my socks on."]
+};
+const JOSH_JUDGES=[
+  {ok:v=>v.hi-v.lo>=2,t:"{topJudge} gave a {hi}, {lowJudge} gave a {lo}. Were they even watching the same dance?"},
+  {ok:v=>v.hi-v.lo>=3,t:"{spread} points between the judges. That's not a panel, that's a family argument at Christmas."},
+  {ok:v=>v.hi===v.lo,t:"All four judges agree. First time for everything. Somebody screenshot this."},
+  {ok:v=>v.craigScore>=9,t:"{craig} gave a {craigScore}. That's practically a hug from {craig}. I'm scared."},
+  {ok:v=>v.craigScore&&v.craigScore<=6,t:"{craig} gave a {craigScore}. Classic {craig}. Probably scores sunsets a 6."},
+  {ok:v=>v.lo<=4,t:"{lowJudge} gave a {lo}. I don't think {lowJudge} has ever enjoyed anything. Including birthdays."},
+  {ok:v=>v.hi===10,t:"A 10 from {topJudge}! Has {topJudge} been at the green room biscuits again?"},
+  {ok:()=>true,t:"The judges went {list}. I've seen less random numbers on a bingo night."},
+  {ok:()=>true,t:"{topJudge} with the {hi}. Generous. Suspiciously generous. I'll be checking bank statements."}
+];
+const EMMA_KIND={
+  low:["Oh, {first}, come here — that was so brave and we're all so proud of you.","Don't listen to the numbers, {first}. You lit up that floor.","I know that's not what you wanted, but the effort was incredible.","Big hug from all of us. Next week's yours, I can feel it.","You and {pro} have worked so hard, and it showed in your smiles."],
+  ok:["That's a lovely score to build on, and you looked like you loved every second.","You can see how much work went in. Be really proud of that.","Every week you two get stronger. I love watching you."],
+  harsh:["{lowJudge}'s {lo} was a bit tough. I thought you were wonderful.","Don't let that {lo} get you down, {first}. The audience adored you."]
+};
 function makeQuips(real,guesses,order){
   const total=sum(real),tier=total>=36?'top':total>=30?'great':total>=22?'ok':'low';
   const hi=Math.max(...real),lo=Math.min(...real);
@@ -729,20 +753,27 @@ function makeQuips(real,guesses,order){
   const cpl=couple(entry().cid),parts=cpl.name.split('&');
   const vars={couple:cpl.name,first:firstName(parts[0]),pro:firstName(parts[1]||''),total,topJudge:fn(hi),lowJudge:fn(lo),hi,lo,dance:entry().dance||'',
     best:bestP&&player(bestP.id)?player(bestP.id).name:'',worst:worstP&&player(worstP.id)?player(worstP.id).name:''};
+  const craigI=S.judges.findIndex(j=>j.style===3);
+  Object.assign(vars,{list:real.join(', '),spread:hi-lo,craig:craigI>=0?firstName(S.judges[craigI].name):'',craigScore:craigI>=0?real[craigI]:0});
   const fill=t=>t.replace(/\{(\w+)\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
   const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+  // each presenter's own voice: Josh wild (and often about the judges), Emma kind when it's a tough night
+  const voice=(p,tier)=>{
+    if(p===1){const jl=JOSH_JUDGES.filter(x=>x.ok(vars));return Math.random()<.45&&jl.length?pickOne(jl).t:pickOne([...JOSH[tier],...QUIPS[1][tier]])}
+    if(p===0&&(tier==='low'||tier==='ok')){const pool=[...EMMA_KIND[tier],...(hi-lo>=2?EMMA_KIND.harsh:[])];if(Math.random()<.75)return pickOne(pool)}
+    return pickOne(QUIPS[p][tier])};
   const ids=shuffle([0,1,2]),n=Math.random()<.65?2:1,out=[];
   const stats=scoreStats(cpl,real,entry().dance);
   const statLine=(p,st)=>{Object.assign(vars,st);return fill(STATQ[st.k][p])};
   const split=hi-lo>=3&&Math.random()<.35;
   // presenter 1: the most exciting stat if there is one (usually), otherwise a reaction to the score
   if(stats.length&&Math.random()<.85)out.push({p:ids[0],t:statLine(ids[0],stats[0])});
-  else out.push({p:ids[0],t:fill(pickOne(split?QUIPS[ids[0]].split:QUIPS[ids[0]][tier]))});
+  else out.push({p:ids[0],t:fill(split&&ids[0]!==1?pickOne(QUIPS[ids[0]].split):voice(ids[0],tier))});
   if(n===2){
     const q=QUIPS[ids[1]],canGuess=order.length>1&&hiS>loS,fact=randomFact(cpl),r=Math.random();
     if(stats.length>1&&r<.45)out.push({p:ids[1],t:statLine(ids[1],stats[1])});
     else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(STATQ.fact[ids[1]])})}
-    else out.push({p:ids[1],t:fill(pickOne(q[canGuess?(Math.random()<.6?'best':'worst'):tier]))});
+    else out.push({p:ids[1],t:fill(canGuess&&ids[1]!==1&&Math.random()<.6?pickOne(q[Math.random()<.6?'best':'worst']):canGuess&&ids[1]===1&&Math.random()<.3?pickOne(q[Math.random()<.5?'best':'worst']):voice(ids[1],tier))});
   }
   if(Math.random()<.08)out.push({p:3,t:pickOne(BANDQ)});   // Dave Arch, rarely
   return out;
@@ -977,7 +1008,7 @@ function vDance(){
     <div class="stagecontent">${art(c,'lg')}<br><div class="upnext">${progress()} · UP NEXT!</div>
       ${stageName(c.name,1.9)}
       <div class="dancetag" id="dtag" style="${e.dance?'':'display:none'}">💃 <span>${esc(e.dance)}</span></div></div>
-    <div class="stagectl"><input type="text" list="dances" data-bind="dance:${W().idx}" value="${esc(e.dance)}" placeholder="💃 Dance (optional)">
+    <div class="stagectl"><select data-bind="dance:${W().idx}" aria-label="Dance (optional)"><option value="">💃 Dance (optional)</option>${DANCES.map(d=>`<option ${e.dance===d?'selected':''}>${d}</option>`).join('')}${e.dance&&!DANCES.includes(e.dance)?`<option selected>${esc(e.dance)}</option>`:''}</select>
       <button class="big pink" data-act="danced">They've danced! 👏</button><button class="white" data-act="cantdance">🤕 Can't dance</button></div>
     <div class="curtain l"></div><div class="curtain r"></div><div class="pelmet"></div></div>
   <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
@@ -1386,9 +1417,9 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Backspace'){for(let i=3;i>=0;i--)if(S.tmp[i]){S.tmp[i]=null;break}save();render();return}
   if(/^[0-9]$/.test(e.key)){let n=e.key==='0'?10:+e.key,j=S.tmp.findIndex(x=>!x);if(j<0){S.tmp=[null,null,null,null];j=0}S.tmp[j]=n;justSet=j;sfx.key();save();render()}
 });
-window.__strictly={scoreStats,seriesDances,presetFor,factsFor};window.__strictlyPhase=()=>W()&&W().phase;   // for tests and debugging
+window.__strictly={scoreStats,seriesDances,presetFor,factsFor,makeQuips};window.__strictlyPhase=()=>W()&&W().phase;   // for tests and debugging
 applySeries();
-$('#dances').innerHTML=['Waltz','Foxtrot','Quickstep','Viennese Waltz','Tango','American Smooth','Cha Cha Cha','Rumba','Samba','Salsa','Jive','Paso Doble','Charleston','Argentine Tango',"Couple's Choice",'Street/Commercial','Showdance','Musical Theatre','Contemporary'].map(d=>`<option value="${d}">`).join('');
+$('#dances').innerHTML=DANCES.map(d=>`<option value="${d}">`).join('');
 render();
 })();
 </script>

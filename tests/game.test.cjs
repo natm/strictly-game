@@ -85,7 +85,7 @@ test('full week: theme, sick couple, scoring, fix scores, eliminations', async (
   // no running order: pick who's on first (Ann or Cat; Bob is sick)
   assert.equal(await page.locator('[data-act=pickc]').count(), 2);
   await page.click('[data-act=pickc][data-i="0"]');
-  await page.fill('[data-bind="dance:0"]', 'Waltz');   // dance is optional, typed on the night
+  await page.selectOption('[data-bind="dance:0"]', 'Waltz');   // dance is optional, picked from a list
 
   // Couple 1: real 8,8,8,8. Player guesses: exact for first player.
   await page.click('[data-act=danced]');
@@ -460,4 +460,17 @@ test("phone: judges' scores by tapping only, no keyboard box", async () => {
   await page.waitForFunction(() => window.__strictlyPhase() === 'reveal');
   assert.deepEqual((await state(page)).week.results[(await state(page)).week.entries[0].cid].real, [8, 7, 9, 6]);
   await ctx.close();
+});
+
+test('presenter voices: Josh has plenty to say (incl. the judges), Emma is kind on low scores', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '4444'); await page.press('#quick', 'Enter'); }
+  // sample many presenter lines for a low, split score
+  const lines = await page.evaluate(() => { const out = []; for (let i = 0; i < 400; i++) out.push(...window.__strictly.makeQuips([3, 6, 4, 5], { a: [4, 4, 4, 4] }, ['a'])); return out; });
+  const josh = new Set(lines.filter(q => q.p === 1).map(q => q.t)), emma = lines.filter(q => q.p === 0).map(q => q.t);
+  assert.ok(josh.size >= 12, `Josh only had ${josh.size} different lines`);
+  assert.ok([...josh].some(t => /Craig|Motsi|Shirley|Anton/.test(t)), 'Josh comments on the judges');
+  assert.ok(emma.some(t => /proud|brave|hug|wonderful|adored/.test(t)), 'Emma is sympathetic');
 });
