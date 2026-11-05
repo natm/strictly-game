@@ -675,8 +675,8 @@ test('judges react: same score = Snap!, Shirley/Anton shout SEVEN', async () => 
   await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
   for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
   await page.click('[data-act=jkey][data-n="6"]'); await page.click('[data-act=jkey][data-n="6"]');   // Craig 6, Motsi 6
-  await page.waitForSelector('.paddle[data-i="0"] .jbub', { timeout: 2000 });
-  assert.match(await page.textContent('.paddle[data-i="0"] .jbub'), /Snap|minds|agree|Same/);
+  // Craig may say his own line first; the Snap! bubble replaces it shortly after Motsi's matching 6
+  await page.waitForFunction(() => [...document.querySelectorAll('.paddle[data-i="0"] .jbub')].some(b => /Snap|minds|agree|Same/.test(b.textContent)), null, { timeout: 2500 });
   await page.click('[data-act=jkey][data-n="7"]');                 // Shirley 7 (shouts SEVEN most of the time)
   await page.waitForTimeout(700);
   const t = await page.$$eval('.paddle[data-i="2"] .jbub', e => e.map(x => x.textContent).join(' '));
