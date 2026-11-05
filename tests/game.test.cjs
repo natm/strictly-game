@@ -708,3 +708,16 @@ test('the audience boos a low score from Craig and he answers back', async () =>
   assert.match(reply, /quiet|honest|boo|over it|ter|rules|dance-off/i);
   assert.deepEqual(page.errors, []);
 });
+
+test('week setup: rename players in place; help and footer link to the repo', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]');
+  await page.fill('[data-bind^="player:"] >> nth=0', 'Nan');
+  await page.click('[data-act=addplayerhere]');
+  await page.keyboard.type('Grandad');                       // new player's box is focused
+  const s = await state(page);
+  assert.equal(s.players[0].name, 'Nan'); assert.equal(s.players[s.players.length - 1].name, 'Grandad');
+  await page.click('[data-act=nav][data-to=rules]');
+  assert.ok(await page.locator('#view a[href="https://github.com/natm/strictly-game"]').count() >= 1, 'help links to the repo');
+  assert.ok(await page.locator('.credits a[href="https://github.com/natm/strictly-game"]').count() >= 1, 'footer links to the repo');
+});

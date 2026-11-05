@@ -3,6 +3,10 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.0.2 "Promenade" (2026-11-05)
+- Week setup: change player names right there while picking who's playing, and a new player's name box is ready to type in.
+- Help screen and footer link to the code on GitHub.
+
 ## v3.0.1 "Boo" (2026-11-05)
 - If Craig gives 5 or under, the audience usually boos 👎, and Craig answers back ("Oh, be quiet!", "I'm just being honest, darling!").
 
