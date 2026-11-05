@@ -518,7 +518,8 @@ function vHome(){
         ${S.history.some(h=>h.n===nextWeekNo())?`<div class="center" style="color:var(--yellow);font-family:var(--title)">⚠️ You've already played week ${nextWeekNo()}</div>`:''}
         ${!S.history.length?`<div class="center" style="color:#fff;font-weight:600">Joining mid-season? Pick the week you're on, and only add the couples still in.</div>`:''}
         <button class="big pink pulse" data-act="newweek" ${n?'':'disabled'}>✨ Start Week ${nextWeekNo()}</button>
-        ${n?'':'<div class="center" style="color:#fff;font-family:var(--title)">Add your couples first 👇</div>'}`}
+        ${n?'':`<div class="center" style="color:#fff;font-family:var(--title)">Add your couples first 👇</div>
+          <button class="big yellow" data-act="load2026">⚡ Load the 2026 couples still in (after week ${SERIES_2026.afterWeek})</button>`}`}
       <button class="big cyan" data-act="nav" data-to="manage">👯 Couples, Players &amp; Judges</button>
       <button class="big green" data-act="nav" data-to="season">🏆 Season Tables</button>
     </div>
@@ -547,7 +548,8 @@ function vManage(){
       ${c.out!=null?`<span class="tag out">OUT wk ${c.out}</span><button class="sm green" data-act="restore" data-id="${c.id}">Bring back</button>`:''}
       <button class="sm red" data-act="delcouple" data-id="${c.id}">✕</button></div>`).join('')||'<div class="hint">No couples yet. Add them below!</div>'}
     <textarea id="newcouples" placeholder="Add couples — one per line, e.g.&#10;Jane Smith &amp; Pro Name&#10;Bob Jones &amp; Pro Name"></textarea>
-    <div class="actions" style="margin:8px 0 0"><button class="green" data-act="addcouples">+ Add couples</button></div></div>
+    <div class="actions" style="margin:8px 0 0"><button class="green" data-act="addcouples">+ Add couples</button><button data-act="load2026">⚡ Load 2026 couples still in</button></div>
+    <div class="hint">The 2026 list is everyone still in after week ${SERIES_2026.afterWeek}. Edit any name above if it's wrong.</div></div>
   <div class="card"><h3>🎉 Players</h3>
     ${S.players.map((p,i)=>`<div class="row"><button class="av" style="background:${p.color};cursor:pointer;font-size:22px" data-act="cycleav" data-id="${p.id}" title="Change avatar">${p.av}</button>
       <input type="text" data-bind="player:${p.id}:name" value="${esc(p.name)}" maxlength="18">
@@ -796,6 +798,15 @@ function render(){
 }
 
 /* =============== actions =============== */
+/* 2026 series: couples still in after week 6 (Halloween, 1 Nov 2026). Editable on the Cast screen. */
+const SERIES_2026={afterWeek:6,couples:['Lacey Turner & Vito Coppola','Dani Dyer & Nikita Kuzmin','Delta Goodrem & Kai Widdrington','Cach Mercer & Maddie Ingoldsby',
+  'Tabby Stoecker & Mark Karmalita','Bethany Antonia & Nancy Xu','Jaime Winstone & Carlos Gu','Will Best & Dianne Buswell','Graeme Hall & Lauren Oakley','John Nellis']};
+function load2026(){
+  const have=new Set(S.couples.map(c=>c.name.trim().toLowerCase()));let added=0;
+  SERIES_2026.couples.forEach(n=>{if(!have.has(n.toLowerCase())){S.couples.push({id:uid(),name:n,out:null,scores:[]});added++}});
+  if(!S.history.length&&!S.week)S.nextWeek=SERIES_2026.afterWeek+1;
+  save();render();toast(added?`Added ${added} couples ✨`:'They are all already here!');
+}
 const nextWeekNo=()=>S.nextWeek||S.weeksDone+1;
 function newWeek(){
   const n=nextWeekNo();S.nextWeek=null;
@@ -839,6 +850,7 @@ document.addEventListener('click',e=>{
   case 'home':overlay='home';return render();
   case 'nav':overlay=b.dataset.to||null;return render();
   case 'resume':overlay=null;return render();
+  case 'load2026':load2026();return;
   case 'wkstep':S.nextWeek=Math.max(1,Math.min(99,nextWeekNo()+(+b.dataset.d)));save();return render();
   case 'newweek':newWeek();overlay=null;return render();
   case 'quitweek':if(confirm('Abandon this week? Nothing from it will be saved.')){S.week=null;overlay=null;save();render()}return;
