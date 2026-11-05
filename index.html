@@ -402,7 +402,7 @@ function avatar(j,i,mood='idle'){
   if(j.photo)return `<img src="${j.photo}" alt="${esc(j.name)}">`;
   const ink='#1c0a33',st=j.style!=null?j.style:i;
   const skin=['#ffd2b0','#a8683f','#ffd8b8','#ffcfa8'][st%4];
-  const hair=['#ffd54a','#2b1a14','#c9c9d1','#3a3a3a'][st%4];
+  const hair=['#1a1210','#2b1a14','#c9c9d1','#3a3a3a'][st%4];  // Shirley, Motsi, Anton, Craig
   const suit=['#e0245e','#7b2cbf','#1d4ed8','#222'][st%4];
   const back=[
     `<path d="M16 120 Q4 50 24 30 Q60 -6 96 30 Q116 50 104 120Z" fill="${hair}" stroke="${ink}" stroke-width="4"/>`,
