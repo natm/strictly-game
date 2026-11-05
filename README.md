@@ -25,8 +25,8 @@ Or just open `index.html` in a browser.
 
 ## Releases
 Each release has a semantic version and a dance name (e.g. `v2.0.0 "Tango"`), shown in the game header and footer.
-To release: bump `VERSION`/`RELEASE` in `index.html`, add a section to `CHANGELOG.md`, then push a tag (`git tag v2.0.0 && git push origin v2.0.0`).
-The `release` workflow publishes the GitHub release with the changelog notes.
+To release: bump `VERSION`/`RELEASE` in `index.html`, add a section to `CHANGELOG.md`, and deploy to the `gh-pages` branch.
+The `release` workflow then creates the `vX.Y.Z` tag and GitHub release with the changelog notes (pushing a `v*` tag by hand works too).
 
 ## Credits
 Photos and profile info: BBC Strictly Come Dancing. Scores, dances and facts: Wikipedia (CC BY-SA).
