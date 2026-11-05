@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strictly Score Guess</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#f5d27a; --gold2:#c9972e; --deep:#12041f; --plum:#2a0a45; --pink:#ff3d8b; --cream:#fff6dc;
+  --green:#2fd27a; --amber:#ffb020; --red:#ff5a5a;
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --sans:'Montserrat','Segoe UI',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans);color:var(--cream);overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% -10%,#6a1b9a55,transparent 60%),
+    radial-gradient(ellipse at 10% 110%,#ff3d8b33,transparent 50%),
+    radial-gradient(ellipse at 90% 110%,#f5d27a22,transparent 50%),
+    linear-gradient(180deg,#1b0630,#0a0214);
+}
+#sparkles{position:fixed;inset:0;pointer-events:none;z-index:0}
+#app{position:relative;z-index:1;height:100vh;height:100dvh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px clamp(12px,3vw,32px);gap:10px;
+  border-bottom:2px solid var(--gold2);background:linear-gradient(180deg,#00000066,#00000022)}
+.logo{font-family:var(--serif);font-weight:900;font-size:clamp(20px,3.2vw,38px);letter-spacing:.04em;
+  background:linear-gradient(180deg,#fff4c9,var(--gold) 45%,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 30px #f5d27a44}
+.logo small{display:block;font-family:var(--sans);font-size:.32em;letter-spacing:.5em;font-weight:600;color:var(--pink);-webkit-text-fill-color:var(--pink)}
+.hdr-right{display:flex;gap:8px;align-items:center}
+main{flex:1;overflow:auto;padding:clamp(12px,2.5vw,28px);display:flex;flex-direction:column;align-items:center}
+.wrap{width:100%;max-width:1200px;margin:auto}
+h1,h2,h3{font-family:var(--serif)}
+h2{font-size:clamp(24px,4vw,46px);color:var(--gold);text-align:center;margin-bottom:10px}
+h3{font-size:clamp(18px,2.2vw,26px);color:var(--gold);margin-bottom:8px}
+.sub{text-align:center;opacity:.8;letter-spacing:.15em;text-transform:uppercase;font-size:clamp(11px,1.4vw,14px);margin-bottom:14px}
+button{font-family:var(--sans);cursor:pointer;border:0;color:#2b1200;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  background:linear-gradient(180deg,#ffe9a8,var(--gold) 50%,var(--gold2));border-radius:999px;padding:12px 26px;font-size:clamp(13px,1.5vw,17px);
+  box-shadow:0 4px 0 #7a5410,0 8px 22px #0008;transition:transform .08s}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #7a5410}
+button.big{font-size:clamp(16px,2.2vw,26px);padding:16px 38px}
+button.ghost{background:transparent;color:var(--gold);border:2px solid var(--gold2);box-shadow:none}
+button.pink{background:linear-gradient(180deg,#ff8cba,var(--pink));color:#fff;box-shadow:0 4px 0 #8c1650,0 8px 22px #0008}
+button.sm{padding:6px 14px;font-size:12px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.card{background:linear-gradient(180deg,#2a0a45cc,#12041fcc);border:2px solid var(--gold2);border-radius:18px;padding:18px;
+  box-shadow:0 0 0 3px #00000066,0 10px 40px #000a, inset 0 0 40px #f5d27a11}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+input[type=text],textarea{width:100%;background:#0a0214;border:2px solid #5b2a85;border-radius:10px;color:var(--cream);padding:10px 12px;font:600 15px var(--sans)}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--gold)}
+textarea{min-height:170px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.dot{width:26px;height:26px;border-radius:50%;flex:none;border:2px solid #fff8}
+.center{text-align:center}
+.mt{margin-top:18px}
+.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+
+/* judges */
+.judges{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.6vw,20px)}
+@media(max-width:600px){.judges{grid-template-columns:repeat(2,1fr)}}
+.judge{text-align:center}
+.portrait{width:100%;aspect-ratio:1;border-radius:50%;border:4px solid var(--gold);background:radial-gradient(circle at 50% 30%,#5b2a85,#1b0630);overflow:hidden;
+  box-shadow:0 0 24px #f5d27a66,0 6px 20px #000a;max-width:170px;margin:0 auto 6px}
+.portrait img,.portrait svg{width:100%;height:100%;object-fit:cover;display:block}
+.jname{font-family:var(--serif);font-weight:700;font-size:clamp(13px,1.6vw,19px);color:var(--gold)}
+.jrole{font-size:10px;letter-spacing:.2em;opacity:.7;text-transform:uppercase}
+
+/* keypad */
+.keyrow{display:grid;grid-template-columns:minmax(90px,150px) 1fr;gap:12px;align-items:center;margin-bottom:10px}
+.keyrow .judge{display:flex;align-items:center;gap:10px;text-align:left}
+.keyrow .portrait{width:clamp(44px,7vw,70px);margin:0;flex:none}
+.keys{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(3px,.8vw,8px)}
+.keys button{padding:0;aspect-ratio:1;border-radius:12px;font-size:clamp(14px,2.4vw,28px);font-family:var(--serif);box-shadow:0 3px 0 #7a5410;
+  background:linear-gradient(180deg,#3a1260,#1b0630);color:var(--gold);border:2px solid var(--gold2)}
+.keys button.sel{background:linear-gradient(180deg,#fff4c9,var(--gold));color:#2b1200}
+@media(max-width:560px){.keyrow{grid-template-columns:1fr}.keys{grid-template-columns:repeat(5,1fr)}}
+
+/* paddles */
+.paddles{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px);margin:10px 0 20px}
+.paddle{perspective:800px;text-align:center}
+.paddle .face{background:#fff;color:#c1121f;font-family:var(--serif);font-weight:900;font-size:clamp(50px,13vw,150px);line-height:1.1;border-radius:14px;
+  border:6px solid var(--gold);box-shadow:0 12px 30px #000a;padding:4px 0;transform:rotateX(90deg);opacity:0;animation:flip .7s forwards}
+@keyframes flip{to{transform:rotateX(0);opacity:1}}
+.total{font-family:var(--serif);text-align:center;font-size:clamp(20px,3vw,34px);color:var(--gold)}
+
+/* leaderboard */
+.board{border:3px solid var(--gold);border-radius:16px;overflow:hidden;box-shadow:0 0 30px #f5d27a44,0 10px 40px #000a;background:#0a0214}
+.board .bh{background:linear-gradient(180deg,var(--pink),#a0124f);color:#fff;font-family:var(--serif);font-size:clamp(16px,2.4vw,28px);padding:10px 16px;text-align:center;letter-spacing:.08em;text-transform:uppercase}
+.lrow{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:9px 14px;border-bottom:1px solid #f5d27a33;
+  background:linear-gradient(90deg,#2a0a45,#12041f);font-weight:800;font-size:clamp(14px,1.8vw,22px)}
+.lrow:nth-child(odd){background:linear-gradient(90deg,#3a1260,#1b0630)}
+.lrow .rk{font-family:var(--serif);font-size:1.3em;color:var(--gold);text-align:center}
+.lrow:nth-child(2) .rk,.lrow.first .rk{color:#fff;text-shadow:0 0 12px var(--gold)}
+.lrow .sc{background:linear-gradient(180deg,#fff4c9,var(--gold2));color:#2b1200;border-radius:8px;padding:2px 12px;font-family:var(--serif);font-weight:900;min-width:56px;text-align:center}
+.lrow .nm{display:flex;align-items:center;gap:10px;min-width:0}
+.lrow .nm span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow small{display:block;font-weight:600;opacity:.7;font-size:.62em;letter-spacing:.1em}
+.chips{display:flex;gap:4px;margin-top:2px}
+.chip{background:#fff;color:#c1121f;font-family:var(--serif);font-weight:900;border-radius:5px;padding:0 7px;font-size:.78em}
+
+table.res{width:100%;border-collapse:collapse;font-weight:600}
+table.res th{color:var(--gold);font-family:var(--serif);text-align:center;padding:6px;font-size:clamp(12px,1.5vw,16px)}
+table.res td{text-align:center;padding:7px 4px;border-top:1px solid #f5d27a22;font-size:clamp(13px,1.8vw,20px)}
+table.res td:first-child{text-align:left;font-weight:800}
+.g{border-radius:8px;padding:2px 9px;display:inline-block;min-width:30px}
+.g.x{background:var(--green);color:#052}
+.g.n{background:var(--amber);color:#3a2000}
+.g.m{background:#ffffff18}
+.pts{color:var(--gold);font-family:var(--serif);font-weight:900}
+
+.pass{text-align:center;padding:30px 10px}
+.pass .who{font-family:var(--serif);font-weight:900;font-size:clamp(34px,8vw,90px);margin:14px 0 24px;text-shadow:0 0 30px currentColor}
+.couplebig{font-family:var(--serif);font-weight:900;font-size:clamp(30px,7vw,84px);line-height:1.1;text-align:center;
+  background:linear-gradient(180deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;margin:10px 0}
+.dancebig{text-align:center;font-family:var(--serif);font-style:italic;color:var(--pink);font-size:clamp(20px,4vw,44px);margin-bottom:20px}
+.ball{font-size:clamp(50px,10vw,110px);text-align:center;animation:spin 6s linear infinite;filter:drop-shadow(0 0 20px #fff8)}
+@keyframes spin{50%{transform:scale(1.08) rotate(6deg)}}
+.legend{font-size:12px;opacity:.75;text-align:center;margin-top:8px}
+.podium{display:flex;gap:12px;align-items:flex-end;justify-content:center;margin:20px 0}
+.pod{flex:1;max-width:240px;text-align:center;border:3px solid var(--gold);border-radius:14px 14px 0 0;padding:14px 6px;font-family:var(--serif);font-weight:900;
+  background:linear-gradient(180deg,#5b2a85,#1b0630)}
+.pod .n{font-size:clamp(16px,2.6vw,30px)} .pod .p{font-size:clamp(24px,4vw,48px);color:var(--gold)}
+.pod.p1{height:240px}.pod.p2{height:190px}.pod.p3{height:150px}
+.rules li{margin:6px 0 6px 20px}
+</style>
+</head>
+<body>
+<canvas id="sparkles"></canvas>
+<div id="app">
+  <header>
+    <div class="logo">STRICTLY<small>SCORE GUESS</small></div>
+    <div class="hdr-right" id="hdr"></div>
+  </header>
+  <main><div class="wrap" id="view"></div></main>
+</div>
+
+<script>
+(()=>{
+'use strict';
+const COLORS=['#ff3d8b','#35d0ff','#2fd27a','#ffb020','#b46bff','#ff6b3d','#f5d27a','#6bffe0','#ff8cba','#a0ff4f'];
+const KEY='strictly-v1', SKEY='strictly-season-v1';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+
+const defaultJudges=()=>[
+  {name:'Shirley Ballas',role:'Head Judge',photo:''},
+  {name:'Motsi Mabuse',role:'Judge',photo:''},
+  {name:'Anton Du Beke',role:'Judge',photo:''},
+  {name:'Craig Revel Horwood',role:'Judge',photo:''}];
+const fresh=()=>({
+  phase:'setup',
+  players:[0,1,2].map(i=>({id:uid(),name:'Player '+(i+1),color:COLORS[i]})),
+  judges:defaultJudges(),
+  couplesText:'Celebrity One & Pro One | Waltz\nCelebrity Two & Pro Two | Cha Cha Cha\nCelebrity Three & Pro Three | Jive',
+  couples:[],idx:0,order:[],oi:0,guesses:{},totals:{},seasonDone:false});
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){S=null}
+if(!S||!S.players)S=fresh();
+// judge photos stored separately-in-state; ensure shape
+S.judges=(S.judges||defaultJudges());
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const getSeason=()=>{try{return JSON.parse(localStorage.getItem(SKEY)||'{}')}catch(e){return {}}};
+let tmp=[null,null,null,null];   // current keypad selections
+let ready=false;                 // pass-the-device gate
+let showSeason=false, showRules=false;
+
+/* ---------- avatars ---------- */
+function avatar(j,i){
+  if(j.photo)return `<img src="${j.photo}" alt="${esc(j.name)}">`;
+  const skin=['#f2c9a5','#8a5a3c','#e8b88f','#f0c4a0'][i%4];
+  const hair=['#f0d58a','#2a1a14','#9a9a9a','#222'][i%4];
+  const suit=['#c1121f','#7b2cbf','#14213d','#111'][i%4];
+  const hairShape=[
+    `<path d="M20 50 Q20 12 60 12 Q100 12 100 50 L106 100 Q92 80 92 52 Q60 44 28 52 Q28 80 14 100Z" fill="${hair}"/>`,
+    `<circle cx="60" cy="30" r="34" fill="${hair}"/><circle cx="28" cy="48" r="14" fill="${hair}"/><circle cx="92" cy="48" r="14" fill="${hair}"/>`,
+    `<path d="M26 46 Q24 14 60 14 Q96 14 94 46 Q80 30 60 30 Q40 30 26 46Z" fill="${hair}"/>`,
+    `<path d="M30 42 Q34 20 60 20 Q86 20 90 42 Q60 34 30 42Z" fill="${hair}"/>`][i%4];
+  const extra=[
+    ``,
+    `<circle cx="34" cy="68" r="4" fill="#ffd700"/><circle cx="86" cy="68" r="4" fill="#ffd700"/>`,
+    `<path d="M50 112 L60 106 L70 112 L60 118Z" fill="#c1121f"/>`,
+    `<rect x="36" y="52" width="20" height="12" rx="4" fill="none" stroke="#000" stroke-width="3"/><rect x="64" y="52" width="20" height="12" rx="4" fill="none" stroke="#000" stroke-width="3"/><path d="M56 57h8" stroke="#000" stroke-width="3"/>`][i%4];
+  const mouth=['<path d="M46 80 Q60 92 74 80" stroke="#b00020" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    '<path d="M46 80 Q60 92 74 80" stroke="#b00020" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    '<path d="M46 80 Q60 90 74 80" stroke="#7a2a2a" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    '<path d="M48 82 Q60 86 72 80" stroke="#7a2a2a" stroke-width="4" fill="none" stroke-linecap="round"/>'][i%4];
+  return `<svg viewBox="0 0 120 120"><rect width="120" height="120" fill="none"/>
+    <path d="M10 125 Q14 96 60 96 Q106 96 110 125Z" fill="${suit}"/>
+    <rect x="50" y="84" width="20" height="16" fill="${skin}"/>
+    <ellipse cx="60" cy="58" rx="30" ry="34" fill="${skin}"/>
+    ${hairShape}
+    <circle cx="48" cy="58" r="3.4" fill="#222"/><circle cx="72" cy="58" r="3.4" fill="#222"/>
+    ${i===3?'':'<path d="M42 49 Q48 45 54 49M66 49 Q72 45 78 49" stroke="#3a2a22" stroke-width="2.5" fill="none"/>'}
+    ${mouth}${extra}</svg>`;
+}
+function portrait(i){return `<div class="portrait">${avatar(S.judges[i],i)}</div>`}
+
+/* ---------- helpers ---------- */
+const couples=()=>S.couples;
+const cur=()=>S.couples[S.idx];
+const pById=id=>S.players.find(p=>p.id===id);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function scorePlayer(g,r){
+  let pts=0;
+  g.forEach((v,i)=>{const d=Math.abs(v-r[i]);pts+= d===0?3:d===1?1:0});
+  const td=Math.abs(sum(g)-sum(r));
+  const bonus= td===0?5: td<=2?2:0;
+  return {judgePts:pts,bonus,total:pts+bonus};
+}
+function leaderboard(list,title,opts={}){
+  const rows=list.map((r,i)=>`<div class="lrow ${i===0?'first':''}"><div class="rk">${i+1}</div>
+    <div class="nm">${r.color?`<span class="dot" style="background:${r.color}"></span>`:''}<span class="t">${esc(r.name)}${r.sub?`<small>${r.sub}</small>`:''}${r.chips||''}</span></div>
+    <div class="sc">${r.score}</div></div>`).join('')||'<div class="lrow"><div></div><div>Nothing yet…</div><div></div></div>';
+  return `<div class="board"><div class="bh">${title}</div>${rows}</div>`;
+}
+const weeklyRows=()=>S.players.map(p=>({name:p.name,color:p.color,score:S.totals[p.id]||0})).sort((a,b)=>b.score-a.score);
+const coupleRows=()=>S.couples.filter(c=>c.real).map(c=>({name:c.name,sub:c.dance||'',score:sum(c.real),
+  chips:`<div class="chips">${c.real.map(n=>`<span class="chip">${n}</span>`).join('')}</div>`})).sort((a,b)=>b.score-a.score);
+
+/* ---------- views ---------- */
+function hdr(){
+  const inGame=S.phase!=='setup';
+  $('#hdr').innerHTML=(inGame?`<span style="opacity:.8;font-size:13px;font-weight:600">Couple ${Math.min(S.idx+1,S.couples.length)}/${S.couples.length}</span>`:'')+
+    `<button class="ghost sm" data-act="rules">Rules</button>`+
+    (inGame?`<button class="ghost sm" data-act="quit">Quit</button>`:'')+
+    `<button class="ghost sm" data-act="fs">⛶ Full screen</button>`;
+}
+
+function vSetup(){
+  const season=getSeason();
+  return `<div class="wrap">
+  <h2>Tonight's Show</h2><div class="sub">Set up your players, couples and judges</div>
+  <div class="grid2">
+    <div class="card"><h3>Players</h3><div id="plist">
+      ${S.players.map(p=>`<div class="row" data-pid="${p.id}"><span class="dot" style="background:${p.color}"></span>
+        <input type="text" value="${esc(p.name)}" maxlength="20" data-pname>
+        <button class="ghost sm" data-act="delp" data-id="${p.id}">✕</button></div>`).join('')}
+    </div><button class="sm" data-act="addp" ${S.players.length>=10?'disabled':''}>+ Add player</button></div>
+    <div class="card"><h3>Couples (one per line)</h3>
+      <textarea id="couples" placeholder="Celebrity & Pro | Dance">${esc(S.couplesText)}</textarea>
+      <div class="legend" style="text-align:left">Format: <b>Names | Dance</b> (dance is optional). They'll be played in this order.</div>
+    </div>
+  </div>
+  <div class="card mt"><h3>The Judges</h3>
+    <div class="judges">${S.judges.map((j,i)=>`<div class="judge">${portrait(i)}
+      <input type="text" value="${esc(j.name)}" data-jname="${i}" style="text-align:center;margin-top:4px">
+      <label><button class="ghost sm" style="margin-top:6px" data-act="photo" data-i="${i}">📷 Upload photo</button></label>
+      ${j.photo?`<div><button class="ghost sm" style="margin-top:4px" data-act="clearphoto" data-i="${i}">Remove</button></div>`:''}
+    </div>`).join('')}</div>
+    <input type="file" id="file" accept="image/*" hidden>
+  </div>
+  <div class="actions">
+    <button class="big pink" data-act="start">Start the show ✨</button>
+    <button class="ghost" data-act="season">🏆 Season table${Object.keys(season).length?` (${Object.keys(season).length})`:''}</button>
+  </div></div>`;
+}
+
+function vSeason(){
+  const s=getSeason();
+  const rows=Object.values(s).sort((a,b)=>b.pts-a.pts).map(p=>({name:p.name,color:p.color,score:p.pts,sub:`${p.weeks} week${p.weeks===1?'':'s'}`}));
+  return `<div class="wrap" style="max-width:700px"><h2>Season Leaderboard</h2><div class="sub">Points carried over every week</div>
+    ${leaderboard(rows,'Season Standings')}
+    <div class="actions"><button data-act="back">← Back</button><button class="ghost" data-act="resetseason">Reset season</button></div></div>`;
+}
+
+function vRules(){
+  return `<div class="wrap" style="max-width:760px"><div class="card"><h2>How to play</h2>
+  <ol class="rules">
+   <li>A couple dances. Everyone watches!</li>
+   <li>Players are called in a <b>random order</b>. In secret, each guesses the score (1–10) from <b>all four judges</b>.</li>
+   <li>When everyone has guessed, enter the <b>real judges' scores</b>.</li>
+   <li>Points per judge: <b>exact = 3</b>, <b>one away = 1</b>.</li>
+   <li>Bonus for the <b>total</b>: exact = <b>+5</b>, within 2 = <b>+2</b>.</li>
+   <li>Most points after the last couple wins the week. Scores add up in the season table.</li></ol>
+  <div class="actions"><button data-act="closerules">Got it</button></div></div></div>`;
+}
+
+function vDance(){
+  const c=cur();
+  return `<div class="wrap"><div class="ball">🪩</div><div class="sub">Up next</div>
+    <div class="couplebig">${esc(c.name)}</div>
+    ${c.dance?`<div class="dancebig">${esc(c.dance)}</div>`:''}
+    <div class="actions"><button class="big pink" data-act="danced">They've danced! 💃 Start guessing</button></div>
+    <div class="grid2 mt">${leaderboard(weeklyRows(),'Player Leaderboard')}${leaderboard(coupleRows(),"Judges' Scoreboard")}</div></div>`;
+}
+
+function keypad(label,btnText){
+  return `<div class="card">${S.judges.map((j,i)=>`<div class="keyrow">
+    <div class="judge"><div class="portrait">${avatar(j,i)}</div><div class="jname">${esc(j.name)}</div></div>
+    <div class="keys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="key" data-j="${i}" data-n="${n}" class="${tmp[i]===n?'sel':''}">${n}</button>`).join('')}</div>
+  </div>`).join('')}
+  <div class="total">Total: ${tmp.every(x=>x)?sum(tmp):'–'} / 40</div></div>
+  <div class="actions"><button class="big" data-act="confirm" ${tmp.every(x=>x)?'':'disabled'}>${btnText}</button></div>`;
+}
+
+function vGuess(){
+  const p=pById(S.order[S.oi]);
+  if(!ready)return `<div class="wrap"><div class="pass"><div class="sub">Guess ${S.oi+1} of ${S.order.length} · ${esc(cur().name)}</div>
+    <div>Pass the controls to…</div><div class="who" style="color:${p.color}">${esc(p.name)}</div>
+    <button class="big pink" data-act="ready">I'm ready</button></div></div>`;
+  return `<div class="wrap"><h2 style="color:${p.color}">${esc(p.name)}'s guesses</h2>
+    <div class="sub">How will each judge score ${esc(cur().name)}?</div>${keypad('', S.oi+1<S.order.length?'Lock in & pass on':'Lock in')}</div>`;
+}
+
+function vReal(){
+  return `<div class="wrap"><h2>Judges' Scores</h2><div class="sub">Enter the real scores for ${esc(cur().name)}</div>${keypad('','Reveal scores!')}</div>`;
+}
+
+function vReveal(){
+  const c=cur(), r=c.real;
+  const results=S.order.map(id=>({p:pById(id),g:S.guesses[id],s:scorePlayer(S.guesses[id],r)})).sort((a,b)=>b.s.total-a.s.total);
+  const cls=(g,rv)=>{const d=Math.abs(g-rv);return d===0?'x':d===1?'n':'m'};
+  return `<div class="wrap"><h2>${esc(c.name)}</h2>
+    <div class="paddles">${r.map((n,i)=>`<div class="paddle">${portrait(i)}<div class="face" style="animation-delay:${.4+i*1.1}s">${n}</div></div>`).join('')}</div>
+    <div class="total" style="animation:none">Total: ${sum(r)} / 40</div>
+    <div class="card mt"><table class="res"><tr><th>Player</th>${S.judges.map(j=>`<th>${esc(j.name.split(' ')[0])}</th>`).join('')}<th>Total</th><th>Pts</th></tr>
+    ${results.map(x=>`<tr><td style="color:${x.p.color}">${esc(x.p.name)}</td>
+      ${x.g.map((g,i)=>`<td><span class="g ${cls(g,r[i])}">${g}</span></td>`).join('')}
+      <td>${sum(x.g)}${x.s.bonus?` <small>(+${x.s.bonus})</small>`:''}</td><td class="pts">+${x.s.total}</td></tr>`).join('')}
+    </table><div class="legend">🟩 exact (3) · 🟧 one away (1) · total bonus: exact +5, within 2 +2</div></div>
+    <div class="actions"><button class="big pink" data-act="board">Leaderboards 🏆</button></div></div>`;
+}
+
+function vBoard(){
+  const last=S.idx>=S.couples.length-1;
+  return `<div class="wrap"><h2>Leaderboards</h2><div class="sub">After ${S.idx+1} of ${S.couples.length} couples</div>
+    <div class="grid2">${leaderboard(weeklyRows(),'Player Leaderboard')}${leaderboard(coupleRows(),"Judges' Scoreboard")}</div>
+    <div class="actions"><button class="big pink" data-act="next">${last?'Final results 🎉':'Next couple →'}</button></div></div>`;
+}
+
+function vFinal(){
+  const w=weeklyRows();
+  const pod=[1,0,2].map(i=>w[i]?`<div class="pod p${i+1}"><div style="font-size:2em">${['🥇','🥈','🥉'][i]}</div><div class="n" style="color:${w[i].color}">${esc(w[i].name)}</div><div class="p">${w[i].score}</div></div>`:'').join('');
+  return `<div class="wrap"><div class="ball">🪩</div><h2>${w[0]?esc(w[0].name)+' wins the week!':'Finished!'}</h2>
+    <div class="podium">${pod}</div>
+    <div class="grid2">${leaderboard(w,'Final Player Leaderboard')}${leaderboard(coupleRows(),"Judges' Final Scoreboard")}</div>
+    <div class="legend mt">✅ Points added to the season table</div>
+    <div class="actions"><button class="big pink" data-act="again">New week 🔁</button><button class="ghost" data-act="season">🏆 Season table</button></div></div>`;
+}
+
+function render(){
+  hdr();
+  let h;
+  if(showRules)h=vRules();
+  else if(showSeason)h=vSeason();
+  else h={setup:vSetup,dance:vDance,guess:vGuess,real:vReal,reveal:vReveal,board:vBoard,final:vFinal}[S.phase]();
+  $('#view').innerHTML=h; $('main').scrollTop=0;
+}
+
+/* ---------- setup sync ---------- */
+function syncSetup(){
+  if(S.phase!=='setup')return;
+  document.querySelectorAll('[data-pid]').forEach(row=>{
+    const p=pById(row.dataset.pid); if(p)p.name=row.querySelector('[data-pname]').value.trim()||p.name;});
+  document.querySelectorAll('[data-jname]').forEach(el=>{S.judges[+el.dataset.jname].name=el.value.trim()||S.judges[+el.dataset.jname].name});
+  const t=$('#couples'); if(t)S.couplesText=t.value;
+  save();
+}
+
+function finishSeason(){
+  if(S.seasonDone)return;
+  const s=getSeason();
+  S.players.forEach(p=>{
+    const k=p.name.trim().toLowerCase();
+    s[k]=s[k]||{name:p.name,color:p.color,pts:0,weeks:0};
+    s[k].pts+=S.totals[p.id]||0; s[k].weeks+=1; s[k].color=p.color;
+  });
+  try{localStorage.setItem(SKEY,JSON.stringify(s))}catch(e){}
+  S.seasonDone=true;
+}
+
+function startCouple(){
+  S.order=shuffle(S.players.map(p=>p.id)); S.oi=0; S.guesses={}; tmp=[null,null,null,null]; ready=false;
+}
+
+/* ---------- actions ---------- */
+function resizePhoto(file,i){
+  const fr=new FileReader();
+  fr.onload=()=>{const img=new Image();img.onload=()=>{
+    const c=document.createElement('canvas');c.width=c.height=240;const x=c.getContext('2d');
+    const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/3,m,m,0,0,240,240);
+    S.judges[i].photo=c.toDataURL('image/jpeg',.85);save();render();};img.src=fr.result;};
+  fr.readAsDataURL(file);
+}
+let photoFor=0;
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b)return;
+  const a=b.dataset.act;
+  if(a==='fs'){const d=document.documentElement;document.fullscreenElement?document.exitFullscreen():(d.requestFullscreen||d.webkitRequestFullscreen).call(d);return}
+  if(a==='rules'){showRules=true;return render()}
+  if(a==='closerules'){showRules=false;return render()}
+  if(a==='season'){showSeason=true;return render()}
+  if(a==='back'){showSeason=false;return render()}
+  if(a==='resetseason'){if(confirm('Reset the whole season table?')){localStorage.removeItem(SKEY);render()}return}
+  if(a==='quit'){if(confirm('Quit this game and go back to setup? Current week scores will be lost.')){
+      const keep={players:S.players,judges:S.judges,couplesText:S.couplesText};S=Object.assign(fresh(),keep);save();render()}return}
+  syncSetup();
+  if(a==='addp'){S.players.push({id:uid(),name:'Player '+(S.players.length+1),color:COLORS[S.players.length%COLORS.length]});save();return render()}
+  if(a==='delp'){if(S.players.length>1){S.players=S.players.filter(p=>p.id!==b.dataset.id);save();render()}return}
+  if(a==='photo'){photoFor=+b.dataset.i;$('#file').click();return}
+  if(a==='clearphoto'){S.judges[+b.dataset.i].photo='';save();return render()}
+  if(a==='start'){
+    const cs=S.couplesText.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const [n,d]=l.split('|');return{name:n.trim(),dance:(d||'').trim(),real:null}});
+    if(!cs.length||!S.players.length){alert('Add at least one player and one couple.');return}
+    S.couples=cs;S.idx=0;S.totals={};S.players.forEach(p=>S.totals[p.id]=0);S.seasonDone=false;
+    S.phase='dance';save();return render()}
+  if(a==='danced'){startCouple();S.phase='guess';save();return render()}
+  if(a==='ready'){ready=true;return render()}
+  if(a==='key'){tmp[+b.dataset.j]=+b.dataset.n;return render()}
+  if(a==='confirm'){
+    if(S.phase==='guess'){
+      S.guesses[S.order[S.oi]]=tmp.slice();tmp=[null,null,null,null];ready=false;S.oi++;
+      if(S.oi>=S.order.length)S.phase='real';
+    }else if(S.phase==='real'){
+      const r=tmp.slice();cur().real=r;
+      S.order.forEach(id=>{S.totals[id]=(S.totals[id]||0)+scorePlayer(S.guesses[id],r).total});
+      tmp=[null,null,null,null];S.phase='reveal';
+    }
+    save();return render()}
+  if(a==='board'){S.phase='board';save();return render()}
+  if(a==='next'){
+    if(S.idx>=S.couples.length-1){finishSeason();S.phase='final'}
+    else{S.idx++;S.phase='dance'}
+    save();return render()}
+  if(a==='again'){const keep={players:S.players,judges:S.judges,couplesText:S.couplesText};S=Object.assign(fresh(),keep);save();return render()}
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='file'&&e.target.files[0]){syncSetup();resizePhoto(e.target.files[0],photoFor);e.target.value=''}
+});
+document.addEventListener('input',e=>{ if(S.phase==='setup'&&(e.target.matches('[data-pname],[data-jname],#couples'))) syncSetup() });
+
+/* ---------- sparkles ---------- */
+const cv=$('#sparkles'),cx=cv.getContext('2d');let W,H,stars=[];
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;stars=Array.from({length:Math.round(W*H/16000)},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+.4,p:Math.random()*6.28,s:Math.random()*.03+.01}))}
+addEventListener('resize',size);size();
+(function tick(){cx.clearRect(0,0,W,H);for(const s of stars){s.p+=s.s;const a=(Math.sin(s.p)+1)/2;cx.globalAlpha=a*.8;cx.fillStyle='#fff3c4';
+  cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.28);cx.fill();s.y+=.08;if(s.y>H)s.y=0}requestAnimationFrame(tick)})();
+
+render();
+})();
+</script>
+</body>
+</html>
