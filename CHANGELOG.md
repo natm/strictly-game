@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.6.0 "Lindy" (2026-11-05)
+- Phones and tablets: guessing works like the judges' screen. All four judges sit in a row with one set of 1–10 buttons, and tapping a number lifts that paddle and moves to the next judge. Tap a judge to change their score. No device keyboard, so nothing covers the screen.
+
 ## v2.5.1 "Bolero" (2026-11-05)
 - The dance picker on the stage is sorted A–Z.
 

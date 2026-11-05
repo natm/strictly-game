@@ -297,6 +297,20 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .credits{margin:22px auto 6px;max-width:760px;text-align:center;color:#fff;font-size:12px;opacity:.8;text-shadow:0 1px 0 var(--ink)}
 .credits a{color:var(--yellow)}
 .ver{font-family:var(--title);font-size:11px;letter-spacing:.06em;color:#fff;opacity:.85}
+/* touch guessing (phones/tablets) */
+.gtouch{padding:10px}
+.gpads{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.gpad{text-align:center;border:3px solid transparent;border-radius:16px;padding:4px 2px;cursor:pointer}
+.gpad.active{border-color:var(--pink);background:#ffe3f0;box-shadow:0 3px 0 var(--ink)}
+.gpad .portrait{width:min(64px,15vw);border-width:3px;box-shadow:0 2px 0 var(--ink);margin:0 auto 2px}
+.gpad .gname{font-family:var(--title);font-size:13px}
+.gpad .pad{margin:2px auto 0;width:min(56px,13vw);height:min(80px,18vw)}
+.gpad .pcard{font-size:min(28px,6.5vw)}
+.glabel{text-align:center;font-family:var(--title);font-size:20px;margin:8px 0 6px}.glabel b{color:var(--pink)}
+.gkeys button{background:#fff;color:var(--ink);border-color:var(--ink);box-shadow:0 3px 0 var(--ink);padding:9px 0;font-size:20px}
+.gkeys button.sel{background:var(--pink);color:#fff}
+.gtouch .totalbox{font-size:20px;margin-top:6px}
+@media(min-width:700px){.gpad .portrait{width:min(90px,9vw)}.gpad .pad{width:64px;height:92px}.gpad .gname{font-size:16px}.gkeys button{padding:12px 0;font-size:24px}}
 /* quick type box */
 .qrow{display:flex;gap:8px}.qrow input{flex:1;min-width:0}.qrow .qlock{flex:none;white-space:nowrap}
 .quick{margin-bottom:14px}
@@ -478,7 +492,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.5.1',RELEASE='Bolero';
+const VERSION='2.6.0',RELEASE='Lindy';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -1047,7 +1061,24 @@ function vDance(){
   <div class="chips" style="justify-content:center">${weekPlayerRows(false).map(r=>`<span class="pill"><span class="av" style="background:${r.color};width:1.5em;height:1.5em;font-size:.9em">${r.av}</span> ${esc(r.name)} <b>${r.score}</b></span>`).join('')}</div>`;
 }
 
+const touchUI=()=>matchMedia('(pointer:coarse)').matches;
+let gSel=null;   // touch guessing: which judge the number buttons fill (null = next empty one)
+/* phones/tablets: like the judges' screen. All four judges in a row, one set of 1-10 buttons; tapping fills
+   the highlighted judge and jumps to the next. No device keyboard, so nothing covers the screen. */
+function keypadTouch(btn){
+  const done=S.tmp.every(x=>x),js=justSet;justSet=-1;
+  let cur=gSel!=null?gSel:S.tmp.findIndex(x=>!x);if(cur<0)cur=null;
+  return `<div class="card kp gtouch">
+    <div class="gpads">${S.judges.map((j,i)=>`<div class="gpad ${i===cur?'active':''}" data-act="gsel" data-j="${i}">
+      <div class="portrait">${avatar(j,i,S.tmp[i]?moodFor(S.tmp[i]):'idle')}</div><div class="gname">${esc(firstName(j.name))}</div>
+      <div class="pad ${S.tmp[i]?'has':''}"><div class="hint0">?</div><div class="pup ${i===js?'lift':''}"><div class="pstick"></div><div class="pcard ${S.tmp[i]>=9?'hi':''}">${S.tmp[i]||''}</div></div><div class="phand">✊</div></div></div>`).join('')}</div>
+    <div class="glabel">${cur!=null?`⭐ <b>${esc(firstName(S.judges[cur].name))}</b>'s score?`:'All four in! Tap a judge to change one'}</div>
+    <div class="jkeys gkeys">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button data-act="key" data-j="${cur!=null?cur:3}" data-n="${n}" class="${cur!=null&&S.tmp[cur]===n?'sel':''}" ${cur==null?'disabled':''}>${n}</button>`).join('')}</div>
+    <div class="totalbox">Total: <span id="ktot">${done?sum(S.tmp):'–'}</span> <span style="opacity:.5">/ 40</span></div></div>
+  <div class="actions"><button class="big pink qlock ${done?'pulse':''}" data-act="confirm" ${done?'':'disabled'}>${btn}</button></div>`;
+}
 function keypad(btn){
+  if(touchUI())return keypadTouch(btn);
   const done=S.tmp.every(x=>x),js=justSet;justSet=-1;
   return `<div class="card kp">
     <div class="quick"><label for="quick">⌨️ Type the four scores, then press Enter or ✓</label>
@@ -1355,7 +1386,7 @@ function resizePhoto(file,i){
   fr.readAsDataURL(file);
 }
 let photoFor=0,photoKind='judge';
-function startCouple(){const w=W();w.order=shuffle(w.pids);w.oi=0;w.guesses={};w.prevTotals=Object.assign({},w.totals);S.tmp=[null,null,null,null];ready=false}
+function startCouple(){gSel=null;const w=W();w.order=shuffle(w.pids);w.oi=0;w.guesses={};w.prevTotals=Object.assign({},w.totals);S.tmp=[null,null,null,null];ready=false}
 function advance(){const w=W(),rem=remaining();if(!rem.length)w.phase='wrap';else if(rem.length===1){w.idx=rem[0].i;w.phase='dance'}else w.phase='pick';save();render()}
 function finishWeek(){
   const w=W();kdTrack('week_finished',{week:w.n});
@@ -1426,9 +1457,12 @@ document.addEventListener('click',e=>{
     if(w.oi>=w.order.length)w.phase='real';
     save();render();toast(`${nm} skipped for this couple, no points`);return}
   case 'ready':ready=true;render();focusQuick();return;
-  case 'key':sfx.key();S.tmp[+b.dataset.j]=+b.dataset.n;justSet=+b.dataset.j;save();return render();
+  case 'key':{sfx.key();const j=+b.dataset.j;S.tmp[j]=+b.dataset.n;justSet=j;
+    if(touchUI()){const nx=[1,2,3].map(d=>(j+d)%4).find(k=>!S.tmp[k]);gSel=nx!=null?nx:null}
+    save();return render()}
+  case 'gsel':gSel=+b.dataset.j;return render();
   case 'confirm':
-    if(w.phase==='guess'){w.guesses[w.order[w.oi]]=S.tmp.slice();S.tmp=[null,null,null,null];ready=false;w.oi++;if(w.oi>=w.order.length)w.phase='real'}
+    if(w.phase==='guess'){gSel=null;w.guesses[w.order[w.oi]]=S.tmp.slice();S.tmp=[null,null,null,null];ready=false;w.oi++;if(w.oi>=w.order.length)w.phase='real'}
     else if(w.phase==='real'){const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses)),quips:makeQuips(r,w.guesses,w.order)};
       w.order.forEach(pid=>{w.totals[pid]=(w.totals[pid]||0)+scorePlayer(w.guesses[pid],r).total});S.tmp=[null,null,null,null];w.phase='reveal'}
     save();return render();

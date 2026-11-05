@@ -407,16 +407,24 @@ test('a judge speech bubble rises when a 10 goes up', async () => {
   assert.match(await page.textContent('.jbub'), /\S/);
 });
 
-test('phone: lock in typed guesses without an Enter key', async () => {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+test('phone: guess by tapping (no keyboard), each tap moves to the next judge', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 700 }, hasTouch: true, isMobile: true });
   const page = await ctx.newPage(); page.on('dialog', d => d.accept());
   await page.goto(URL); await page.addStyleTag({ content: CALM });
   await addCouples(page, ['Ann & A']);
   await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
   await page.tap('[data-act=ready]');
-  await page.fill('#quick', '7 8 6 9');
-  await page.tap('.qlock');                           // the ✓ next to the box
-  assert.equal(Object.keys((await state(page)).week.guesses).length, 1);
+  assert.equal(await page.locator('#quick').count(), 0, 'no keyboard text box on touch screens');
+  for (const n of [7, 8, 6, 9]) await page.tap(`.gkeys [data-n="${n}"]`);
+  assert.equal(await page.locator('.pad.has').count(), 4);
+  await page.tap('.gpad[data-j="2"]'); await page.tap('.gkeys [data-n="10"]');   // change Shirley's
+  for (const sel of ['.qlock', '.gkeys [data-n="10"]']) {
+    const bt = await page.$eval(sel, e => e.getBoundingClientRect().bottom);
+    assert.ok(bt <= 700, `${sel} at ${Math.round(bt)}px needs scrolling`);
+  }
+  await page.tap('.qlock');
+  const s = await state(page);
+  assert.deepEqual(s.week.guesses[s.week.order[0]], [7, 8, 10, 9]);
   await ctx.close();
 });
 
@@ -426,7 +434,7 @@ test("phone: judges' scores by tapping only, no keyboard box", async () => {
   await page.goto(URL); await page.addStyleTag({ content: CALM });
   await addCouples(page, ['Ann & A']);
   await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
-  for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); await page.fill('#quick', '7777'); await page.tap('.qlock'); }
+  for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); for (const n of [7, 7, 7, 7]) await page.tap(`.gkeys [data-n="${n}"]`); await page.tap('.qlock'); }
   assert.equal(await page.isVisible('#jscore'), false, 'no text box on touch screens');
   for (const n of [8, 7, 9, 6]) {
     await page.tap(`[data-act=jkey][data-n="${n}"]`);
@@ -473,7 +481,7 @@ test("phone: slim header and judges' score buttons on screen without scrolling",
   const page = await ctx.newPage(); page.on('dialog', d => d.accept());
   await page.goto(URL); await page.addStyleTag({ content: CALM });
   await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
-  for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); await page.fill('#quick', '7777'); await page.tap('.qlock'); }
+  for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); for (const n of [7, 7, 7, 7]) await page.tap(`.gkeys [data-n="${n}"]`); await page.tap('.qlock'); }
   const hdr = await page.$eval('header', e => e.getBoundingClientRect().height);
   assert.ok(hdr <= 52, `header is ${hdr}px tall`);
   for (const sel of ['#jok', '.jkeys button[data-n="10"]']) {
