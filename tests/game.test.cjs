@@ -693,3 +693,18 @@ test('new-presenter jokes and whole-number averages', async () => {
   const avgs = await page.$$eval('.board .lrow .sc', e => e.map(x => x.textContent.trim()));
   assert.ok(avgs.every(a => /^\d+$/.test(a)), `averages not whole: ${avgs}`);
 });
+
+test('the audience boos a low score from Craig and he answers back', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter'); }
+  await page.evaluate(() => { Math.random = () => 0.5; });   // take the "boo" branch every time
+  await page.click('[data-act=jkey][data-n="3"]');            // Craig gives a 3
+  const booed = !!(await page.waitForSelector('.boo', { state: 'attached', timeout: 2500 }).catch(() => null));
+  await page.waitForTimeout(1500);
+  const reply = await page.$$eval('.paddle[data-i="0"] .jbub', e => e.map(x => x.textContent).join(' '));
+  assert.ok(booed, 'boos appear');
+  assert.match(reply, /quiet|honest|boo|over it|ter|rules|dance-off/i);
+  assert.deepEqual(page.errors, []);
+});

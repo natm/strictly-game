@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.0.1 "Boo" (2026-11-05)
+- If Craig gives 5 or under, the audience usually boos 👎, and Craig answers back ("Oh, be quiet!", "I'm just being honest, darling!").
+
 ## v3.0.0 "Paso" (2026-11-05)
 - **Dances pre-filled:** the dances (and songs 🎵) announced for the coming week are pre-filled for each couple, from Wikipedia via the scheduled data update.
 - **Weeks close themselves:** once the real result is in the data, a finished week closes on its own. "Who went home?" also pre-selects the real result.

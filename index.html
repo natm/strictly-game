@@ -273,6 +273,10 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
   .jkeys button{padding:5px 0}
   .rp{padding:4px 6px}.rs{height:32px}
 }
+.revmain{position:relative}
+.boo{position:absolute;z-index:6;font-family:var(--title);font-size:clamp(18px,3vw,34px);color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;
+  text-shadow:0 3px 0 var(--ink);pointer-events:none;opacity:0;animation:boo 1.8s ease-out forwards}
+@keyframes boo{0%{opacity:0;transform:scale(.4) rotate(-10deg)}20%{opacity:1;transform:scale(1.15) rotate(6deg)}70%{opacity:1}100%{opacity:0;transform:translateY(-40px) scale(1) rotate(-4deg)}}
 /* judge speech bubbles */
 .paddle{position:relative}
 .jbub{position:absolute;left:50%;top:4%;z-index:5;white-space:nowrap;font-family:var(--title);font-size:clamp(13px,1.6vw,20px);background:#fff;color:var(--ink);
@@ -501,7 +505,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.0.0',RELEASE='Paso';
+const VERSION='3.0.1',RELEASE='Boo';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -1281,6 +1285,14 @@ function judgeBubble(i,n){
 const pickR=a=>a[Math.floor(Math.random()*a.length)];
 function bubbleOn(i,text,delay=0){setTimeout(()=>{const pd=document.querySelector(`.paddle[data-i="${i}"]`);if(!pd)return;pd.querySelectorAll('.jbub').forEach(x=>x.remove());
   const b=document.createElement('div');b.className='jbub';b.textContent=text;pd.appendChild(b);setTimeout(()=>b.remove(),2900)},delay)}
+/* the audience boos a stingy Craig, and he answers back */
+function craigBoos(k,n){
+  const j=S.judges[k];if(!j||j.style!==3||n>5||Math.random()<.15)return;
+  setTimeout(()=>{const host=document.querySelector('.revmain');if(!host||realDone())return;sfx.boo();
+    for(let i=0;i<7;i++){const b=document.createElement('span');b.className='boo';b.textContent=pickR(['BOOO!','Boo!','👎','BOOOO!','Booo! 👎']);
+      b.style.left=(5+Math.random()*85)+'%';b.style.top=(10+Math.random()*55)+'%';b.style.animationDelay=(i*.12)+'s';host.appendChild(b);setTimeout(()=>b.remove(),2600)}},900);
+  bubbleOn(k,pickR(["Oh, be quiet!","I'm just being honest, darling!","Boo all you like!","Get over it!","It was a dis-AS-ter, darling. Sorry!","I don't make the rules. Oh wait, I do.","Save your boos for the dance-off!"]),2100);
+}
 function judgesReact(k,n){
   const prev=k>0?S.tmp[k-1]:null;
   if(prev===n){   // same as the judge before: both smile
@@ -1297,7 +1309,7 @@ function liveConfirm(n){
   const pd=document.querySelector(`.paddle[data-i="${t}"]`),face=pd.querySelector('.face');
   face.textContent=n;face.classList.toggle('hi',n>=9);pd.classList.remove('static','on');void pd.offsetWidth;pd.classList.add('on');
   pd.querySelector('.portrait').innerHTML=avatar(S.judges[t],t,moodFor(n));if(n>=9)burstAt(pd,50);sfx.flip(n);
-  if(fixing)liveRecalcPlayers();else setTimeout(()=>{if(S.tmp[t]===n&&!realDone())liveRecalcPlayers();liveReact(n);judgeBubble(t,n);judgesReact(t,n)},450);
+  if(fixing)liveRecalcPlayers();else setTimeout(()=>{if(S.tmp[t]===n&&!realDone())liveRecalcPlayers();liveReact(n);judgeBubble(t,n);judgesReact(t,n);craigBoos(t,n)},450);
   const q=$('#jscore');if(q){q.value='';if(matchMedia('(pointer:fine)').matches)q.focus({preventScroll:true})}
   liveLabel();
 }
