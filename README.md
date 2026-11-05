@@ -2,48 +2,30 @@
 
 ### ▶️ [Play now: natm.github.io/strictly-game](https://natm.github.io/strictly-game/)
 
-*The Strictly score-guessing game.*
+*The Strictly score-guessing game for the whole family.*
 
-A family game to play while watching Strictly Come Dancing. Guess each judge's score before they give it!
+Before the judges hold up their paddles, everyone at home guesses all four scores: Craig, Motsi, Shirley and Anton. Get a judge's score exact and you score 3 points; one away scores 1. Nail the total for a bonus. Most points by the end of the night wins the week, and the season table keeps score all series long.
 
-- Runs entirely in the browser; progress is saved in `localStorage` (resume any time in the same browser).
-- Remembers couples week to week; mark couples as sick/absent for a week and pick who left at the end.
-- Season tables for players and couples. Export/import a backup from the "Couples, Players & Judges" screen.
+## How to play
+1. **Pick who's playing tonight.** Players can come and go week to week, and you can skip anyone who's popped out of the room.
+2. **Watch the dance.** Tap the couple on the floor. Their dance and song are usually already filled in.
+3. **Guess.** Pass the phone round. Each player taps their four scores in secret.
+4. **Reveal.** Tap in the real scores as the judges give them. Up go the paddles, everyone's 🎯 or "2 off" lands live, and Emma, Josh and Johannes have their say.
+5. **Leaderboards.** After the last couple, crown the week's winner. Weeks close on their own once the real result is known.
 
-## Play / host on GitHub Pages
-1. Merge to `main`.
-2. Repo **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `(root)`**.
-3. Open `https://<your-user>.github.io/strictly-game/`.
-
-Or just open `index.html` in a browser.
-
+Works on phones, tablets, laptops and the TV, with no sign-up. Your game is saved in your browser.
 
 ## Screenshots
 
 | | |
 |---|---|
-| ![Home](docs/screenshots/home.jpg) **Keep dancing!** Load the 2026 couples in one tap | ![Who's up next](docs/screenshots/pick.jpg) **Who's up next?** No running order needed |
-| ![Stage](docs/screenshots/stage.jpg) **Curtains up**: cartoon couples, the week's theme and "Did you know?" facts | ![Guessing](docs/screenshots/guess.jpg) **Guess the paddles**: type `8 9 8 9` and press Enter |
-| ![Real scores](docs/screenshots/real.jpg) **The official scores**: enter each judge, confirm, and up goes the paddle | ![Reveal](docs/screenshots/reveal.jpg) **The reveal**: everyone's 🎯 or "2 off" lands live as each paddle goes up, with the odd "Fab-u-lous!" |
+| ![Home](docs/screenshots/home.jpg) **Keep dancing!** The 2026 couples are ready to go | ![Who's up next](docs/screenshots/pick.jpg) **Who's up next?** No running order needed |
+| ![Stage](docs/screenshots/stage.jpg) **Curtains up**: cartoon couples, the week's theme and their series so far | ![Guessing](docs/screenshots/guess.jpg) **Guess the paddles**: tap (or type) four scores |
+| ![Real scores](docs/screenshots/real.jpg) **The official scores**: one tap per judge, and up goes the paddle | ![Reveal](docs/screenshots/reveal.jpg) **The reveal**: 🎯 or "2 off" lands live, with the odd "Fab-u-lous!" |
 | ![Presenters](docs/screenshots/presenters.jpg) **Presenter banter** using real series stats (Josh is always snarky) | ![Leaderboard](docs/screenshots/leaderboard.jpg) **Leaderboards** for the family and the judges |
 
-## Analytics (optional, cookieless)
-The game ships with analytics switched off. To turn on a cookieless tracker (Plausible, Umami, Simple Analytics, GoatCounter…), set the `ANALYTICS` constant near the top of the script in `index.html`, for example:
-
-```js
-const ANALYTICS={src:'https://plausible.io/js/script.js',attrs:{'data-domain':'natm.github.io/strictly-game'}};
-```
-
-The game then also sends three anonymous events, `week_started`, `couple_revealed` and `week_finished`, to whichever tracker is loaded. They include the week number and player count, but never names or scores. No cookies are set either way.
-
-## Routines
-`routines/` holds instructions Claude can run on a schedule. For example, `update-series-data.md` pulls the latest scores from Wikipedia and then tests, releases and deploys. See [routines/README.md](routines/README.md).
-
-## Releases
-Each release has a semantic version and a dance name (e.g. `v2.0.0 "Tango"`), shown in the game header and footer.
-To release: bump `VERSION`/`RELEASE` in `index.html`, add a section to `CHANGELOG.md`, and deploy to the `gh-pages` branch.
-The `release` workflow then creates the `vX.Y.Z` tag and GitHub release with the changelog notes (pushing a `v*` tag by hand works too).
-
 ## Credits
-Photos and profile info: BBC Strictly Come Dancing. Scores, dances and facts: Wikipedia (CC BY-SA).
+Photos and profile info: [BBC Strictly Come Dancing](https://www.bbc.co.uk/programmes/b006m8dq). Scores, dances and facts: [Wikipedia](https://en.wikipedia.org/wiki/Strictly_Come_Dancing_series_24) (CC BY-SA).
 This is an unofficial fan-made family game and is not affiliated with the BBC.
+
+Working on the game? See the [developer docs](docs/README.md).

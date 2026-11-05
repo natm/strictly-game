@@ -5,7 +5,7 @@ Each one is a self-contained Markdown file: what to do, how to check it worked, 
 
 | Routine | Suggested schedule | What it does |
 |---|---|---|
-| [update-series-data.md](update-series-data.md) | Sundays and Mondays, 10:00 UK (after the Saturday show and the Sunday results) | Pulls the latest scores, dances, themes and eliminations from Wikipedia, tests, releases and deploys |
+| [update-series-data.md](update-series-data.md) | Sundays and Mondays, 09:32 UK (after the Saturday show and the Sunday results) | Pulls the latest scores, dances, themes and eliminations from Wikipedia, tests, releases and deploys |
 | [site-health-check.md](site-health-check.md) | Daily | Runs the test suite against the live GitHub Pages site and reports problems |
 
 ## Running one
