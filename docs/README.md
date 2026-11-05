@@ -10,6 +10,7 @@ Keep Dancing! is a single-page browser game with no build step and no server. It
 | [Testing](testing.md) | The Playwright suites (desktop, phone, tablet), how to run them, and how to write a test |
 | [Releasing & deploying](releasing.md) | Versions and dance names, the changelog, GitHub Pages, the release workflow and the update banner |
 | [Routines](routines.md) | Scheduled jobs Claude runs (series data updates, health checks) |
+| [Languages](i18n.md) | Translating the game UI (Welsh today) and adding another language |
 | [Analytics](analytics.md) | The optional cookieless analytics hook |
 
 ## Quick start

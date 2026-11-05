@@ -781,3 +781,27 @@ test('presenters sometimes hand over to each other and the second replies', asyn
     assert.ok(q[1].t.includes(names[q[0].p]), `reply names the first: ${q[1].t}`);
   }
 });
+
+test('language menu: switch to Welsh (Cymraeg) and back; choice is remembered', async () => {
+  const page = await open({ width: 390, height: 844 });
+  await page.click('[data-act=langmenu]');
+  await page.click('[data-act=setlang][data-l=cy]');
+  assert.match(await page.textContent('[data-act=newweek]'), /Dechrau Wythnos 7/);
+  assert.equal(await page.evaluate(() => document.documentElement.lang), 'cy');
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  assert.match(await page.textContent('[data-act=newweek]'), /Dechrau Wythnos/, 'remembered after reload');
+  // walk the main screens in Welsh: no English UI leftovers, no sideways scroll
+  await page.click('[data-act=newweek]');
+  assert.match(await page.textContent('#view'), /Pwy sy'n chwarae heno\?/);
+  await page.click('[data-act=startweek]');
+  assert.match(await page.textContent('#view'), /Pwy Sy Nesaf\?/);
+  await page.click('[data-act=pickc] >> nth=0');
+  assert.match(await page.textContent('[data-act=danced]'), /Maen nhw wedi dawnsio/);
+  await page.click('[data-act=danced]');
+  assert.match(await page.textContent('#view'), /Pasiwch y rheolyddion/);
+  const [sw, iw] = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
+  assert.ok(sw <= iw, 'no sideways scroll in Welsh');
+  await page.click('[data-act=langmenu]'); await page.click('[data-act=setlang][data-l=en]');
+  assert.match(await page.textContent('#view'), /Pass the controls/);
+  assert.deepEqual(page.errors, []);
+});
