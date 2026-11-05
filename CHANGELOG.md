@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v2.1.2 "Rumba" (2026-11-05)
+- On phones and tablets, the judges' scores use just the number buttons and ✓, so no keyboard pops up and covers the screen.
+
 ## v2.1.1 "Samba" (2026-11-05)
 - The game is now called **Keep Dancing!** (top left and the browser tab).
 

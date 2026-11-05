@@ -215,6 +215,8 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .jkeys button{padding:6px 0;font-size:18px;border-width:3px;background:#2b0f4d;color:var(--yellow);border-color:var(--yellow);box-shadow:0 3px 0 var(--yellow)}
 .jkeys button.sel{background:var(--yellow);color:var(--ink)}
 .jctl .hint{color:#fff;opacity:.75}
+/* touch screens: tap a number + ✓ only, no text box (the phone keyboard would cover the screen) */
+@media(pointer:coarse){.jrow input{display:none}.jrow button.big{flex:1;max-width:420px}.jctl .hint{display:none}}
 @media(max-width:560px){.jkeys{grid-template-columns:repeat(5,1fr)}}
 @media(min-width:700px){
   .revhead .cart.md{width:84px;height:63px}
@@ -436,7 +438,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.1.1',RELEASE='Samba';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
+const VERSION='2.1.2',RELEASE='Rumba';   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
 const COLORS=['#ff4fa0','#35d0ff','#3ddc84','#ffd93d','#b980ff','#ff9f1c','#7af0d8','#ff8a8a','#a3e635','#f472b6','#60a5fa','#fb923c'];
 const EMOJI=['🦄','🐙','🦖','🐸','🐼','🦊','🐵','🦋','🐲','🐧','🐯','🦩','🐨','🦁','🐰','🐢'];
 const $=s=>document.querySelector(s);
@@ -1107,7 +1109,7 @@ function liveConfirm(){
   setTimeout(()=>{liveMarkPlayers(k);liveReact(n);judgeBubble(k,n)},450);
   const q=$('#jscore');q.value='';liveSetPending(NaN);
   if(k<3){const nx=document.querySelector(`.paddle[data-i="${k+1}"]`);nx.classList.add('active');nx.querySelector('.await').textContent='⬇ Next';
-    $('#jname').textContent=firstName(S.judges[k+1].name);q.focus({preventScroll:true});return}
+    $('#jname').textContent=firstName(S.judges[k+1].name);if(matchMedia('(pointer:fine)').matches)q.focus({preventScroll:true});return}
   // all four in: score the round, then total, banner and presenters
   $('#jctl').style.display='none';const rb=document.querySelector('.realbanner');if(rb)rb.remove();
   const r=S.tmp.slice();w.results[entry().cid]={real:r,guesses:JSON.parse(JSON.stringify(w.guesses)),quips:makeQuips(r,w.guesses,w.order)};

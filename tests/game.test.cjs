@@ -443,3 +443,21 @@ test('phone: lock in typed guesses without an Enter key', async () => {
   assert.equal(Object.keys((await state(page)).week.guesses).length, 1);
   await ctx.close();
 });
+
+test("phone: judges' scores by tapping only, no keyboard box", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await ctx.newPage(); page.on('dialog', d => d.accept());
+  await page.goto(URL); await page.addStyleTag({ content: CALM });
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  for (let i = 0; i < 3; i++) { await page.tap('[data-act=ready]'); await page.fill('#quick', '7777'); await page.tap('.qlock'); }
+  assert.equal(await page.isVisible('#jscore'), false, 'no text box on touch screens');
+  for (const n of [8, 7, 9, 6]) {
+    await page.tap(`[data-act=jkey][data-n="${n}"]`);
+    await page.tap('#jok');
+    assert.notEqual(await page.evaluate(() => document.activeElement && document.activeElement.id), 'jscore', 'keyboard never opens');
+  }
+  await page.waitForFunction(() => window.__strictlyPhase() === 'reveal');
+  assert.deepEqual((await state(page)).week.results[(await state(page)).week.entries[0].cid].real, [8, 7, 9, 6]);
+  await ctx.close();
+});
