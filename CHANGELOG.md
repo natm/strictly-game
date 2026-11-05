@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.0.4 "Hello" (2026-11-05)
+- Still called "Player 2"? The pass-the-controls screen asks for your real name, with a box right there, or "Keep Player 2" to stop asking.
+
 ## v3.0.3 "Hush" (2026-11-05)
 - Sound is off by default. Tap 🔇 in the header to turn it on, and the game remembers your choice.
 

@@ -735,3 +735,18 @@ test('sound is off by default and remembers when you turn it on', async () => {
   await page.reload(); await page.addStyleTag({ content: CALM });
   assert.match(await page.textContent('[data-act=snd]'), /🔇/);
 });
+
+test('nudges "Player N" to enter their real name on the pass screen', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=danced]');
+  assert.equal(await page.locator('.namenudge').count(), 1);
+  const pid = (await state(page)).week.order[0];
+  await page.fill('.namenudge input', 'Grandad');
+  assert.equal(await page.textContent('.pass .who'), 'Grandad');
+  assert.equal((await state(page)).players.find(p => p.id === pid).name, 'Grandad');
+  await page.click('[data-act=ready]'); await page.fill('#quick', '7777'); await page.press('#quick', 'Enter');
+  // next player keeps their default name and is not asked again
+  await page.click('[data-act=keepname]');
+  assert.equal(await page.locator('.namenudge').count(), 0);
+});

@@ -309,6 +309,8 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .credits a{color:var(--yellow)}
 .ver{font-family:var(--title);font-size:11px;letter-spacing:.06em;color:#fff;opacity:.85}
 .updbar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:70;background:var(--yellow);color:var(--ink);border:var(--line);border-radius:18px;padding:10px 18px;font-family:var(--title);font-size:17px;box-shadow:var(--shadow);animation:pop .4s both}
+.namenudge{max-width:460px;margin:16px auto 0;background:#fff;border:var(--line);border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);font-weight:600;animation:pop .5s .3s both}
+.namenudge .row{margin:8px 0 0}.namenudge input{flex:1}
 /* touch guessing (phones/tablets) */
 .gtouch{padding:10px}
 .gpads{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -507,7 +509,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.0.3',RELEASE='Hush';
+const VERSION='3.0.4',RELEASE='Hello';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -1199,6 +1201,9 @@ function vGuess(){
   if(!ready)return `<div class="pass"><div class="sub">${esc(couple(entry().cid).name)} · guess ${w.oi+1} of ${w.order.length}</div>
     <span class="bigav">${p.av}</span><div style="font-family:var(--title);color:#fff;font-size:24px;text-shadow:0 3px 0 var(--ink)">Pass the controls to…</div>
     <div class="who" style="color:${p.color}">${esc(p.name)}</div><button class="big pink pulse" data-act="ready">I'm ready! 🙈 no peeking</button>
+    ${isDefaultName(p)?`<div class="namenudge"><div>👋 Still called <b>${esc(p.name)}</b>? What's your name?</div>
+      <div class="row"><input type="text" data-bind="player:${p.id}:name" data-live="who" maxlength="18" placeholder="Your name" aria-label="Your name">
+      <button class="sm white" data-act="keepname" data-id="${p.id}">Keep ${esc(p.name)}</button></div></div>`:''}
     <div style="margin-top:14px"><button class="white" data-act="skipplayer">🚽 ${esc(p.name)}'s out of the room, skip them</button></div>
     ${factsFor(couple(entry().cid)).length?`<div class="dyk" id="dyk" data-cid="${entry().cid}"><b>💡 Did you know?</b><span>${esc(randomFact(couple(entry().cid)))}</span></div>`:''}</div>`;
   return `<h2 class="t" style="color:${p.color}">${p.av} ${esc(p.name)}</h2><div class="sub">${art(couple(entry().cid),'md')}<br>Guess each judge's score for ${esc(couple(entry().cid).name)}</div>${keypad(w.oi+1<w.order.length?'Lock it in! →':'Lock it in! ✔')}<div class="center"><button class="sm white" data-act="skipplayer">Skip ${esc(p.name)} for this couple</button></div>`;
@@ -1431,6 +1436,7 @@ function applySeries(){let ch=false;
   // couples eliminated in the real series are marked as gone
   (SD.eliminated||[]).forEach(([wk,cel])=>{const c=S.couples.find(c=>celebOf(c.name)===normName(cel));if(c&&c.out==null&&!(S.week&&S.week.n<=wk&&S.week.entries.some(e=>e.cid===c.id&&!S.week.committed))){c.out=wk;ch=true}});
   if(!S.couples.length&&SD.couples.length){SD.couples.forEach(p=>S.couples.push({id:uid(),name:p.name,out:null,scores:[]}));if(!S.history.length&&!S.week)S.nextWeek=SD.afterWeek+1;ch=true}S.couples.forEach(c=>{const p=presetFor(c);if(p&&!c.name.includes('&')&&normName(p.name)!==normName(c.name)){c.name=p.name;ch=true}});if(ch)save()}
+const isDefaultName=p=>p&&!p.keepName&&/^Player \d+$/.test((p.name||'').trim());
 const firstName=n=>(n||'').trim().split(/\s+/)[0];
 function factsFor(c){const p=presetFor(c);if(!p||!p.facts)return[];return[...(p.facts.celebrity||[]),...(p.facts.pro||[])]}
 function randomFact(c){const f=factsFor(c);return f.length?f[Math.floor(Math.random()*f.length)]:''}
@@ -1578,6 +1584,7 @@ document.addEventListener('click',e=>{
   case 'pickc':w.idx=+b.dataset.i;w.phase='dance';save();return render();
   case 'danced':startCouple();w.phase='guess';save();return render();
   case 'cantdance':if(confirm('Mark this couple as absent this week and skip them?')){entry().status='sick';advance()}return;
+  case 'keepname':{const p=player(id);if(p)p.keepName=true;save();return render()}
   case 'skipplayer':{const nm=(player(w.order[w.oi])||{}).name;
     w.order.splice(w.oi,1);S.tmp=[null,null,null,null];ready=false;
     if(w.oi>=w.order.length)w.phase='real';
@@ -1614,7 +1621,7 @@ document.addEventListener('input',e=>{
   if(k==='weekn'){W().n=Math.max(1,parseInt(t.value)||1);save();hdr();return}
   if(k==='theme'){W().theme=t.value;save();hdr();return}
   if(k==='couple')couple(id)[f]=t.value;
-  else if(k==='player')player(id)[f]=t.value;
+  else if(k==='player'){player(id)[f]=t.value;if(t.dataset.live==='who'){const w=document.querySelector('.pass .who');if(w)w.textContent=t.value||'…'}}
   else if(k==='judge')S.judges[+id][f]=t.value;
   else if(k==='pres')S.presenters[+id][f]=t.value;
   else if(k==='dance'){W().entries[+id].dance=t.value;const dt=$('#dtag');if(dt){dt.style.display=t.value?'':'none';dt.querySelector('span').textContent=t.value}}
