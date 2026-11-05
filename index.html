@@ -300,6 +300,7 @@ button.av{padding:0;width:2.2em;height:2.2em;font-size:22px;border-radius:50%;bo
 .credits{margin:22px auto 6px;max-width:760px;text-align:center;color:#fff;font-size:12px;opacity:.8;text-shadow:0 1px 0 var(--ink)}
 .credits a{color:var(--yellow)}
 .ver{font-family:var(--title);font-size:11px;letter-spacing:.06em;color:#fff;opacity:.85}
+.updbar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:70;background:var(--yellow);color:var(--ink);border:var(--line);border-radius:18px;padding:10px 18px;font-family:var(--title);font-size:17px;box-shadow:var(--shadow);animation:pop .4s both}
 /* touch guessing (phones/tablets) */
 .gtouch{padding:10px}
 .gpads{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -495,7 +496,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='2.8.1',RELEASE='Twirl';
+const VERSION='2.9.0',RELEASE='Spin';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -1359,6 +1360,7 @@ function render(){
     if(p==='real'){jFix=null;liveLabel()}
     if(p==='real'&&matchMedia('(pointer:fine)').matches){const q=$('#jscore');if(q)q.focus({preventScroll:true})}
     if(p==='wrap'){rain(180);sfx.tada()}
+    if(p==='wrap'||p==='elim')commitWeek(W());
   }
 }
 
@@ -1446,17 +1448,25 @@ function resizePhoto(file,i){
 let photoFor=0,photoKind='judge';
 function startCouple(){gSel=null;const w=W();w.order=shuffle(w.pids);w.oi=0;w.guesses={};w.prevTotals=Object.assign({},w.totals);S.tmp=[null,null,null,null];ready=false}
 function advance(){const w=W(),rem=remaining();if(!rem.length)w.phase='wrap';else if(rem.length===1){w.idx=rem[0].i;w.phase='dance'}else w.phase='pick';save();render()}
-function finishWeek(){
-  const w=W();kdTrack('week_finished',{week:w.n});
-  w.entries.forEach(e=>{const r=w.results[e.cid];if(r)couple(e.cid).scores.push({week:w.n,dance:e.dance,real:r.real})});
+/* a week counts as soon as its results are shown: season points, wins, stats rounds and history.
+   Runs once per week (w.committed). "Who went home?" then only records eliminations. */
+function commitWeek(w){
+  if(!w||w.committed)return;
+  kdTrack('week_finished',{week:w.n});
+  w.entries.forEach(e=>{const r=w.results[e.cid],c=couple(e.cid);if(r&&c)c.scores.push({week:w.n,dance:e.dance,real:r.real})});
   const rows=weekPlayerRows(false),best=rows.length?rows[0].score:0;
   const winners=best>0?rows.filter(r=>r.score===best).map(r=>r.name):[];
   w.pids.forEach(id=>{const p=player(id);if(!p)return;const s=S.season[id]=S.season[id]||{pts:0,weeks:0,wins:0};
     s.name=p.name;s.color=p.color;s.av=p.av;s.pts+=w.totals[id]||0;s.weeks++;if(best>0&&(w.totals[id]||0)===best)s.wins++});
-  w.entries.forEach(e=>{const r=w.results[e.cid];if(r&&r.guesses)S.rounds.push({w:w.n,c:couple(e.cid).name,d:e.dance||'',r:r.real,g:r.guesses})});
-  w.leaving.forEach(id=>{couple(id).out=w.n});
-  S.history.push({n:w.n,theme:w.theme||'',winners,out:w.leaving.map(id=>couple(id).name),sick:w.entries.filter(e=>e.status==='sick').map(e=>couple(e.cid).name)});
-  S.weeksDone=Math.max(S.weeksDone,w.n);S.week=null;overlay=null;save();render();
+  w.entries.forEach(e=>{const r=w.results[e.cid],c=couple(e.cid);if(r&&r.guesses&&c)S.rounds.push({w:w.n,c:c.name,d:e.dance||'',r:r.real,g:r.guesses})});
+  S.history.push({n:w.n,theme:w.theme||'',winners,out:[],sick:w.entries.filter(e=>e.status==='sick').map(e=>(couple(e.cid)||{}).name).filter(Boolean)});
+  S.weeksDone=Math.max(S.weeksDone,w.n);w.committed=true;save();
+}
+function finishWeek(){
+  const w=W();commitWeek(w);
+  w.leaving.forEach(id=>{const c=couple(id);if(c)c.out=w.n});
+  const h=S.history.slice().reverse().find(x=>x.n===w.n);if(h)h.out=w.leaving.map(id=>(couple(id)||{}).name).filter(Boolean);
+  S.week=null;overlay=null;save();render();
   toast(`Week ${w.n} saved! ${w.leaving.length?'👋 '+w.leaving.length+' left':''}`);
 }
 
@@ -1481,7 +1491,7 @@ document.addEventListener('click',e=>{
   case 'load2026':load2026();return;
   case 'wkstep':S.nextWeek=Math.max(1,Math.min(99,nextWeekNo()+(+b.dataset.d)));save();return render();
   case 'newweek':newWeek();overlay=null;return render();
-  case 'quitweek':if(confirm('Abandon this week? Nothing from it will be saved.')){S.week=null;overlay=null;save();render()}return;
+  case 'quitweek':if(confirm(w&&w.committed?'Close this week? Its scores are already saved; nobody will be marked as gone home.':'Abandon this week? Nothing from it will be saved.')){S.week=null;overlay=null;save();render()}return;
   case 'stab':S.seasonTab=b.dataset.t;save();return render();
   /* manage */
   case 'addcouples':{const t=$('#newcouples').value.split('\n').map(x=>x.trim()).filter(Boolean);
@@ -1571,7 +1581,13 @@ window.__strictly={scoreStats,seriesDances,presetFor,factsFor,makeQuips};window.
 /* custom events, sent to whichever cookieless tracker is loaded (no personal data: no names, no scores) */
 window.kdTrack=(name,props={})=>{try{if(window.plausible)window.plausible(name,{props});else if(window.umami&&window.umami.track)window.umami.track(name,props);
   else if(window.sa_event)window.sa_event(name,props);else if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:'event/'+name,event:true})}catch(e){}};
+(function checkForUpdate(){if(location.protocol==='file:')return;
+  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const VERSION='([0-9.]+)',RELEASE='([^']+)'/);
+    const newer=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]>y[i]}return false};
+    if(m&&newer(m[1],VERSION)){const d=document.createElement('button');d.className='updbar';d.textContent=`✨ New version v${m[1]} “${m[2]}”, tap to update`;
+      d.onclick=()=>location.reload();document.body.appendChild(d)}}).catch(()=>{})})();
 applySeries();
+if(S.week&&(S.week.phase==='wrap'||S.week.phase==='elim'))commitWeek(S.week);
 $('#dances').innerHTML=DANCES.map(d=>`<option value="${d}">`).join('');
 render();
 })();

@@ -591,3 +591,41 @@ test('fun stats show up mid-week and survive odd saved data', async () => {
   assert.match(await page.textContent('#view'), /in progress/);
   assert.deepEqual(page.errors, []);
 });
+
+test('a week counts at the results podium, even without finishing "who went home"', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
+  await playCouple(page, () => [7, 7, 7, 7], [7, 7, 7, 7]);          // last couple -> week results podium
+  let s = await state(page);
+  assert.equal(s.week.phase, 'wrap');
+  assert.equal(s.history.length, 1, 'week in the history already');
+  assert.equal(s.rounds.length, 1);
+  assert.equal(Object.values(s.season)[0].weeks, 1);
+  // reloading on this screen must not count it twice
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  s = await state(page);
+  assert.equal(s.history.length, 1); assert.equal(s.rounds.length, 1); assert.equal(Object.values(s.season)[0].weeks, 1);
+  await page.click('[data-act=nav][data-to=season]'); await page.click('[data-act=stab][data-t=weeks]');
+  assert.doesNotMatch(await page.textContent('#view'), /No weeks finished yet/);
+  await page.click('[data-act=stab][data-t=stats]');
+  assert.ok(await page.locator('.awardcard').count() > 0);
+  // then who went home: eliminations recorded on the same history entry
+  await page.click('[data-act=nav][data-to=""]'); await page.click('[data-act=toelim]'); await page.click('.cc:nth-child(1)'); await page.click('[data-act=finishweek]');
+  s = await state(page);
+  assert.equal(s.history.length, 1); assert.deepEqual(s.history[0].out, ['Ann & A']); assert.equal(s.couples[0].out, 1);
+  assert.equal(Object.values(s.season)[0].weeks, 1, 'still counted once');
+});
+
+test('a week saved before this change, stuck on "who went home", gets counted on load', async () => {
+  const page = await open();
+  await addCouples(page, ['Ann & A']);
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]');
+  await playCouple(page, () => [8, 8, 8, 8], [8, 8, 8, 8]);
+  // simulate an old save: week on the elim screen but never committed
+  await page.evaluate(() => { const S = JSON.parse(localStorage.getItem('strictly-v2')); S.week.phase = 'elim'; delete S.week.committed;
+    S.history = []; S.rounds = []; S.season = {}; localStorage.setItem('strictly-v2', JSON.stringify(S)); });
+  await page.reload(); await page.addStyleTag({ content: CALM });
+  const s = await state(page);
+  assert.equal(s.history.length, 1); assert.equal(s.rounds.length, 1);
+});
