@@ -515,7 +515,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.3.0',RELEASE='Lights Out';
+const VERSION='3.3.1',RELEASE='Sequins';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -825,6 +825,12 @@ const STATQ={
   tonightBottom:["Bottom of the leaderboard tonight, but the public vote counts too!","Bottom of the leaderboard. Get the phones out, Nan.","Bottom for now — but it's not over till the vote!"],
   fact:["Fun fact: {fact}","{fact}","Did you know? {fact}"]
 };
+/* costumes and timing: playful presenter digs and compliments */
+const COSTUMEQ={
+  0:["That costume, {first}! The sequin count alone deserves a 10.","I need that outfit. Wardrobe, if you're listening, size 10 please!","The feathers! The fringe! The sparkle! I'm getting lost in it.","Your timing was spot on tonight, {first}. Right on the beat!"],
+  1:["{first}, that costume has more sequins than I have thoughts. And I have a lot of thoughts.","Bold outfit. I think I saw it on a disco ball once.","The timing was… let's say 'interpretive'. The band waited for you, which was nice.","Were you a beat behind, or was the band a beat ahead? We'll never know.","I'm told that outfit took 200 hours. The dance took 90 seconds. Value for money."],
+  2:["The costume is giving EVERYTHING! Wardrobe, I love you!","Gorgeous timing! You were right on the music, every step.","A couple of beats got away from you, but the musicality was there!","{pro}, did you choose that outfit? Iconic. Absolutely iconic."]
+};
 /* the famous "Strictly curse": playful, never about anyone real */
 const CURSEQ={
   0:["Look at the chemistry between {first} and {pro}! Nobody say the C-word… curse! 🙈","That hold was so close, I'm getting Strictly curse flashbacks. Purely professional, of course!","{first} and {pro}, you two are lovely together. Strictly professional lovely!"],
@@ -936,6 +942,7 @@ function makeQuips(real,guesses,order){
     else if(r<.78)out.push({p:ids[1],t:fill(pickOne(BREATHLESSQ[ids[1]]))})
     else if(r<.86&&(SD.past||[]).length)out.push({p:ids[1],t:audienceLine(ids[1])})
     else if(r<.9)out.push({p:ids[1],t:fill(pickOne(CURSEQ[ids[1]]))})
+    else if(r<.97)out.push({p:ids[1],t:fill(pickOne(COSTUMEQ[ids[1]]))})
     else out.push({p:ids[1],t:fill(canGuess&&ids[1]!==1&&Math.random()<.6?pickOne(q[Math.random()<.6?'best':'worst']):canGuess&&ids[1]===1&&Math.random()<.3?pickOne(q[Math.random()<.5?'best':'worst']):voice(ids[1],tier))});
   }
   // now and then the first presenter hands over to the second, who replies to them

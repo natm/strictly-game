@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.3.1 "Sequins" (2026-11-05)
+- Presenters sometimes joke about the couple's costume or timing: "Were you a beat behind, or was the band a beat ahead? We'll never know."
+
 ## v3.3.0 "Lights Out" (2026-11-05)
 - Abi Clarke pops up to remind everyone to watch Strictly: Lights Out after Sunday's results show 🌙.
 - Dave Arch and Abi Clarke each appear at least once every week, guaranteed by the last couple, as well as their random pop-ups.

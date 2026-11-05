@@ -532,7 +532,7 @@ test('presenter extras: Josh fact sources, Emma hugs and tissues, breathless lin
   await page.click('[data-act=danced]');
   const lines = await page.evaluate(() => { const out = [];
     for (let i = 0; i < 600; i++) out.push(...window.__strictly.makeQuips([3, 4, 4, 3], { a: [5, 5, 5, 5] }, ['a']));
-    for (let i = 0; i < 600; i++) out.push(...window.__strictly.makeQuips([5, 6, 5, 6], { a: [5, 5, 5, 5] }, ['a']));
+    for (let i = 0; i < 600; i++) out.push(...window.__strictly.makeQuips([4, 5, 5, 4], { a: [5, 5, 5, 5] }, ['a']));   // 18: low tier, where Emma offers hugs
     return out; });
   const josh = lines.filter(q => q.p === 1).map(q => q.t), emma = lines.filter(q => q.p === 0).map(q => q.t), all = lines.map(q => q.t);
   assert.ok(josh.some(t => /pub|bus|newspaper|Instagram|wife|kids|dream/.test(t)), 'Josh cites his sources');
@@ -859,4 +859,12 @@ test('Dave Arch and Abi Clarke appear at least once every week', async () => {
   const all = Object.values(s.week.results).flatMap(r => r.quips || []);
   assert.ok(all.some(q => q.p === 3), 'Dave appeared this week');
   assert.ok(all.some(q => q.p === 4), 'Abi appeared this week');
+});
+
+test('presenters sometimes comment on costumes and timing', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  const lines = await page.evaluate(() => { const o = []; for (let i = 0; i < 1500; i++) o.push(...window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a']).filter(q => q.p < 3).map(q => q.t)); return o; });
+  assert.ok(lines.some(t => /costume|outfit|sequin|feathers/i.test(t)), 'costume comments');
+  assert.ok(lines.some(t => /timing|beat/i.test(t)), 'timing comments');
 });
