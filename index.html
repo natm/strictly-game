@@ -510,7 +510,7 @@ ol.rules li{margin:8px 0 8px 22px;font-size:18px;font-weight:600}
 'use strict';
 /* =============== constants & state =============== */
 const KEY='strictly-v2';
-const VERSION='3.0.5',RELEASE='Sway';
+const VERSION='3.0.6',RELEASE='Handover';
 /* Cookieless analytics (optional). Paste your provider's script URL + attributes here; nothing loads while src is empty.
    Works with Plausible, Umami, Simple Analytics, GoatCounter, etc. See README "Analytics". */
 const ANALYTICS={src:'',attrs:{}};   // bump on every release; release names are dances or Strictly words (see CHANGELOG.md)
@@ -894,6 +894,18 @@ function makeQuips(real,guesses,order){
     else if(fact&&r<.65){vars.fact=fact;out.push({p:ids[1],t:fill(ids[1]===1?(Math.random()<.45?voice(1,tier):pickOne(JOSH_FACT)):STATQ.fact[ids[1]])})}
     else if(r<.78)out.push({p:ids[1],t:fill(pickOne(BREATHLESSQ[ids[1]]))})
     else out.push({p:ids[1],t:fill(canGuess&&ids[1]!==1&&Math.random()<.6?pickOne(q[Math.random()<.6?'best':'worst']):canGuess&&ids[1]===1&&Math.random()<.3?pickOne(q[Math.random()<.5?'best':'worst']):voice(ids[1],tier))});
+  }
+  // now and then the first presenter hands over to the second, who replies to them
+  if(out.length>=2&&out[0].p!==3&&out[1].p!==3&&Math.random()<.35){
+    const A=firstName(S.presenters[out[0].p].name),B=firstName(S.presenters[out[1].p].name);
+    const ask=out[0].p===1?[`${B}, back me up here.`,`${B}, you're the expert. Explain that to me.`,`What do you reckon, ${B}? Be honest.`]
+      :[`What do you think, ${B}?`,`${B}, what did you make of that?`,`Over to you, ${B}!`,`${B}, your thoughts?`];
+    const reply={0:[`Oh, ${A}, I loved it! `,`Honestly, ${A}? `,`Thanks, ${A}! `],
+      1:[`Well, ${A}… `,`Thanks for putting me on the spot, ${A}. `,`Honestly, ${A}? `,`Oh, now you want my opinion, ${A}? `],
+      2:[`Oh, ${A}! `,`${A}, listen. `,`Thank you, ${A}! `]}[out[1].p];
+    out[0].t=out[0].t.replace(/\s*$/,'')+' '+pickOne(ask);
+    out[1].t=pickOne(reply)+out[1].t;
+    out[1].reply=true;
   }
   if(out.length===1&&out[0].p===2&&Math.random()<.7){   // Johannes on his own: the scores, then his catchphrase
     const sc=`${vars.topJudge} gave ${hi}, ${vars.lowJudge} ${lo}… ${total} out of 40!`;

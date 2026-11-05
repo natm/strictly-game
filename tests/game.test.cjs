@@ -768,3 +768,16 @@ test('players never share an emoji, and changing one does not re-render the page
   assert.equal(new Set(avs).size, avs.length, 'cycling skips emojis in use');
   assert.equal(await page.textContent('[data-act=cycleav] >> nth=0'), avs[0]);
 });
+
+test('presenters sometimes hand over to each other and the second replies', async () => {
+  const page = await open();
+  await page.click('[data-act=newweek]'); await page.click('[data-act=startweek]'); await page.click('[data-act=pickc] >> nth=0'); await page.click('[data-act=danced]');
+  const qs = await page.evaluate(() => { const o = []; for (let i = 0; i < 500; i++) o.push(window.__strictly.makeQuips([7, 8, 7, 8], { a: [7, 7, 7, 7] }, ['a'])); return o; });
+  const names = ['Emma', 'Josh', 'Johannes'];
+  const handovers = qs.filter(q => q[1] && q[1].reply);
+  assert.ok(handovers.length > 50, `only ${handovers.length} handovers`);
+  for (const q of handovers) {
+    assert.ok(q[0].t.includes(names[q[1].p]), `first presenter names the second: ${q[0].t}`);
+    assert.ok(q[1].t.includes(names[q[0].p]), `reply names the first: ${q[1].t}`);
+  }
+});

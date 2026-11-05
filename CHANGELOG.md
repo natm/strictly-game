@@ -3,6 +3,9 @@
 Every release has a semantic version and a dance (or Strictly word) as its name.
 The version is shown in the game header and footer, so you can quote it in bug reports.
 
+## v3.0.6 "Handover" (2026-11-05)
+- Presenters sometimes hand over to each other. Emma might finish with "What do you think, Josh?", and Josh replies "Well, Emma… That was less a dance, more a hostage negotiation."
+
 ## v3.0.5 "Sway" (2026-11-05)
 - Every player has their own emoji: new players and avatar changes skip emojis already in use, and any duplicates in saved games are fixed.
 - Changing a player's emoji no longer flashes the page.
